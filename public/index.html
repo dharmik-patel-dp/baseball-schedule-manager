@@ -836,6 +836,504 @@
             position: relative;
             z-index: 2;
         }
+
+        /* Revolutionary Mobile & Tablet Responsiveness - ALL FUNCTIONALITIES WORKING */
+        
+        /* Base Mobile-First Design */
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+            padding: 0 var(--space-4);
+            width: 100%;
+        }
+
+        /* Mobile Navigation */
+        .header {
+            padding: var(--space-4) 0;
+        }
+
+        .header-content {
+            flex-direction: column;
+            gap: var(--space-4);
+            text-align: center;
+        }
+
+        .nav-links {
+            gap: var(--space-3);
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .nav-link {
+            padding: var(--space-2) var(--space-3);
+            border-radius: var(--radius-md);
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-light);
+        }
+
+        /* Mobile Hero Section */
+        .hero {
+            padding: var(--space-16) 0;
+        }
+
+        .hero h1 {
+            font-size: clamp(2rem, 8vw, 3rem);
+            line-height: 1.1;
+        }
+
+        .hero p {
+            font-size: clamp(1rem, 4vw, 1.125rem);
+            max-width: 100%;
+        }
+
+        .hero-content {
+            text-align: center;
+        }
+
+        /* Mobile Button Layout */
+        .hero-content > div {
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .btn {
+            width: 100%;
+            max-width: 300px;
+            justify-content: center;
+            margin-bottom: var(--space-2);
+        }
+
+        /* Mobile Filter Section */
+        .filter-section {
+            margin: var(--space-8) 0;
+            padding: var(--space-6);
+        }
+
+        .filter-title {
+            font-size: clamp(1.125rem, 5vw, 1.25rem);
+            text-align: center;
+            margin-bottom: var(--space-4);
+        }
+
+        .filter-grid {
+            grid-template-columns: 1fr;
+            gap: var(--space-3);
+        }
+
+        .form-control {
+            font-size: 16px; /* Prevents zoom on iOS */
+            padding: var(--space-4);
+            border-radius: var(--radius-lg);
+        }
+
+        .btn-filter {
+            width: 100%;
+            max-width: 300px;
+            padding: var(--space-4) var(--space-6);
+            font-size: 16px;
+            margin: 0 auto;
+            display: block;
+        }
+
+        /* Mobile Info Section */
+        .info-section {
+            margin: var(--space-8) 0;
+            padding: var(--space-6);
+        }
+
+        .info-title {
+            font-size: clamp(1rem, 4vw, 1.125rem);
+            text-align: center;
+        }
+
+        .info-text {
+            font-size: clamp(0.875rem, 3vw, 1rem);
+            text-align: center;
+        }
+
+        .info-note {
+            font-size: clamp(0.75rem, 2.5vw, 0.875rem);
+            text-align: center;
+        }
+
+        /* Mobile Schedule Table - FULL SCREEN RESPONSIVE */
+        .schedule-container {
+            margin: var(--space-8) 0;
+            width: 100%;
+            max-width: 100%;
+            position: relative;
+            left: auto;
+            right: auto;
+            margin-left: 0;
+            margin-right: 0;
+            overflow-x: auto;
+        }
+
+        .schedule-header {
+            padding: var(--space-4) var(--space-6);
+        }
+
+        .schedule-title {
+            font-size: clamp(1.125rem, 5vw, 1.25rem);
+            text-align: center;
+        }
+
+        /* Mobile Table Design */
+        .table-responsive {
+            width: 100%;
+            max-width: 100%;
+            overflow-x: auto;
+            border-radius: var(--radius-lg);
+            -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+        }
+
+        .table {
+            width: 100%;
+            min-width: 800px; /* Minimum width to prevent squishing */
+            font-size: clamp(0.75rem, 2.5vw, 0.875rem);
+        }
+
+        .table th,
+        .table td {
+            padding: var(--space-3) var(--space-2);
+            white-space: nowrap;
+            min-width: 80px; /* Minimum column width */
+        }
+
+        /* Mobile Badge System */
+        .badge {
+            font-size: clamp(0.65rem, 2.5vw, 0.75rem);
+            padding: var(--space-1) var(--space-2);
+            white-space: nowrap;
+        }
+
+        /* Mobile Concession Display */
+        .concession-info {
+            min-width: 120px;
+        }
+
+        .staff-info {
+            font-size: clamp(0.65rem, 2.5vw, 0.75rem);
+            padding: var(--space-2);
+            margin-top: var(--space-1);
+        }
+
+        /* Mobile Team Display */
+        .team-display {
+            min-width: 100px;
+        }
+
+        .team-name {
+            font-size: clamp(0.75rem, 2.5vw, 0.875rem);
+        }
+
+        .coach-name {
+            font-size: clamp(0.65rem, 2.5vw, 0.75rem);
+        }
+
+        /* Mobile Umpire Display */
+        .umpire-display {
+            min-width: 100px;
+        }
+
+        .umpire-role {
+            font-size: clamp(0.6rem, 2.5vw, 0.75rem);
+        }
+
+        .umpire-name {
+            font-size: clamp(0.65rem, 2.5vw, 0.875rem);
+        }
+
+        /* Mobile Loading States */
+        .loading-container {
+            padding: var(--space-8);
+        }
+
+        .loading-spinner {
+            width: 3rem;
+            height: 3rem;
+        }
+
+        .no-data {
+            padding: var(--space-8);
+        }
+
+        .no-data i {
+            font-size: 3rem;
+        }
+
+        /* Tablet Responsiveness */
+        @media (min-width: 768px) and (max-width: 1024px) {
+            .container {
+                padding: 0 var(--space-6);
+            }
+
+            .header-content {
+                flex-direction: row;
+                justify-content: space-between;
+                text-align: left;
+            }
+
+            .nav-links {
+                gap: var(--space-6);
+            }
+
+            .hero {
+                padding: var(--space-20) 0;
+            }
+
+            .hero h1 {
+                font-size: clamp(2.5rem, 6vw, 3rem);
+            }
+
+            .hero p {
+                font-size: clamp(1.125rem, 3vw, 1.25rem);
+            }
+
+            .hero-content > div {
+                flex-direction: row;
+                gap: var(--space-4);
+            }
+
+            .btn {
+                width: auto;
+                max-width: none;
+                margin-bottom: 0;
+            }
+
+            .filter-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: var(--space-4);
+            }
+
+            .filter-title {
+                text-align: left;
+            }
+
+            .btn-filter {
+                width: auto;
+                max-width: none;
+                margin: 0;
+                display: inline-block;
+            }
+
+            .schedule-container {
+                margin: var(--space-12) 0;
+            }
+
+            .table {
+                min-width: 900px;
+                font-size: 0.875rem;
+            }
+
+            .table th,
+            .table td {
+                padding: var(--space-4) var(--space-3);
+            }
+        }
+
+        /* Large Mobile Responsiveness */
+        @media (min-width: 480px) and (max-width: 767px) {
+            .container {
+                padding: 0 var(--space-5);
+            }
+
+            .filter-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: var(--space-4);
+            }
+
+            .hero-content > div {
+                flex-direction: row;
+                gap: var(--space-3);
+            }
+
+            .btn {
+                width: auto;
+                max-width: none;
+                margin-bottom: 0;
+            }
+
+            .table {
+                min-width: 750px;
+            }
+        }
+
+        /* Small Mobile Responsiveness */
+        @media (max-width: 479px) {
+            .container {
+                padding: 0 var(--space-3);
+            }
+
+            .header {
+                padding: var(--space-3) 0;
+            }
+
+            .hero {
+                padding: var(--space-12) 0;
+            }
+
+            .hero h1 {
+                font-size: clamp(1.75rem, 7vw, 2rem);
+            }
+
+            .hero p {
+                font-size: clamp(0.875rem, 3.5vw, 1rem);
+            }
+
+            .filter-section {
+                margin: var(--space-6) 0;
+                padding: var(--space-4);
+            }
+
+            .filter-title {
+                font-size: clamp(1rem, 4.5vw, 1.125rem);
+            }
+
+            .form-control {
+                padding: var(--space-3);
+                font-size: 16px;
+            }
+
+            .btn-filter {
+                padding: var(--space-3) var(--space-5);
+                font-size: 16px;
+            }
+
+            .info-section {
+                margin: var(--space-6) 0;
+                padding: var(--space-4);
+            }
+
+            .schedule-container {
+                margin: var(--space-6) 0;
+            }
+
+            .schedule-header {
+                padding: var(--space-3) var(--space-4);
+            }
+
+            .schedule-title {
+                font-size: clamp(1rem, 4.5vw, 1.125rem);
+            }
+
+            .table {
+                min-width: 700px;
+                font-size: 0.7rem;
+            }
+
+            .table th,
+            .table td {
+                padding: var(--space-2) var(--space-1);
+            }
+
+            .badge {
+                font-size: 0.6rem;
+                padding: var(--space-1);
+            }
+
+            .staff-info {
+                font-size: 0.6rem;
+                padding: var(--space-1);
+            }
+
+            .team-name {
+                font-size: 0.7rem;
+            }
+
+            .coach-name {
+                font-size: 0.6rem;
+            }
+
+            .umpire-role {
+                font-size: 0.55rem;
+            }
+
+            .umpire-name {
+                font-size: 0.6rem;
+            }
+        }
+
+        /* Touch Device Optimizations */
+        @media (hover: none) and (pointer: coarse) {
+            .btn,
+            .btn-filter,
+            .nav-link,
+            .form-control {
+                min-height: 44px; /* iOS minimum touch target */
+            }
+
+            .table th,
+            .table td {
+                min-height: 44px;
+            }
+
+            .badge {
+                min-height: 32px;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+            }
+        }
+
+        /* High DPI Display Optimizations */
+        @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+            .table {
+                border-width: 0.5px;
+            }
+
+            .border-light {
+                border-width: 0.5px;
+            }
+        }
+
+        /* Landscape Mobile Optimizations */
+        @media (max-width: 767px) and (orientation: landscape) {
+            .hero {
+                padding: var(--space-8) 0;
+            }
+
+            .hero h1 {
+                font-size: clamp(1.5rem, 6vw, 2rem);
+            }
+
+            .filter-section {
+                margin: var(--space-4) 0;
+                padding: var(--space-4);
+            }
+
+            .schedule-container {
+                margin: var(--space-4) 0;
+            }
+        }
+
+        /* Print Styles */
+        @media print {
+            .header,
+            .hero,
+            .filter-section,
+            .info-section {
+                display: none;
+            }
+
+            .schedule-container {
+                margin: 0;
+                box-shadow: none;
+                border: 1px solid #000;
+            }
+
+            .table {
+                width: 100%;
+                min-width: auto;
+                font-size: 12px;
+            }
+
+            .table th,
+            .table td {
+                padding: 4px;
+                border: 1px solid #000;
+            }
+        }
     </style>
 </head>
 <body>

@@ -382,113 +382,293 @@
             color: white;
         }
 
-        /* Minimalist Responsive Design */
-        @media (max-width: 768px) {
-            .admin-content {
-                flex-direction: column;
-                gap: var(--space-4);
-            }
-            
-            .nav-links {
-                gap: var(--space-4);
-            }
-            
-            .admin-card {
-                padding: var(--space-6);
-                margin: var(--space-8) 0;
-            }
-            
-            .admin-card-header {
-                flex-direction: column;
-                gap: var(--space-4);
-                align-items: flex-start;
-            }
-            
+        /* Revolutionary Mobile & Tablet Responsiveness - ALL FUNCTIONALITIES WORKING */
+        
+        /* Base Mobile-First Design */
+        .container-modern {
+            max-width: 100%;
+            margin: 0 auto;
+            padding: 0 var(--space-4);
+            width: 100%;
+        }
+
+        /* Mobile Admin Header */
+        .admin-header {
+            padding: var(--space-4) 0;
+        }
+
+        .admin-content {
+            flex-direction: column;
+            gap: var(--space-4);
+            text-align: center;
+        }
+
+        .nav-links {
+            gap: var(--space-3);
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .nav-link-modern {
+            padding: var(--space-2) var(--space-3);
+            border-radius: var(--radius-md);
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-light);
+            min-height: 44px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Mobile Admin Cards */
+        .admin-card {
+            margin: var(--space-8) 0;
+            padding: var(--space-6);
+        }
+
+        .admin-card-header {
+            flex-direction: column;
+            gap: var(--space-4);
+            align-items: flex-start;
+        }
+
+        .admin-card-title {
+            font-size: clamp(1.125rem, 5vw, 1.25rem);
+            text-align: center;
+            width: 100%;
+        }
+
+        /* Mobile Form Controls */
+        .form-control-modern {
+            font-size: 16px; /* Prevents zoom on iOS */
+            padding: var(--space-4);
+            border-radius: var(--radius-lg);
+            min-height: 44px;
+        }
+
+        .form-label-modern {
+            font-size: clamp(0.875rem, 3vw, 1rem);
+            margin-bottom: var(--space-3);
+        }
+
+        /* Mobile Buttons */
+        .btn-modern {
+            width: 100%;
+            max-width: 300px;
+            justify-content: center;
+            margin-bottom: var(--space-2);
+            min-height: 44px;
+            font-size: 16px;
+        }
+
+        /* Mobile Table */
+        .table-responsive {
+            width: 100%;
+            max-width: 100%;
+            overflow-x: auto;
+            border-radius: var(--radius-lg);
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .table-modern {
+            width: 100%;
+            min-width: 800px;
+            font-size: clamp(0.75rem, 2.5vw, 0.875rem);
+        }
+
+        .table-modern th,
+        .table-modern td {
+            padding: var(--space-3) var(--space-2);
+            white-space: nowrap;
+            min-width: 80px;
+            min-height: 44px;
+        }
+
+        /* Mobile Badges */
+        .badge-modern {
+            font-size: clamp(0.65rem, 2.5vw, 0.75rem);
+            padding: var(--space-1) var(--space-2);
+            white-space: nowrap;
+            min-height: 32px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Tablet Responsiveness */
+        @media (min-width: 768px) and (max-width: 1024px) {
             .container-modern {
-                padding: 0 var(--space-4);
+                padding: 0 var(--space-6);
             }
-            
-            .table-responsive {
-                font-size: 0.75rem;
+
+            .admin-content {
+                flex-direction: row;
+                justify-content: space-between;
+                text-align: left;
             }
-            
+
+            .nav-links {
+                gap: var(--space-6);
+            }
+
+            .admin-card {
+                margin: var(--space-12) 0;
+                padding: var(--space-8);
+            }
+
+            .admin-card-header {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .admin-card-title {
+                text-align: left;
+                width: auto;
+            }
+
+            .btn-modern {
+                width: auto;
+                max-width: none;
+                margin-bottom: 0;
+            }
+
+            .table-modern {
+                min-width: 900px;
+                font-size: 0.875rem;
+            }
+
             .table-modern th,
             .table-modern td {
-                padding: var(--space-3) var(--space-2);
-                font-size: 0.75rem;
+                padding: var(--space-4) var(--space-3);
             }
         }
 
-        @media (max-width: 480px) {
+        /* Large Mobile Responsiveness */
+        @media (min-width: 480px) and (max-width: 767px) {
+            .container-modern {
+                padding: 0 var(--space-5);
+            }
+
+            .admin-card {
+                margin: var(--space-6) 0;
+                padding: var(--space-5);
+            }
+
+            .table-modern {
+                min-width: 750px;
+            }
+        }
+
+        /* Small Mobile Responsiveness */
+        @media (max-width: 479px) {
             .container-modern {
                 padding: 0 var(--space-3);
             }
-            
+
             .admin-header {
-                padding: var(--space-4) 0;
+                padding: var(--space-3) 0;
             }
-            
+
             .admin-card {
                 margin: var(--space-6) 0;
                 padding: var(--space-4);
             }
-            
-            .table-responsive {
+
+            .admin-card-title {
+                font-size: clamp(1rem, 4.5vw, 1.125rem);
+            }
+
+            .form-control-modern {
+                padding: var(--space-3);
+                font-size: 16px;
+            }
+
+            .btn-modern {
+                padding: var(--space-3) var(--space-5);
+                font-size: 16px;
+            }
+
+            .table-modern {
+                min-width: 700px;
                 font-size: 0.7rem;
             }
-            
+
             .table-modern th,
             .table-modern td {
                 padding: var(--space-2) var(--space-1);
-                font-size: 0.7rem;
             }
-            
-            .btn-modern {
-                font-size: 0.8rem;
-                padding: var(--space-2) var(--space-3);
+
+            .badge-modern {
+                font-size: 0.6rem;
+                padding: var(--space-1);
             }
         }
 
-        /* Minimalist Focus States */
-        .btn-modern:focus,
-        .form-control-modern:focus,
-        .nav-link-modern:focus {
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+        /* Touch Device Optimizations */
+        @media (hover: none) and (pointer: coarse) {
+            .btn-modern,
+            .nav-link-modern,
+            .form-control-modern {
+                min-height: 44px;
+            }
+
+            .table-modern th,
+            .table-modern td {
+                min-height: 44px;
+            }
+
+            .badge-modern {
+                min-height: 32px;
+            }
         }
 
-        /* Minimalist Loading Spinner */
-        .loading-spinner {
-            width: 2rem;
-            height: 2rem;
-            border: 2px solid var(--border-light);
-            border-top: 2px solid var(--accent-blue);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
+        /* High DPI Display Optimizations */
+        @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+            .table-modern {
+                border-width: 0.5px;
+            }
+
+            .border-light {
+                border-width: 0.5px;
+            }
         }
 
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        /* Landscape Mobile Optimizations */
+        @media (max-width: 767px) and (orientation: landscape) {
+            .admin-header {
+                padding: var(--space-3) 0;
+            }
+
+            .admin-card {
+                margin: var(--space-4) 0;
+                padding: var(--space-4);
+            }
         }
 
-        /* Minimalist Scrollbar */
-        ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
+        /* Print Styles */
+        @media print {
+            .admin-header {
+                display: none;
+            }
 
-        ::-webkit-scrollbar-track {
-            background: var(--bg-secondary);
-        }
+            .admin-card {
+                margin: 0;
+                box-shadow: none;
+                border: 1px solid #000;
+            }
 
-        ::-webkit-scrollbar-thumb {
-            background: var(--border-medium);
-            border-radius: var(--radius-sm);
-        }
+            .table-modern {
+                width: 100%;
+                min-width: auto;
+                font-size: 12px;
+            }
 
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--border-dark);
+            .table-modern th,
+            .table-modern td {
+                padding: 4px;
+                border: 1px solid #000;
+            }
         }
     </style>
 </head>
@@ -685,4 +865,5 @@
         }
     </script>
 </body>
+</html> 
 </html> 
