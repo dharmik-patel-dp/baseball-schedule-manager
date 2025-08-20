@@ -3,1175 +3,584 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Panel - Baseball/Softball Schedule Manager</title>
+    <title>⚾🥎 Admin Panel - Baseball/Softball Schedule Manager</title>
+    
+    <!-- Modern CSS Framework -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- AOS Animation Library -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    
     <style>
         :root {
-            --primary-color: #1e3a8a;
+            --primary-color: #2563eb;
+            --primary-dark: #1d4ed8;
             --secondary-color: #dc2626;
             --accent-color: #f59e0b;
-            --light-bg: #f8fafc;
-            --border-color: #e2e8f0;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --info-color: #3b82f6;
+            
+            --text-primary: #1f2937;
+            --text-secondary: #6b7280;
+            --text-muted: #9ca3af;
+            
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8fafc;
+            --bg-tertiary: #f1f5f9;
+            --bg-dark: #0f172a;
+            
+            --border-color: #e5e7eb;
+            --border-light: #f3f4f6;
+            
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+            
+            --radius-sm: 0.375rem;
+            --radius-md: 0.5rem;
+            --radius-lg: 0.75rem;
+            --radius-xl: 1rem;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
         body {
-            background-color: var(--light-bg);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
         }
 
-        .navbar-brand {
-            font-weight: bold;
-            color: var(--primary-color) !important;
-        }
-
+        /* Modern Admin Header */
         .admin-header {
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            background: linear-gradient(135deg, var(--bg-dark) 0%, var(--text-primary) 100%);
             color: white;
             padding: 2rem 0;
-            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--shadow-lg);
         }
 
+        .admin-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="50" cy="50" r="1" fill="white" opacity="0.05"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+            opacity: 0.3;
+        }
+
+        .admin-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .admin-title {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 700;
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(45deg, #ffffff, #e0e7ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .admin-subtitle {
+            font-size: 1.125rem;
+            font-weight: 400;
+            opacity: 0.8;
+            margin-bottom: 1.5rem;
+        }
+
+        .admin-nav {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .nav-link-modern {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: var(--radius-lg);
+            padding: 0.75rem 1.5rem;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-link-modern:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.4);
+            color: white;
+            transform: translateY(-2px);
+            text-decoration: none;
+        }
+
+        .nav-link-modern.active {
+            background: var(--primary-color);
+            border-color: var(--primary-color);
+            box-shadow: var(--shadow-md);
+        }
+
+        /* Modern Container */
+        .container-modern {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+
+        /* Admin Cards */
         .admin-card {
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            margin-bottom: 2rem;
-        }
-
-        .admin-card-header {
-            background-color: var(--primary-color);
-            color: white;
-            padding: 1rem 1.5rem;
-            border-radius: 10px 10px 0 0;
-            font-weight: 600;
-        }
-
-        .admin-card-body {
-            padding: 1.5rem;
-        }
-
-        .btn-primary {
-            background-color: var(--primary-color);
-            border-color: var(--primary-color);
-        }
-
-        .btn-primary:hover {
-            background-color: #1e40af;
-            border-color: #1e40af;
-        }
-
-        .btn-danger {
-            background-color: var(--secondary-color);
-            border-color: var(--secondary-color);
-        }
-
-        .btn-success {
-            background-color: #059669;
-            border-color: #059669;
-        }
-
-        .form-control:focus {
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 0.2rem rgba(30, 58, 138, 0.25);
-        }
-
-        .table th {
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            font-weight: 600;
-        }
-
-        .table td {
-            vertical-align: middle;
-            border-color: var(--border-color);
-        }
-
-        .modal-header {
-            background-color: var(--primary-color);
-            color: white;
-        }
-
-        .alert {
-            border-radius: 8px;
-            border: none;
-        }
-
-        .csv-upload-area {
-            border: 2px dashed var(--border-color);
-            border-radius: 10px;
+            background: var(--bg-primary);
+            border-radius: var(--radius-xl);
             padding: 2rem;
-            text-align: center;
+            margin: 2rem 0;
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--border-light);
             transition: all 0.3s ease;
         }
 
-        .csv-upload-area:hover {
-            border-color: var(--primary-color);
-            background-color: rgba(30, 58, 138, 0.05);
+        .admin-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
         }
 
-        .csv-upload-area.dragover {
-            border-color: var(--primary-color);
-            background-color: rgba(30, 58, 138, 0.1);
+        .admin-card-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--border-light);
         }
 
-        .status-badge {
+        .admin-card-title {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            font-size: 1.5rem;
+            color: var(--text-primary);
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .btn-modern {
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--radius-lg);
+            font-weight: 600;
+            font-size: 0.875rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+        }
+
+        .btn-primary-modern {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-primary-modern:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+            color: white;
+        }
+
+        .btn-success-modern {
+            background: linear-gradient(135deg, var(--success-color), #059669);
+            color: white;
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-success-modern:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+            color: white;
+        }
+
+        .btn-warning-modern {
+            background: linear-gradient(135deg, var(--warning-color), #d97706);
+            color: white;
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-warning-modern:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+            color: white;
+        }
+
+        .btn-danger-modern {
+            background: linear-gradient(135deg, var(--danger-color), #dc2626);
+            color: white;
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-danger-modern:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+            color: white;
+        }
+
+        /* Form Controls */
+        .form-control-modern {
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 0.875rem 1rem;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+        }
+
+        .form-control-modern:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .form-control-modern::placeholder {
+            color: var(--text-muted);
+        }
+
+        .form-label-modern {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        /* Table Styling */
+        .table-modern {
+            background: var(--bg-primary);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .table-modern th {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            font-weight: 600;
+            padding: 1rem;
+            border: none;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .table-modern td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-light);
+            vertical-align: middle;
+        }
+
+        .table-modern tbody tr:hover {
+            background-color: var(--bg-secondary);
+        }
+
+        /* Badge System */
+        .badge-modern {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius-lg);
             font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            line-height: 1;
         }
 
-        .loading {
-            text-align: center;
-            padding: 2rem;
-            color: var(--primary-color);
+        .badge-primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
         }
 
-        .no-data {
-            text-align: center;
-            padding: 2rem;
-            color: #6b7280;
+        .badge-success {
+            background: linear-gradient(135deg, var(--success-color), #059669);
+            color: white;
+        }
+
+        .badge-warning {
+            background: linear-gradient(135deg, var(--warning-color), #d97706);
+            color: white;
+        }
+
+        .badge-secondary {
+            background: linear-gradient(135deg, var(--text-secondary), var(--text-muted));
+            color: white;
+        }
+
+        .badge-info {
+            background: linear-gradient(135deg, var(--info-color), #2563eb);
+            color: white;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .admin-title {
+                font-size: 2rem;
+            }
+            
+            .admin-nav {
+                flex-direction: column;
+            }
+            
+            .nav-link-modern {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .admin-card {
+                padding: 1.5rem;
+            }
+        }
+
+        /* Animation Classes */
+        .fade-in {
+            animation: fadeIn 0.6s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .slide-up {
+            animation: slideUp 0.5s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Focus States */
+        .btn-modern:focus,
+        .form-control-modern:focus,
+        .nav-link-modern:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.3);
         }
     </style>
 </head>
 <body>
-    <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
-        <div class="container">
-            <a class="navbar-brand" href="/">
-                <i class="fas fa-baseball-ball me-2"></i>
-                Baseball/Softball Schedule Manager
-            </a>
-            <a href="/" class="btn btn-outline-primary">
-                <i class="fas fa-home me-2"></i>Public View
-            </a>
+    <!-- Modern Admin Header -->
+    <header class="admin-header">
+        <div class="container-modern">
+            <div class="admin-content">
+                <h1 class="admin-title">⚾🥎 Admin Panel</h1>
+                <p class="admin-subtitle">Manage schedules, staff, and league operations</p>
+                <nav class="admin-nav">
+                    <a href="#schedules" class="nav-link-modern active" onclick="showSection('schedules')">
+                        <i class="fas fa-calendar-alt"></i>
+                        Schedules
+                    </a>
+                    <a href="#staff" class="nav-link-modern" onclick="showSection('staff')">
+                        <i class="fas fa-users"></i>
+                        Staff Directory
+                    </a>
+                    <a href="#csv" class="nav-link-modern" onclick="showSection('csv')">
+                        <i class="fas fa-upload"></i>
+                        CSV Import
+                    </a>
+                    <a href="/" class="nav-link-modern">
+                        <i class="fas fa-eye"></i>
+                        View Public Site
+                    </a>
+                </nav>
+            </div>
         </div>
-    </nav>
+    </header>
 
-    <!-- Admin Header -->
-    <div class="admin-header">
-        <div class="container text-center">
-            <h1 class="display-5 fw-bold mb-2">Admin Panel</h1>
-            <p class="lead mb-0">Manage game schedules, CSV uploads, and umpire change requests</p>
-        </div>
-    </div>
-
-    <div class="container">
-        <!-- Alert Messages -->
-        <div id="alertContainer"></div>
-
-        <!-- Create New Schedule -->
-        <div class="admin-card">
+    <div class="container-modern">
+        <!-- Schedules Section -->
+        <section id="schedules" class="admin-card" data-aos="fade-up">
             <div class="admin-card-header">
-                <i class="fas fa-plus me-2"></i>Create New Schedule
-            </div>
-            <div class="admin-card-body">
-                <form id="scheduleForm">
-                    <div class="row g-3">
-                        <div class="col-md-2">
-                            <label class="form-label">Season *</label>
-                            <select class="form-select" id="season" required>
-                                <option value="">Select Season</option>
-                                <option value="Spring">Spring</option>
-                                <option value="Summer">Summer</option>
-                                <option value="Fall">Fall</option>
-                            </select>
-                        </div>
-                        <div class="col-md-2">
-                            <label class="form-label">Event Type *</label>
-                            <select class="form-select" id="eventType" required>
-                                <option value="">Select Type</option>
-                                <option value="Baseball">Baseball</option>
-                                <option value="Softball">Softball</option>
-                            </select>
-                        </div>
-                        <div class="col-md-2">
-                            <label class="form-label">Day *</label>
-                            <select class="form-select" id="day" required>
-                                <option value="">Select Day</option>
-                                <option value="Monday">Monday</option>
-                                <option value="Tuesday">Tuesday</option>
-                                <option value="Wednesday">Wednesday</option>
-                                <option value="Thursday">Thursday</option>
-                                <option value="Friday">Friday</option>
-                                <option value="Saturday">Saturday</option>
-                                <option value="Sunday">Sunday</option>
-                            </select>
-                        </div>
-                        <div class="col-md-2">
-                            <label class="form-label">Date *</label>
-                            <input type="date" class="form-control" id="date" required>
-                        </div>
-                        <div class="col-md-2">
-                            <label class="form-label">Start Time *</label>
-                            <input type="time" class="form-control" id="startTime" required>
-                        </div>
-                        <div class="col-md-2">
-                            <label class="form-label">AM/PM *</label>
-                            <select class="form-select" id="amPm" required>
-                                <option value="">Select</option>
-                                <option value="AM">AM</option>
-                                <option value="PM">PM</option>
-                            </select>
-                        </div>
-                        <div class="col-md-2">
-                            <label class="form-label">Division *</label>
-                            <select class="form-select" id="division" required>
-                                <option value="">Select Division</option>
-                                <!-- Baseball Divisions -->
-                                <optgroup label="Baseball">
-                                    <option value="Senior 13/16">Senior 13/16</option>
-                                    <option value="Senior 11/12">Senior 11/12</option>
-                                    <option value="Minor 9/10">Minor 9/10</option>
-                                    <option value="Minor 7/8">Minor 7/8</option>
-                                    <option value="T-Ball 6/7">T-Ball 6/7</option>
-                                    <option value="T-Ball 4/5">T-Ball 4/5</option>
-                                </optgroup>
-                                <!-- Softball Divisions -->
-                                <optgroup label="Softball">
-                                    <option value="16U">16U</option>
-                                    <option value="14U">14U</option>
-                                    <option value="12U">12U</option>
-                                    <option value="10U">10U</option>
-                                    <option value="8U">8U</option>
-                                </optgroup>
-                            </select>
-                        </div>
-                        <div class="col-md-2">
-                            <label class="form-label">Home Team *</label>
-                            <select class="form-select" id="homeTeam" required>
-                                <option value="">Select Home Team</option>
-                                <optgroup label="Baseball Teams">
-                                    <option value="A's">A's</option>
-                                    <option value="Bulls">Bulls</option>
-                                    <option value="Cubs">Cubs</option>
-                                    <option value="Devil Rays">Devil Rays</option>
-                                    <option value="Giants">Giants</option>
-                                    <option value="Grasshoppers">Grasshoppers</option>
-                                    <option value="Grizzlies">Grizzlies</option>
-                                    <option value="Hooks">Hooks</option>
-                                    <option value="Hot Rods">Hot Rods</option>
-                                    <option value="Iron Birds">Iron Birds</option>
-                                    <option value="Mariners">Mariners</option>
-                                    <option value="Marlins">Marlins</option>
-                                    <option value="Nationals">Nationals</option>
-                                    <option value="Padres">Padres</option>
-                                    <option value="Phillios">Phillios</option>
-                                    <option value="Red Sox">Red Sox</option>
-                                    <option value="Red Wings">Red Wings</option>
-                                    <option value="Reds">Reds</option>
-                                    <option value="Riverdogs">Riverdogs</option>
-                                    <option value="Rock Hounds">Rock Hounds</option>
-                                    <option value="Rockies">Rockies</option>
-                                    <option value="Tides">Tides</option>
-                                    <option value="White Sox">White Sox</option>
-                                    <option value="Yard Goats">Yard Goats</option>
-                                </optgroup>
-                                <optgroup label="Softball Teams">
-                                    <option value="8U Duke Blue Devils">8U Duke Blue Devils</option>
-                                    <option value="8U Florida State Seminoles">8U Florida State Seminoles</option>
-                                    <option value="8U Maryland Terrapins">8U Maryland Terrapins</option>
-                                    <option value="8U Michigan State Spartans">8U Michigan State Spartans</option>
-                                    <option value="8U Notre Dame Fighting Irish">8U Notre Dame Fighting Irish</option>
-                                    <option value="8U Tennessee Lady Vols">8U Tennessee Lady Vols</option>
-                                    <option value="8U UMass Lowell Riverhawks">8U UMass Lowell Riverhawks</option>
-                                    <option value="8U Washington Huskies">8U Washington Huskies</option>
-                                    <option value="10U Chelmsford Longhorns">10U Chelmsford Longhorns</option>
-                                    <option value="10U Dracut Grave Diggers">10U Dracut Grave Diggers</option>
-                                    <option value="10U Lowell Huskies">10U Lowell Huskies</option>
-                                    <option value="10U Tyngsboro Red">10U Tyngsboro Red</option>
-                                    <option value="10U Westford Team 1">10U Westford Team 1</option>
-                                    <option value="12U Lowell Red">12U Lowell Red</option>
-                                    <option value="12U Lowell Gray">12U Lowell Gray</option>
-                                    <option value="16U Lowell Red">16U Lowell Red</option>
-                                    <option value="16U Lowell Gray">16U Lowell Gray</option>
-                                </optgroup>
-                                <option value="Lowell 8U District">Lowell 8U District</option>
-                                <option value="Lowell 9U District">Lowell 9U District</option>
-                                <option value="Lowell 10U District">Lowell 10U District</option>
-                                <option value="Lowell 11U District">Lowell 11U District</option>
-                                <option value="Lowell 12U District">Lowell 12U District</option>
-                                <option value="Lowell 8U Baystates">Lowell 8U Baystates</option>
-                                <option value="Lowell 9U Baystates">Lowell 9U Baystates</option>
-                                <option value="Lowell 10U Baystates">Lowell 10U Baystates</option>
-                                <option value="Lowell 11U Baystates">Lowell 11U Baystates</option>
-                                <option value="Lowell 12U Baystates">Lowell 12U Baystates</option>
-                                <option value="7-8 MVC Lowell Gray">7-8 MVC Lowell Gray</option>
-                                <option value="9-10 MVC Lowell Red">9-10 MVC Lowell Red</option>
-                                <option value="11-12 MVC Lowell Black">11-12 MVC Lowell Black</option>
-                            </select>
-                        </div>
-                        <div class="col-md-2">
-                            <label class="form-label">Home Coach *</label>
-                            <select class="form-select" id="homeCoach" required>
-                                <option value="">Select Home Coach</option>
-                                <option value="Alex Normandie">Alex Normandie</option>
-                                <option value="Brendan Akashian">Brendan Akashian</option>
-                                <option value="Brian Durkin">Brian Durkin</option>
-                                <option value="Cesar Ortiz">Cesar Ortiz</option>
-                                <option value="Dave Brown">Dave Brown</option>
-                                <option value="Greg Kay">Greg Kay</option>
-                                <option value="John Morris">John Morris</option>
-                                <option value="Matt LeLacheur">Matt LeLacheur</option>
-                                <option value="Mike Upton">Mike Upton</option>
-                                <option value="Pate Donavan">Pate Donavan</option>
-                                <option value="Steve McNamara">Steve McNamara</option>
-                                <option value="Tommy Zahareas">Tommy Zahareas</option>
-                                <option value="Angelica Molligi">Angelica Molligi</option>
-                                <option value="Ashley Schwagor">Ashley Schwagor</option>
-                                <option value="Burr McCutcheon">Burr McCutcheon</option>
-                                <option value="George Yfantopulos">George Yfantopulos</option>
-                                <option value="Kara Koch">Kara Koch</option>
-                                <option value="Randy Negron">Randy Negron</option>
-                                <option value="Robert McMahon">Robert McMahon</option>
-                                <option value="Bill Florence">Bill Florence</option>
-                                <option value="Mike Doucette">Mike Doucette</option>
-                                <option value="Sam Valles">Sam Valles</option>
-                                <option value="Steve Davidson">Steve Davidson</option>
-                                <option value="Rich Gallo">Rich Gallo</option>
-                                <option value="Rudolph Beiler">Rudolph Beiler</option>
-                            </select>
-                        </div>
-                        <div class="col-md-2">
-                            <label class="form-label">Visitor Team *</label>
-                            <select class="form-select" id="visitorTeam" required>
-                                <option value="">Select Visitor Team</option>
-                                <optgroup label="Baseball Teams">
-                                    <option value="A's">A's</option>
-                                    <option value="Bulls">Bulls</option>
-                                    <option value="Cubs">Cubs</option>
-                                    <option value="Devil Rays">Devil Rays</option>
-                                    <option value="Giants">Giants</option>
-                                    <option value="Grasshoppers">Grasshoppers</option>
-                                    <option value="Grizzlies">Grizzlies</option>
-                                    <option value="Hooks">Hooks</option>
-                                    <option value="Hot Rods">Hot Rods</option>
-                                    <option value="Iron Birds">Iron Birds</option>
-                                    <option value="Mariners">Mariners</option>
-                                    <option value="Marlins">Marlins</option>
-                                    <option value="Nationals">Nationals</option>
-                                    <option value="Padres">Padres</option>
-                                    <option value="Phillios">Phillios</option>
-                                    <option value="Red Sox">Red Sox</option>
-                                    <option value="Red Wings">Red Wings</option>
-                                    <option value="Reds">Reds</option>
-                                    <option value="Riverdogs">Riverdogs</option>
-                                    <option value="Rock Hounds">Rock Hounds</option>
-                                    <option value="Rockies">Rockies</option>
-                                    <option value="Tides">Tides</option>
-                                    <option value="White Sox">White Sox</option>
-                                    <option value="Yard Goats">Yard Goats</option>
-                                </optgroup>
-                                <optgroup label="Softball Teams">
-                                    <option value="8U Duke Blue Devils">8U Duke Blue Devils</option>
-                                    <option value="8U Florida State Seminoles">8U Florida State Seminoles</option>
-                                    <option value="8U Maryland Terrapins">8U Maryland Terrapins</option>
-                                    <option value="8U Michigan State Spartans">8U Michigan State Spartans</option>
-                                    <option value="8U Notre Dame Fighting Irish">8U Notre Dame Fighting Irish</option>
-                                    <option value="8U Tennessee Lady Vols">8U Tennessee Lady Vols</option>
-                                    <option value="8U UMass Lowell Riverhawks">8U UMass Lowell Riverhawks</option>
-                                    <option value="8U Washington Huskies">8U Washington Huskies</option>
-                                    <option value="10U Chelmsford Longhorns">10U Chelmsford Longhorns</option>
-                                    <option value="10U Dracut Grave Diggers">10U Dracut Grave Diggers</option>
-                                    <option value="10U Lowell Huskies">10U Lowell Huskies</option>
-                                    <option value="10U Tyngsboro Red">10U Tyngsboro Red</option>
-                                    <option value="10U Westford Team 1">10U Westford Team 1</option>
-                                    <option value="12U Lowell Red">12U Lowell Red</option>
-                                    <option value="12U Lowell Gray">12U Lowell Gray</option>
-                                    <option value="16U Lowell Red">16U Lowell Red</option>
-                                    <option value="16U Lowell Gray">16U Lowell Gray</option>
-                                </optgroup>
-                                <option value="Lowell 8U District">Lowell 8U District</option>
-                                <option value="Lowell 9U District">Lowell 9U District</option>
-                                <option value="Lowell 10U District">Lowell 10U District</option>
-                                <option value="Lowell 11U District">Lowell 11U District</option>
-                                <option value="Lowell 12U District">Lowell 12U District</option>
-                                <option value="Lowell 8U Baystates">Lowell 8U Baystates</option>
-                                <option value="Lowell 9U Baystates">Lowell 9U Baystates</option>
-                                <option value="Lowell 10U Baystates">Lowell 10U Baystates</option>
-                                <option value="Lowell 11U Baystates">Lowell 11U Baystates</option>
-                                <option value="Lowell 12U Baystates">Lowell 12U Baystates</option>
-                                <option value="7-8 MVC Lowell Gray">7-8 MVC Lowell Gray</option>
-                                <option value="9-10 MVC Lowell Red">9-10 MVC Lowell Red</option>
-                                <option value="11-12 MVC Lowell Black">11-12 MVC Lowell Black</option>
-                            </select>
-                        </div>
-                        <div class="col-md-2">
-                            <label class="form-label">Visitor Coach *</label>
-                            <select class="form-select" id="visitorCoach" required>
-                                <option value="">Select Visitor Coach</option>
-                                <option value="Alex Normandie">Alex Normandie</option>
-                                <option value="Brendan Akashian">Brendan Akashian</option>
-                                <option value="Brian Durkin">Brian Durkin</option>
-                                <option value="Cesar Ortiz">Cesar Ortiz</option>
-                                <option value="Dave Brown">Dave Brown</option>
-                                <option value="Greg Kay">Greg Kay</option>
-                                <option value="John Morris">John Morris</option>
-                                <option value="Matt LeLacheur">Matt LeLacheur</option>
-                                <option value="Mike Upton">Mike Upton</option>
-                                <option value="Pate Donavan">Pate Donavan</option>
-                                <option value="Steve McNamara">Steve McNamara</option>
-                                <option value="Tommy Zahareas">Tommy Zahareas</option>
-                                <option value="Angelica Molligi">Angelica Molligi</option>
-                                <option value="Ashley Schwagor">Ashley Schwagor</option>
-                                <option value="Burr McCutcheon">Burr McCutcheon</option>
-                                <option value="George Yfantopulos">George Yfantopulos</option>
-                                <option value="Kara Koch">Kara Koch</option>
-                                <option value="Randy Negron">Randy Negron</option>
-                                <option value="Robert McMahon">Robert McMahon</option>
-                                <option value="Bill Florence">Bill Florence</option>
-                                <option value="Mike Doucette">Mike Doucette</option>
-                                <option value="Sam Valles">Sam Valles</option>
-                                <option value="Steve Davidson">Steve Davidson</option>
-                                <option value="Rich Gallo">Rich Gallo</option>
-                                <option value="Rudolph Beiler">Rudolph Beiler</option>
-                            </select>
-                        </div>
-                        <div class="col-md-2">
-                            <label class="form-label">Venue *</label>
-                            <select class="form-select" id="venue" required>
-                                <option value="">Select Venue</option>
-                                <optgroup label="LeBlanc Park">
-                                    <option value="LeBlanc Field - LeBlanc Park">LeBlanc Field - LeBlanc Park</option>
-                                    <option value="McNamara Field - LeBlanc Park">McNamara Field - LeBlanc Park</option>
-                                </optgroup>
-                                <optgroup label="Shedd Park">
-                                    <option value="Shedd Upper - Shedd Park">Shedd Upper - Shedd Park</option>
-                                    <option value="Shedd Lower - Shedd Park">Shedd Lower - Shedd Park</option>
-                                </optgroup>
-                                <optgroup label="Gage Park">
-                                    <option value="Finn Field - Gage Park">Finn Field - Gage Park</option>
-                                    <option value="Whalen Field - Gage Park">Whalen Field - Gage Park</option>
-                                </optgroup>
-                                <optgroup label="Highland Park">
-                                    <option value="DeCosta Field - Highland Park">DeCosta Field - Highland Park</option>
-                                    <option value="Loucraft Field - Highland Park">Loucraft Field - Highland Park</option>
-                                    <option value="Hadley Field - Highlands">Hadley Field - Highlands</option>
-                                </optgroup>
-                                <optgroup label="Pawtucketville">
-                                    <option value="Campbell Field (Flaggies) - Pawtucketville">Campbell Field (Flaggies) - Pawtucketville</option>
-                                    <option value="Montbleau Field - Pawtucketville">Montbleau Field - Pawtucketville</option>
-                                </optgroup>
-                                <optgroup label="Other Locations">
-                                    <option value="Ryan Field - South Lowell">Ryan Field - South Lowell</option>
-                                    <option value="Gresco Field - Shedd Park">Gresco Field - Shedd Park</option>
-                                    <option value="Mahoney Field - Father McGuire Park">Mahoney Field - Father McGuire Park</option>
-                                    <option value="McPherson Field #1 - Centralville">McPherson Field #1 - Centralville</option>
-                                    <option value="McPherson Field #2 - Centralville">McPherson Field #2 - Centralville</option>
-                                    <option value="McPherson Field #3 - Centralville">McPherson Field #3 - Centralville</option>
-                                    <option value="Page Field - Shedd Park">Page Field - Shedd Park</option>
-                                </optgroup>
-                            </select>
-                        </div>
-                        <div class="col-md-2">
-                            <label class="form-label">Plate Umpire *</label>
-                            <select class="form-select" id="plateUmpire" required>
-                                <option value="">Select Plate Umpire</option>
-                                <!-- Will be populated dynamically from staff directory -->
-                            </select>
-                        </div>
-                        <div class="col-md-2">
-                            <label class="form-label">Base Umpire *</label>
-                            <select class="form-select" id="baseUmpire" required>
-                                <option value="">Select Base Umpire</option>
-                                <!-- Will be populated dynamically from staff directory -->
-                            </select>
-                        </div>
-                        <div class="col-md-2">
-                            <label class="form-label">Concession Stand *</label>
-                            <select class="form-select" id="concessionStand" required>
-                                <option value="">Select Concession Stand</option>
-                                <optgroup label="LeBlanc Park">
-                                    <option value="Boutin Stand - LeBlanc Park">Boutin Stand - LeBlanc Park</option>
-                                </optgroup>
-                                <optgroup label="Shedd Park">
-                                    <option value="Botto Stand - Shedd Upper">Botto Stand - Shedd Upper</option>
-                                    <option value="Shedd Lower Stand - Shedd Park">Shedd Lower Stand - Shedd Park</option>
-                                </optgroup>
-                                <optgroup label="Gage Park">
-                                    <option value="Finn Field Stand - Gage Park">Finn Field Stand - Gage Park</option>
-                                </optgroup>
-                                <optgroup label="Highland Park">
-                                    <option value="Highlands Park Stand - Highland Park">Highlands Park Stand - Highland Park</option>
-                                </optgroup>
-                                <optgroup label="Pawtucketville">
-                                    <option value="Montbleau Stand - Montbleau Field">Montbleau Stand - Montbleau Field</option>
-                                </optgroup>
-                                <optgroup label="Father McGuire Park">
-                                    <option value="Mahoney Stand - Father McGuire Park">Mahoney Stand - Father McGuire Park</option>
-                                </optgroup>
-                                <optgroup label="McPherson Park">
-                                    <option value="McPherson Stand - McPherson Park">McPherson Stand - McPherson Park</option>
-                                </optgroup>
-                                <optgroup label="Page Field">
-                                    <option value="Page Field Stand - Page Field">Page Field Stand - Page Field</option>
-                                </optgroup>
-                                <optgroup label="Other">
-                                    <option value="No Concession">No Concession</option>
-                                </optgroup>
-                            </select>
-                        </div>
-                        <div class="col-md-2">
-                            <label class="form-label">Concession Staff</label>
-                            <select class="form-select" id="concessionStaff">
-                                <option value="">Select Staff Member</option>
-                                <!-- Will be populated dynamically -->
-                            </select>
-                        </div>
-                    </div>
-                    <div class="row mt-3">
-                        <div class="col-12">
-                            <button type="submit" class="btn btn-primary me-2">
-                                <i class="fas fa-save me-2"></i>Create Schedule
-                            </button>
-                            <button type="reset" class="btn btn-outline-secondary">
-                                <i class="fas fa-undo me-2"></i>Reset Form
-                            </button>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div>
-
-        <!-- CSV Upload -->
-        <div class="admin-card">
-            <div class="admin-card-header">
-                <i class="fas fa-upload me-2"></i>Bulk Upload via CSV
-            </div>
-            <div class="admin-card-body">
-                <div class="csv-upload-area" id="csvUploadArea">
-                    <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-3"></i>
-                    <h5>Drag & Drop CSV File Here</h5>
-                    <p class="text-muted">or click to browse</p>
-                    <input type="file" id="csvFile" accept=".csv" style="display: none;">
-                    <button class="btn btn-outline-primary" onclick="document.getElementById('csvFile').click()">
-                        <i class="fas fa-folder-open me-2"></i>Browse Files
-                    </button>
-                </div>
-                <div id="csvPreview" class="mt-3" style="display: none;">
-                    <h6>CSV Preview:</h6>
-                    <div class="table-responsive">
-                        <table class="table table-sm table-bordered" id="csvPreviewTable">
-                            <thead>
-                                <tr>
-                                    <th>Season</th>
-                                    <th>Event Type</th>
-                                    <th>Day</th>
-                                    <th>Date</th>
-                                    <th>Start Time</th>
-                                    <th>AM/PM</th>
-                                    <th>Division</th>
-                                    <th>Home Team</th>
-                                    <th>Home Coach</th>
-                                    <th>Visitor Team</th>
-                                    <th>Visitor Coach</th>
-                                    <th>Venue</th>
-                                    <th>Plate Umpire</th>
-                                    <th>Base Umpire</th>
-                                    <th>Concession Stand</th>
-                                    <th>Concession Staff</th>
-                                </tr>
-                            </thead>
-                            <tbody id="csvPreviewBody"></tbody>
-                        </table>
-                    </div>
-                    <button class="btn btn-success" onclick="uploadCSV()">
-                        <i class="fas fa-upload me-2"></i>Upload CSV
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Staff Directory Management -->
-        <div class="admin-card">
-            <div class="admin-card-header d-flex justify-content-between align-items-center">
-                <span><i class="fas fa-users me-2"></i>Staff Directory Management</span>
-                <button class="btn btn-sm btn-primary" onclick="showAddStaffModal()">
-                    <i class="fas fa-plus me-2"></i>Add Staff Member
+                <h2 class="admin-card-title">
+                    <i class="fas fa-calendar-plus"></i>
+                    Schedule Management
+                </h2>
+                <button class="btn-modern btn-primary-modern" onclick="showCreateScheduleModal()">
+                    <i class="fas fa-plus"></i>
+                    Create New Schedule
                 </button>
             </div>
-            <div class="admin-card-body">
-                <div class="table-responsive">
-                    <table class="table table-hover mb-0">
-                        <thead>
-                            <tr>
-                                <th>Name</th>
-                                <th>Email</th>
-                                <th>Phone</th>
-                                <th>Parent Name</th>
-                                <th>Parent Email</th>
-                                <th>Parent Phone</th>
-                                <th>Role</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="staffTableBody">
-                            <tr>
-                                <td colspan="8" class="loading">
-                                    <i class="fas fa-spinner fa-spin me-2"></i>Loading staff directory...
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+            
+            <!-- Schedule Table -->
+            <div class="table-responsive">
+                <table class="table table-modern">
+                    <thead>
+                        <tr>
+                            <th>Season</th>
+                            <th>Event</th>
+                            <th>Day</th>
+                            <th>Date</th>
+                            <th>Time</th>
+                            <th>Division</th>
+                            <th>Home Team</th>
+                            <th>Visitor Team</th>
+                            <th>Venue</th>
+                            <th>Umpires</th>
+                            <th>Concession</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="scheduleTableBody">
+                        <tr>
+                            <td colspan="12" class="text-center py-4">
+                                <div class="loading-spinner"></div>
+                                <p class="mt-2">Loading schedules...</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
-        </div>
+        </section>
 
-        <!-- View All Schedules -->
-        <div class="admin-card">
-            <div class="admin-card-header d-flex justify-content-between align-items-center">
-                <span><i class="fas fa-calendar me-2"></i>View All Schedules</span>
-                <div>
-                    <button class="btn btn-sm btn-outline-danger" id="bulkDeleteBtn" style="display: none;" onclick="bulkDelete()">
-                        <i class="fas fa-trash me-2"></i>Delete Selected
+        <!-- Staff Directory Section -->
+        <section id="staff" class="admin-card" style="display: none;" data-aos="fade-up">
+            <div class="admin-card-header">
+                <h2 class="admin-card-title">
+                    <i class="fas fa-users-cog"></i>
+                    Staff Directory Management
+                </h2>
+                <button class="btn-modern btn-success-modern" onclick="showAddStaffModal()">
+                    <i class="fas fa-user-plus"></i>
+                    Add Staff Member
+                </button>
+            </div>
+            
+            <!-- Staff Table -->
+            <div class="table-responsive">
+                <table class="table table-modern">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Role</th>
+                            <th>Phone</th>
+                            <th>Email</th>
+                            <th>Parent Name</th>
+                            <th>Parent Contact</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="staffTableBody">
+                        <tr>
+                            <td colspan="7" class="text-center py-4">
+                                <div class="loading-spinner"></div>
+                                <p class="mt-2">Loading staff...</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- CSV Import Section -->
+        <section id="csv" class="admin-card" style="display: none;" data-aos="fade-up">
+            <div class="admin-card-header">
+                <h2 class="admin-card-title">
+                    <i class="fas fa-file-csv"></i>
+                    Bulk Schedule Import
+                </h2>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="csvFile" class="form-label-modern">Select CSV File</label>
+                        <input type="file" id="csvFile" class="form-control-modern" accept=".csv" onchange="processCSVFile(this)">
+                    </div>
+                    <button id="uploadCSV" class="btn-modern btn-primary-modern" onclick="uploadCSV()" style="display: none;">
+                        <i class="fas fa-upload"></i>
+                        Upload CSV
                     </button>
                 </div>
-            </div>
-            <div class="admin-card-body">
-                <div class="table-responsive">
-                    <table class="table table-hover mb-0">
-                        <thead>
-                            <tr>
-                                <th>
-                                    <input type="checkbox" id="selectAll" onchange="toggleSelectAll()">
-                                </th>
-                                <th>Season</th>
-                                <th>Event</th>
-                                <th>Day</th>
-                                <th>Date</th>
-                                <th>Time</th>
-                                <th>Division</th>
-                                <th>Teams</th>
-                                <th>Venue</th>
-                                <th>Umpires</th>
-                                <th>Concession</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="scheduleTableBody">
-                            <tr>
-                                <td colspan="13" class="loading">
-                                    <i class="fas fa-spinner fa-spin me-2"></i>Loading schedules...
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                <div class="col-md-6">
+                    <div id="csvPreview" style="display: none;">
+                        <h5>CSV Preview</h5>
+                        <div id="previewContent" class="border rounded p-3 bg-light"></div>
+                    </div>
                 </div>
             </div>
-        </div>
-
-        <!-- Umpire Change Requests -->
-        <div class="admin-card">
-            <div class="admin-card-header">
-                <i class="fas fa-edit me-2"></i>Umpire Change Requests
-            </div>
-            <div class="admin-card-body">
-                <div class="table-responsive">
-                    <table class="table table-hover mb-0">
-                        <thead>
-                            <tr>
-                                <th>Game Details</th>
-                                <th>Current Umpires</th>
-                                <th>Requested Changes</th>
-                                <th>Reason</th>
-                                <th>Status</th>
-                                <th>Date</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="umpireRequestsTableBody">
-                            <tr>
-                                <td colspan="7" class="loading">
-                                    <i class="fas fa-spinner fa-spin me-2"></i>Loading requests...
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
+        </section>
     </div>
 
-    <!-- Edit Schedule Modal -->
-    <div class="modal fade" id="editScheduleModal" tabindex="-1">
-        <div class="modal-dialog modal-xl">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Edit Schedule</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="editScheduleForm">
-                        <input type="hidden" id="editScheduleId">
-                        <div class="row g-3">
-                            <div class="col-md-2">
-                                <label class="form-label">Season *</label>
-                                <select class="form-select" id="editSeason" required>
-                                    <option value="Spring">Spring</option>
-                                    <option value="Summer">Summer</option>
-                                    <option value="Fall">Fall</option>
-                                </select>
-                            </div>
-                            <div class="col-md-2">
-                                <label class="form-label">Event Type *</label>
-                                <select class="form-select" id="editEventType" required>
-                                    <option value="Baseball">Baseball</option>
-                                    <option value="Softball">Softball</option>
-                                </select>
-                            </div>
-                            <div class="col-md-2">
-                                <label class="form-label">Day *</label>
-                                <select class="form-select" id="editDay" required>
-                                    <option value="Monday">Monday</option>
-                                    <option value="Tuesday">Tuesday</option>
-                                    <option value="Wednesday">Wednesday</option>
-                                    <option value="Thursday">Thursday</option>
-                                    <option value="Friday">Friday</option>
-                                    <option value="Saturday">Saturday</option>
-                                    <option value="Sunday">Sunday</option>
-                                </select>
-                            </div>
-                            <div class="col-md-2">
-                                <label class="form-label">Date *</label>
-                                <input type="date" class="form-control" id="editDate" required>
-                            </div>
-                            <div class="col-md-2">
-                                <label class="form-label">Start Time *</label>
-                                <input type="time" class="form-control" id="editStartTime" required>
-                            </div>
-                            <div class="col-md-2">
-                                <label class="form-label">AM/PM *</label>
-                                <select class="form-select" id="editAmPm" required>
-                                    <option value="AM">AM</option>
-                                    <option value="PM">PM</option>
-                                </select>
-                            </div>
-                            <div class="col-md-2">
-                                <label class="form-label">Division *</label>
-                                <select class="form-select" id="editDivision" required>
-                                    <optgroup label="Baseball">
-                                        <option value="Senior 13/16">Senior 13/16</option>
-                                        <option value="Senior 11/12">Senior 11/12</option>
-                                        <option value="Minor 9/10">Minor 9/10</option>
-                                        <option value="Minor 7/8">Minor 7/8</option>
-                                        <option value="T-Ball 6/7">T-Ball 6/7</option>
-                                        <option value="T-Ball 4/5">T-Ball 4/5</option>
-                                    </optgroup>
-                                    <optgroup label="Softball">
-                                        <option value="16U">16U</option>
-                                        <option value="14U">14U</option>
-                                        <option value="12U">12U</option>
-                                        <option value="10U">10U</option>
-                                        <option value="8U">8U</option>
-                                    </optgroup>
-                                </select>
-                            </div>
-                            <div class="col-md-2">
-                                <label class="form-label">Home Team *</label>
-                                <select class="form-select" id="editHomeTeam" required>
-                                    <option value="">Select Home Team</option>
-                                    <optgroup label="Baseball Teams">
-                                        <option value="A's">A's</option>
-                                        <option value="Bulls">Bulls</option>
-                                        <option value="Cubs">Cubs</option>
-                                        <option value="Devil Rays">Devil Rays</option>
-                                        <option value="Giants">Giants</option>
-                                        <option value="Grasshoppers">Grasshoppers</option>
-                                        <option value="Grizzlies">Grizzlies</option>
-                                        <option value="Hooks">Hooks</option>
-                                        <option value="Hot Rods">Hot Rods</option>
-                                        <option value="Iron Birds">Iron Birds</option>
-                                        <option value="Mariners">Mariners</option>
-                                        <option value="Marlins">Marlins</option>
-                                        <option value="Nationals">Nationals</option>
-                                        <option value="Padres">Padres</option>
-                                        <option value="Phillios">Phillios</option>
-                                        <option value="Red Sox">Red Sox</option>
-                                        <option value="Red Wings">Red Wings</option>
-                                        <option value="Reds">Reds</option>
-                                        <option value="Riverdogs">Riverdogs</option>
-                                        <option value="Rock Hounds">Rock Hounds</option>
-                                        <option value="Rockies">Rockies</option>
-                                        <option value="Tides">Tides</option>
-                                        <option value="White Sox">White Sox</option>
-                                        <option value="Yard Goats">Yard Goats</option>
-                                    </optgroup>
-                                    <optgroup label="Softball Teams">
-                                        <option value="8U Duke Blue Devils">8U Duke Blue Devils</option>
-                                        <option value="8U Florida State Seminoles">8U Florida State Seminoles</option>
-                                        <option value="8U Maryland Terrapins">8U Maryland Terrapins</option>
-                                        <option value="8U Michigan State Spartans">8U Michigan State Spartans</option>
-                                        <option value="8U Notre Dame Fighting Irish">8U Notre Dame Fighting Irish</option>
-                                        <option value="8U Tennessee Lady Vols">8U Tennessee Lady Vols</option>
-                                        <option value="8U UMass Lowell Riverhawks">8U UMass Lowell Riverhawks</option>
-                                        <option value="8U Washington Huskies">8U Washington Huskies</option>
-                                        <option value="10U Chelmsford Longhorns">10U Chelmsford Longhorns</option>
-                                        <option value="10U Dracut Grave Diggers">10U Dracut Grave Diggers</option>
-                                        <option value="10U Lowell Huskies">10U Lowell Huskies</option>
-                                        <option value="10U Tyngsboro Red">10U Tyngsboro Red</option>
-                                        <option value="10U Westford Team 1">10U Westford Team 1</option>
-                                        <option value="12U Lowell Red">12U Lowell Red</option>
-                                        <option value="12U Lowell Gray">12U Lowell Gray</option>
-                                        <option value="16U Lowell Red">16U Lowell Red</option>
-                                        <option value="16U Lowell Gray">16U Lowell Gray</option>
-                                    </optgroup>
-                                    <option value="Lowell 8U District">Lowell 8U District</option>
-                                    <option value="Lowell 9U District">Lowell 9U District</option>
-                                    <option value="Lowell 10U District">Lowell 10U District</option>
-                                    <option value="Lowell 11U District">Lowell 11U District</option>
-                                    <option value="Lowell 12U District">Lowell 12U District</option>
-                                    <option value="Lowell 8U Baystates">Lowell 8U Baystates</option>
-                                    <option value="Lowell 9U Baystates">Lowell 9U Baystates</option>
-                                    <option value="Lowell 10U Baystates">Lowell 10U Baystates</option>
-                                    <option value="Lowell 11U Baystates">Lowell 11U Baystates</option>
-                                    <option value="Lowell 12U Baystates">Lowell 12U Baystates</option>
-                                    <option value="7-8 MVC Lowell Gray">7-8 MVC Lowell Gray</option>
-                                    <option value="9-10 MVC Lowell Red">9-10 MVC Lowell Red</option>
-                                    <option value="11-12 MVC Lowell Black">11-12 MVC Lowell Black</option>
-                                </select>
-                            </div>
-                            <div class="col-md-2">
-                                <label class="form-label">Home Coach *</label>
-                                <select class="form-select" id="editHomeCoach" required>
-                                    <option value="">Select Home Coach</option>
-                                    <option value="Alex Normandie">Alex Normandie</option>
-                                    <option value="Brendan Akashian">Brendan Akashian</option>
-                                    <option value="Brian Durkin">Brian Durkin</option>
-                                    <option value="Cesar Ortiz">Cesar Ortiz</option>
-                                    <option value="Dave Brown">Dave Brown</option>
-                                    <option value="Greg Kay">Greg Kay</option>
-                                    <option value="John Morris">John Morris</option>
-                                    <option value="Matt LeLacheur">Matt LeLacheur</option>
-                                    <option value="Mike Upton">Mike Upton</option>
-                                    <option value="Pate Donavan">Pate Donavan</option>
-                                    <option value="Steve McNamara">Steve McNamara</option>
-                                    <option value="Tommy Zahareas">Tommy Zahareas</option>
-                                    <option value="Angelica Molligi">Angelica Molligi</option>
-                                    <option value="Ashley Schwagor">Ashley Schwagor</option>
-                                    <option value="Burr McCutcheon">Burr McCutcheon</option>
-                                    <option value="George Yfantopulos">George Yfantopulos</option>
-                                    <option value="Kara Koch">Kara Koch</option>
-                                    <option value="Randy Negron">Randy Negron</option>
-                                    <option value="Robert McMahon">Robert McMahon</option>
-                                    <option value="Bill Florence">Bill Florence</option>
-                                    <option value="Mike Doucette">Mike Doucette</option>
-                                    <option value="Sam Valles">Sam Valles</option>
-                                    <option value="Steve Davidson">Steve Davidson</option>
-                                    <option value="Rich Gallo">Rich Gallo</option>
-                                    <option value="Rudolph Beiler">Rudolph Beiler</option>
-                                </select>
-                            </div>
-                            <div class="col-md-2">
-                                <label class="form-label">Visitor Team *</label>
-                                <select class="form-select" id="editVisitorTeam" required>
-                                    <option value="">Select Visitor Team</option>
-                                    <optgroup label="Baseball Teams">
-                                        <option value="A's">A's</option>
-                                        <option value="Bulls">Bulls</option>
-                                        <option value="Cubs">Cubs</option>
-                                        <option value="Devil Rays">Devil Rays</option>
-                                        <option value="Giants">Giants</option>
-                                        <option value="Grasshoppers">Grasshoppers</option>
-                                        <option value="Grizzlies">Grizzlies</option>
-                                        <option value="Hooks">Hooks</option>
-                                        <option value="Hot Rods">Hot Rods</option>
-                                        <option value="Iron Birds">Iron Birds</option>
-                                        <option value="Mariners">Mariners</option>
-                                        <option value="Marlins">Marlins</option>
-                                        <option value="Nationals">Nationals</option>
-                                        <option value="Padres">Padres</option>
-                                        <option value="Phillios">Phillios</option>
-                                        <option value="Red Sox">Red Sox</option>
-                                        <option value="Red Wings">Red Wings</option>
-                                        <option value="Reds">Reds</option>
-                                        <option value="Riverdogs">Riverdogs</option>
-                                        <option value="Rock Hounds">Rock Hounds</option>
-                                        <option value="Rockies">Rockies</option>
-                                        <option value="Tides">Tides</option>
-                                        <option value="White Sox">White Sox</option>
-                                        <option value="Yard Goats">Yard Goats</option>
-                                    </optgroup>
-                                    <optgroup label="Softball Teams">
-                                        <option value="8U Duke Blue Devils">8U Duke Blue Devils</option>
-                                        <option value="8U Florida State Seminoles">8U Florida State Seminoles</option>
-                                        <option value="8U Maryland Terrapins">8U Maryland Terrapins</option>
-                                        <option value="8U Michigan State Spartans">8U Michigan State Spartans</option>
-                                        <option value="8U Notre Dame Fighting Irish">8U Notre Dame Fighting Irish</option>
-                                        <option value="8U Tennessee Lady Vols">8U Tennessee Lady Vols</option>
-                                        <option value="8U UMass Lowell Riverhawks">8U UMass Lowell Riverhawks</option>
-                                        <option value="8U Washington Huskies">8U Washington Huskies</option>
-                                        <option value="10U Chelmsford Longhorns">10U Chelmsford Longhorns</option>
-                                        <option value="10U Dracut Grave Diggers">10U Dracut Grave Diggers</option>
-                                        <option value="10U Lowell Huskies">10U Lowell Huskies</option>
-                                        <option value="10U Tyngsboro Red">10U Tyngsboro Red</option>
-                                        <option value="10U Westford Team 1">10U Westford Team 1</option>
-                                        <option value="12U Lowell Red">12U Lowell Red</option>
-                                        <option value="12U Lowell Gray">12U Lowell Gray</option>
-                                        <option value="16U Lowell Red">16U Lowell Red</option>
-                                        <option value="16U Lowell Gray">16U Lowell Gray</option>
-                                    </optgroup>
-                                    <option value="Lowell 8U District">Lowell 8U District</option>
-                                    <option value="Lowell 9U District">Lowell 9U District</option>
-                                    <option value="Lowell 10U District">Lowell 10U District</option>
-                                    <option value="Lowell 11U District">Lowell 11U District</option>
-                                    <option value="Lowell 12U District">Lowell 12U District</option>
-                                    <option value="Lowell 8U Baystates">Lowell 8U Baystates</option>
-                                    <option value="Lowell 9U Baystates">Lowell 9U Baystates</option>
-                                    <option value="Lowell 10U Baystates">Lowell 10U Baystates</option>
-                                    <option value="Lowell 11U Baystates">Lowell 11U Baystates</option>
-                                    <option value="Lowell 12U Baystates">Lowell 12U Baystates</option>
-                                    <option value="7-8 MVC Lowell Gray">7-8 MVC Lowell Gray</option>
-                                    <option value="9-10 MVC Lowell Red">9-10 MVC Lowell Red</option>
-                                    <option value="11-12 MVC Lowell Black">11-12 MVC Lowell Black</option>
-                                </select>
-                            </div>
-                            <div class="col-md-2">
-                                <label class="form-label">Visitor Coach *</label>
-                                <select class="form-select" id="editVisitorCoach" required>
-                                    <option value="">Select Visitor Coach</option>
-                                    <option value="Alex Normandie">Alex Normandie</option>
-                                    <option value="Brendan Akashian">Brendan Akashian</option>
-                                    <option value="Brian Durkin">Brian Durkin</option>
-                                    <option value="Cesar Ortiz">Cesar Ortiz</option>
-                                    <option value="Dave Brown">Dave Brown</option>
-                                    <option value="Greg Kay">Greg Kay</option>
-                                    <option value="John Morris">John Morris</option>
-                                    <option value="Matt LeLacheur">Matt LeLacheur</option>
-                                    <option value="Mike Upton">Mike Upton</option>
-                                    <option value="Pate Donavan">Pate Donavan</option>
-                                    <option value="Steve McNamara">Steve McNamara</option>
-                                    <option value="Tommy Zahareas">Tommy Zahareas</option>
-                                    <option value="Angelica Molligi">Angelica Molligi</option>
-                                    <option value="Ashley Schwagor">Ashley Schwagor</option>
-                                    <option value="Burr McCutcheon">Burr McCutcheon</option>
-                                    <option value="George Yfantopulos">George Yfantopulos</option>
-                                    <option value="Kara Koch">Kara Koch</option>
-                                    <option value="Randy Negron">Randy Negron</option>
-                                    <option value="Robert McMahon">Robert McMahon</option>
-                                    <option value="Bill Florence">Bill Florence</option>
-                                    <option value="Mike Doucette">Mike Doucette</option>
-                                    <option value="Sam Valles">Sam Valles</option>
-                                    <option value="Steve Davidson">Steve Davidson</option>
-                                    <option value="Rich Gallo">Rich Gallo</option>
-                                    <option value="Rudolph Beiler">Rudolph Beiler</option>
-                                </select>
-                            </div>
-                            <div class="col-md-2">
-                                <label class="form-label">Venue *</label>
-                                <select class="form-select" id="editVenue" required>
-                                    <option value="">Select Venue</option>
-                                    <optgroup label="LeBlanc Park">
-                                        <option value="LeBlanc Field - LeBlanc Park">LeBlanc Field - LeBlanc Park</option>
-                                        <option value="McNamara Field - LeBlanc Park">McNamara Field - LeBlanc Park</option>
-                                    </optgroup>
-                                    <optgroup label="Shedd Park">
-                                        <option value="Shedd Upper - Shedd Park">Shedd Upper - Shedd Park</option>
-                                        <option value="Shedd Lower - Shedd Park">Shedd Lower - Shedd Park</option>
-                                    </optgroup>
-                                    <optgroup label="Gage Park">
-                                        <option value="Finn Field - Gage Park">Finn Field - Gage Park</option>
-                                        <option value="Whalen Field - Gage Park">Whalen Field - Gage Park</option>
-                                    </optgroup>
-                                    <optgroup label="Highland Park">
-                                        <option value="DeCosta Field - Highland Park">DeCosta Field - Highland Park</option>
-                                        <option value="Loucraft Field - Highland Park">Loucraft Field - Highland Park</option>
-                                        <option value="Hadley Field - Highlands">Hadley Field - Highlands</option>
-                                    </optgroup>
-                                    <optgroup label="Pawtucketville">
-                                        <option value="Campbell Field (Flaggies) - Pawtucketville">Campbell Field (Flaggies) - Pawtucketville</option>
-                                        <option value="Montbleau Field - Pawtucketville">Montbleau Field - Pawtucketville</option>
-                                    </optgroup>
-                                    <optgroup label="Other Locations">
-                                        <option value="Ryan Field - South Lowell">Ryan Field - South Lowell</option>
-                                        <option value="Gresco Field - Shedd Park">Gresco Field - Shedd Park</option>
-                                        <option value="Mahoney Field - Father McGuire Park">Mahoney Field - Father McGuire Park</option>
-                                        <option value="McPherson Field #1 - Centralville">McPherson Field #1 - Centralville</option>
-                                        <option value="McPherson Field #2 - Centralville">McPherson Field #2 - Centralville</option>
-                                        <option value="McPherson Field #3 - Centralville">McPherson Field #3 - Centralville</option>
-                                        <option value="Page Field - Shedd Park">Page Field - Shedd Park</option>
-                                    </optgroup>
-                                </select>
-                            </div>
-                            <div class="col-md-2">
-                                <label class="form-label">Plate Umpire *</label>
-                                <select class="form-select" id="editPlateUmpire" required>
-                                    <option value="">Select Plate Umpire</option>
-                                    <!-- Will be populated dynamically from staff directory -->
-                                </select>
-                            </div>
-                            <div class="col-md-2">
-                                <label class="form-label">Base Umpire *</label>
-                                <select class="form-select" id="editBaseUmpire" required>
-                                    <option value="">Select Base Umpire</option>
-                                    <!-- Will be populated dynamically from staff directory -->
-                                </select>
-                            </div>
-                            <div class="col-md-2">
-                                <label class="form-label">Concession Stand *</label>
-                                <select class="form-select" id="editConcessionStand" required>
-                                    <option value="">Select Concession Stand</option>
-                                    <optgroup label="LeBlanc Park">
-                                        <option value="Boutin Stand - LeBlanc Park">Boutin Stand - LeBlanc Park</option>
-                                    </optgroup>
-                                    <optgroup label="Shedd Park">
-                                        <option value="Botto Stand - Shedd Upper">Botto Stand - Shedd Upper</option>
-                                        <option value="Shedd Lower Stand - Shedd Park">Shedd Lower Stand - Shedd Park</option>
-                                    </optgroup>
-                                    <optgroup label="Gage Park">
-                                        <option value="Finn Field Stand - Gage Park">Finn Field Stand - Gage Park</option>
-                                    </optgroup>
-                                    <optgroup label="Highland Park">
-                                        <option value="Highlands Park Stand - Highland Park">Highlands Park Stand - Highland Park</option>
-                                    </optgroup>
-                                    <optgroup label="Pawtucketville">
-                                        <option value="Montbleau Stand - Montbleau Field">Montbleau Stand - Montbleau Field</option>
-                                    </optgroup>
-                                    <optgroup label="Father McGuire Park">
-                                        <option value="Mahoney Stand - Father McGuire Park">Mahoney Stand - Father McGuire Park</option>
-                                    </optgroup>
-                                    <optgroup label="McPherson Park">
-                                        <option value="McPherson Stand - McPherson Park">McPherson Stand - McPherson Park</option>
-                                    </optgroup>
-                                    <optgroup label="Page Field">
-                                        <option value="Page Field Stand - Page Field">Page Field Stand - Page Field</option>
-                                    </optgroup>
-                                    <optgroup label="Other">
-                                        <option value="No Concession">No Concession</option>
-                                    </optgroup>
-                                </select>
-                            </div>
-                            <div class="col-md-2">
-                                <label class="form-label">Concession Staff</label>
-                                <select class="form-select" id="editConcessionStaff">
-                                    <option value="">Select Staff Member</option>
-                                    <!-- Will be populated dynamically -->
-                                </select>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" onclick="updateSchedule()">Update Schedule</button>
-                </div>
-            </div>
-        </div>
-    </div>
+    <!-- Loading Spinner -->
+    <style>
+        .loading-spinner {
+            width: 2rem;
+            height: 2rem;
+            border: 3px solid var(--border-color);
+            border-top: 3px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
 
-    <!-- Add Staff Modal -->
-    <div class="modal fade" id="addStaffModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Add Staff Member</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="addStaffForm">
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <label class="form-label">Name *</label>
-                                <input type="text" class="form-control" id="staffName" required>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label">Role</label>
-                                <select class="form-select" id="staffRole">
-                                    <option value="Staff">Staff</option>
-                                    <option value="Coach">Coach</option>
-                                    <option value="Umpire">Umpire</option>
-                                    <option value="Concession">Concession</option>
-                                </select>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label">Email</label>
-                                <input type="email" class="form-control" id="staffEmail">
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label">Phone</label>
-                                <input type="tel" class="form-control" id="staffPhone">
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label">Parent Name</label>
-                                <input type="text" class="form-control" id="staffParentName">
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label">Parent Email</label>
-                                <input type="email" class="form-control" id="staffParentEmail">
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label">Parent Phone</label>
-                                <input type="tel" class="form-control" id="staffParentPhone">
-                            </div>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" onclick="addStaffMember()">Add Staff Member</button>
-                </div>
-            </div>
-        </div>
-    </div>
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
 
-    <!-- Edit Staff Modal -->
-    <div class="modal fade" id="editStaffModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Edit Staff Member</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="editStaffForm">
-                        <input type="hidden" id="editStaffId">
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <label class="form-label">Name *</label>
-                                <input type="text" class="form-control" id="editStaffName" required>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label">Role</label>
-                                <select class="form-select" id="editStaffRole">
-                                    <option value="Staff">Staff</option>
-                                    <option value="Coach">Coach</option>
-                                    <option value="Umpire">Umpire</option>
-                                    <option value="Concession">Concession</option>
-                                </select>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label">Email</label>
-                                <input type="email" class="form-control" id="editStaffEmail">
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label">Phone</label>
-                                <input type="tel" class="form-control" id="editStaffPhone">
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label">Parent Name</label>
-                                <input type="text" class="form-control" id="editStaffParentName">
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label">Parent Email</label>
-                                <input type="email" class="form-control" id="editStaffParentEmail">
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label">Parent Phone</label>
-                                <input type="tel" class="form-control" id="editStaffParentPhone">
-                            </div>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" onclick="updateStaffMember()">Update Staff Member</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Bootstrap JS -->
+    <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
-    <!-- Main JavaScript -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script src="admin.js"></script>
+    
+    <script>
+        // Initialize AOS animations
+        AOS.init({
+            duration: 800,
+            easing: 'ease-out-cubic',
+            once: true,
+            offset: 100
+        });
+
+        // Navigation functionality
+        function showSection(sectionName) {
+            // Hide all sections
+            document.querySelectorAll('.admin-card').forEach(card => {
+                card.style.display = 'none';
+            });
+            
+            // Show selected section
+            document.getElementById(sectionName).style.display = 'block';
+            
+            // Update active nav link
+            document.querySelectorAll('.nav-link-modern').forEach(link => {
+                link.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        }
+    </script>
 </body>
 </html> 
