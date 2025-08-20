@@ -359,13 +359,16 @@
             font-size: 0.875rem;
         }
 
-        /* Perfect Table Design */
+        /* Perfect Table Design - Full Width */
         .table-modern {
             background: var(--white);
             border-radius: var(--radius-2xl);
             overflow: hidden;
             box-shadow: var(--shadow-lg);
             border: 1px solid var(--gray-200);
+            width: 100%;
+            min-width: 100%;
+            table-layout: auto;
         }
 
         .table-modern th {
@@ -380,6 +383,8 @@
             position: sticky;
             top: 0;
             z-index: 10;
+            white-space: nowrap;
+            min-width: auto;
         }
 
         .table-modern td {
@@ -387,10 +392,38 @@
             border-bottom: 1px solid var(--gray-100);
             vertical-align: middle;
             transition: background-color 0.2s ease;
+            word-wrap: break-word;
+            max-width: 200px;
         }
 
         .table-modern tbody tr:hover {
             background-color: var(--gray-50);
+        }
+
+        /* Enhanced Table Responsiveness for Admin */
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+            overflow-y: visible;
+            border-radius: var(--radius-2xl);
+        }
+
+        .table-responsive::-webkit-scrollbar {
+            height: 8px;
+        }
+
+        .table-responsive::-webkit-scrollbar-track {
+            background: var(--gray-100);
+            border-radius: var(--radius-lg);
+        }
+
+        .table-responsive::-webkit-scrollbar-thumb {
+            background: var(--gray-400);
+            border-radius: var(--radius-lg);
+        }
+
+        .table-responsive::-webkit-scrollbar-thumb:hover {
+            background: var(--gray-500);
         }
 
         /* Perfect Badge System */
@@ -431,7 +464,23 @@
             color: var(--white);
         }
 
-        /* Responsive Design */
+        /* Responsive Design - Full Width Table */
+        @media (max-width: 1200px) {
+            .container-modern {
+                padding: 0 var(--spacing-4);
+                max-width: 100%;
+            }
+            
+            .admin-card {
+                margin: var(--spacing-8) 0;
+                border-radius: var(--radius-2xl);
+            }
+            
+            .table-responsive {
+                border-radius: var(--radius-2xl);
+            }
+        }
+
         @media (max-width: 768px) {
             .admin-title {
                 font-size: 2rem;
@@ -455,6 +504,7 @@
             .admin-card {
                 padding: var(--spacing-6);
                 margin: var(--spacing-8) 0;
+                border-radius: var(--radius-2xl);
             }
             
             .admin-card-header {
@@ -465,6 +515,46 @@
             
             .container-modern {
                 padding: 0 var(--spacing-4);
+                max-width: 100%;
+            }
+            
+            .table-responsive {
+                font-size: 0.875rem;
+                border-radius: var(--radius-2xl);
+            }
+            
+            .table-modern th,
+            .table-modern td {
+                padding: var(--spacing-3) var(--spacing-2);
+                font-size: 0.8rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container-modern {
+                padding: 0 var(--spacing-2);
+            }
+            
+            .admin-card {
+                margin: var(--spacing-6) 0;
+                padding: var(--spacing-4);
+                border-radius: var(--radius-xl);
+            }
+            
+            .table-responsive {
+                font-size: 0.75rem;
+                border-radius: var(--radius-xl);
+            }
+            
+            .table-modern th,
+            .table-modern td {
+                padding: var(--spacing-2) var(--spacing-1);
+                font-size: 0.75rem;
+            }
+            
+            .btn-modern {
+                font-size: 0.8rem;
+                padding: var(--spacing-2) var(--spacing-3);
             }
         }
 
