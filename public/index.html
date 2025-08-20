@@ -230,11 +230,12 @@
             transform: translateY(-3px);
         }
 
-        /* Perfect Container System */
+        /* Perfect Container System - Full Width */
         .container {
-            max-width: 1200px;
+            max-width: 100%;
             margin: 0 auto;
-            padding: 0 var(--spacing-6);
+            padding: 0 var(--spacing-4);
+            width: 100%;
         }
 
         /* Stunning Filter Section */
@@ -370,7 +371,7 @@
             gap: var(--spacing-2);
         }
 
-        /* Stunning Schedule Table */
+        /* Stunning Schedule Table - FULL SCREEN */
         .schedule-container {
             background: var(--white);
             border-radius: var(--radius-3xl);
@@ -378,7 +379,13 @@
             border: 1px solid var(--gray-200);
             overflow: hidden;
             margin: var(--spacing-16) 0;
-            width: 100%;
+            width: 100vw;
+            max-width: 100vw;
+            position: relative;
+            left: 50%;
+            right: 50%;
+            margin-left: -50vw;
+            margin-right: -50vw;
         }
 
         .schedule-header {
@@ -396,21 +403,21 @@
             gap: var(--spacing-3);
         }
 
-        /* Perfect Table Design - Full Width */
+        /* Perfect Table Design - FULL SCREEN WIDTH */
         .table {
             margin: 0;
             border-collapse: separate;
             border-spacing: 0;
-            width: 100%;
-            min-width: 100%;
-            table-layout: auto;
+            width: 100vw;
+            min-width: 100vw;
+            table-layout: fixed;
         }
 
         .table th {
             background: var(--gray-50);
             color: var(--gray-700);
             font-weight: 600;
-            padding: var(--spacing-5) var(--spacing-4);
+            padding: var(--spacing-5) var(--spacing-3);
             text-align: left;
             border-bottom: 2px solid var(--gray-200);
             font-size: 0.875rem;
@@ -420,16 +427,18 @@
             top: 0;
             z-index: 10;
             white-space: nowrap;
-            min-width: auto;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .table td {
-            padding: var(--spacing-5) var(--spacing-4);
+            padding: var(--spacing-5) var(--spacing-3);
             border-bottom: 1px solid var(--gray-100);
             vertical-align: top;
             transition: background-color 0.2s ease;
             word-wrap: break-word;
-            max-width: 200px;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .table tbody tr:hover {
@@ -440,11 +449,24 @@
             border-bottom: none;
         }
 
-        /* Enhanced Table Responsiveness */
+        /* FULL SCREEN Column Widths - No Scrolling */
+        .table th:nth-child(1), .table td:nth-child(1) { width: 8vw; }  /* Season */
+        .table th:nth-child(2), .table td:nth-child(2) { width: 8vw; }  /* Event */
+        .table th:nth-child(3), .table td:nth-child(3) { width: 8vw; }  /* Day */
+        .table th:nth-child(4), .table td:nth-child(4) { width: 10vw; } /* Date */
+        .table th:nth-child(5), .table td:nth-child(5) { width: 8vw; }  /* Time */
+        .table th:nth-child(6), .table td:nth-child(6) { width: 10vw; } /* Division */
+        .table th:nth-child(7), .table td:nth-child(7) { width: 12vw; } /* Home Team */
+        .table th:nth-child(8), .table td:nth-child(8) { width: 12vw; } /* Visitor Team */
+        .table th:nth-child(9), .table td:nth-child(9) { width: 12vw; } /* Venue */
+        .table th:nth-child(10), .table td:nth-child(10) { width: 12vw; } /* Umpires */
+        .table th:nth-child(11), .table td:nth-child(11) { width: 12vw; } /* Concession */
+
+        /* Enhanced Table Responsiveness - FULL SCREEN */
         .table-responsive {
-            width: 100%;
-            overflow-x: auto;
-            overflow-y: visible;
+            width: 100vw;
+            max-width: 100vw;
+            overflow: visible;
             border-radius: var(--radius-3xl);
         }
 
@@ -465,19 +487,6 @@
         .table-responsive::-webkit-scrollbar-thumb:hover {
             background: var(--gray-500);
         }
-
-        /* Optimized Column Widths */
-        .table th:nth-child(1), .table td:nth-child(1) { width: 8%; }  /* Season */
-        .table th:nth-child(2), .table td:nth-child(2) { width: 8%; }  /* Event */
-        .table th:nth-child(3), .table td:nth-child(3) { width: 8%; }  /* Day */
-        .table th:nth-child(4), .table td:nth-child(4) { width: 10%; } /* Date */
-        .table th:nth-child(5), .table td:nth-child(5) { width: 8%; }  /* Time */
-        .table th:nth-child(6), .table td:nth-child(6) { width: 10%; } /* Division */
-        .table th:nth-child(7), .table td:nth-child(7) { width: 12%; } /* Home Team */
-        .table th:nth-child(8), .table td:nth-child(8) { width: 12%; } /* Visitor Team */
-        .table th:nth-child(9), .table td:nth-child(9) { width: 12%; } /* Venue */
-        .table th:nth-child(10), .table td:nth-child(10) { width: 12%; } /* Umpires */
-        .table th:nth-child(11), .table td:nth-child(11) { width: 12%; } /* Concession */
 
         /* Perfect Badge System */
         .badge {
@@ -517,10 +526,11 @@
             color: var(--white);
         }
 
-        /* Enhanced Concession Display - Optimized */
+        /* Enhanced Concession Display - Optimized for Full Width */
         .concession-info {
-            min-width: 150px;
-            max-width: 200px;
+            min-width: auto;
+            max-width: none;
+            width: 100%;
         }
 
         .staff-info {
@@ -532,6 +542,7 @@
             position: relative;
             box-shadow: var(--shadow-sm);
             word-wrap: break-word;
+            width: 100%;
         }
 
         .staff-info::before {
@@ -555,12 +566,12 @@
             font-weight: 600;
         }
 
-        /* Perfect Team Display - Optimized */
+        /* Perfect Team Display - Optimized for Full Width */
         .team-display {
             display: flex;
             flex-direction: column;
             gap: var(--spacing-1);
-            max-width: 180px;
+            width: 100%;
         }
 
         .team-name {
@@ -568,6 +579,7 @@
             color: var(--gray-900);
             font-size: 0.9rem;
             word-wrap: break-word;
+            width: 100%;
         }
 
         .coach-name {
@@ -575,14 +587,15 @@
             color: var(--gray-600);
             font-style: italic;
             word-wrap: break-word;
+            width: 100%;
         }
 
-        /* Perfect Umpire Display - Optimized */
+        /* Perfect Umpire Display - Optimized for Full Width */
         .umpire-display {
             display: flex;
             flex-direction: column;
             gap: var(--spacing-1);
-            max-width: 180px;
+            width: 100%;
         }
 
         .umpire-role {
@@ -598,6 +611,7 @@
             color: var(--gray-900);
             font-size: 0.8rem;
             word-wrap: break-word;
+            width: 100%;
         }
 
         /* Loading States */
@@ -634,7 +648,21 @@
             opacity: 0.5;
         }
 
-        /* Responsive Design - Full Width Table */
+        /* Responsive Design - FULL SCREEN Tables */
+        @media (max-width: 1400px) {
+            .table th:nth-child(1), .table td:nth-child(1) { width: 9vw; }  /* Season */
+            .table th:nth-child(2), .table td:nth-child(2) { width: 9vw; }  /* Event */
+            .table th:nth-child(3), .table td:nth-child(3) { width: 9vw; }  /* Day */
+            .table th:nth-child(4), .table td:nth-child(4) { width: 11vw; } /* Date */
+            .table th:nth-child(5), .table td:nth-child(5) { width: 9vw; }  /* Time */
+            .table th:nth-child(6), .table td:nth-child(6) { width: 11vw; } /* Division */
+            .table th:nth-child(7), .table td:nth-child(7) { width: 11vw; } /* Home Team */
+            .table th:nth-child(8), .table td:nth-child(8) { width: 11vw; } /* Visitor Team */
+            .table th:nth-child(9), .table td:nth-child(9) { width: 11vw; } /* Venue */
+            .table th:nth-child(10), .table td:nth-child(10) { width: 11vw; } /* Umpires */
+            .table th:nth-child(11), .table td:nth-child(11) { width: 11vw; } /* Concession */
+        }
+
         @media (max-width: 1200px) {
             .container {
                 padding: 0 var(--spacing-4);
@@ -649,6 +677,18 @@
             .table-responsive {
                 border-radius: var(--radius-2xl);
             }
+            
+            .table th:nth-child(1), .table td:nth-child(1) { width: 10vw; }  /* Season */
+            .table th:nth-child(2), .table td:nth-child(2) { width: 10vw; }  /* Event */
+            .table th:nth-child(3), .table td:nth-child(3) { width: 10vw; }  /* Day */
+            .table th:nth-child(4), .table td:nth-child(4) { width: 12vw; } /* Date */
+            .table th:nth-child(5), .table td:nth-child(5) { width: 10vw; }  /* Time */
+            .table th:nth-child(6), .table td:nth-child(6) { width: 12vw; } /* Division */
+            .table th:nth-child(7), .table td:nth-child(7) { width: 10vw; } /* Home Team */
+            .table th:nth-child(8), .table td:nth-child(8) { width: 10vw; } /* Visitor Team */
+            .table th:nth-child(9), .table td:nth-child(9) { width: 10vw; } /* Venue */
+            .table th:nth-child(10), .table td:nth-child(10) { width: 10vw; } /* Umpires */
+            .table th:nth-child(11), .table td:nth-child(11) { width: 10vw; } /* Concession */
         }
 
         @media (max-width: 768px) {
@@ -698,18 +738,18 @@
                 font-size: 0.8rem;
             }
             
-            /* Mobile table optimization */
-            .table th:nth-child(1), .table td:nth-child(1) { width: 10%; }  /* Season */
-            .table th:nth-child(2), .table td:nth-child(2) { width: 10%; }  /* Event */
-            .table th:nth-child(3), .table td:nth-child(3) { width: 10%; }  /* Day */
-            .table th:nth-child(4), .table td:nth-child(4) { width: 12%; } /* Date */
-            .table th:nth-child(5), .table td:nth-child(5) { width: 10%; } /* Time */
-            .table th:nth-child(6), .table td:nth-child(6) { width: 12%; } /* Division */
-            .table th:nth-child(7), .table td:nth-child(7) { width: 12%; } /* Home Team */
-            .table th:nth-child(8), .table td:nth-child(8) { width: 12%; } /* Visitor Team */
-            .table th:nth-child(9), .table td:nth-child(9) { width: 12%; } /* Venue */
-            .table th:nth-child(10), .table td:nth-child(10) { width: 12%; } /* Umpires */
-            .table th:nth-child(11), .table td:nth-child(11) { width: 12%; } /* Concession */
+            /* Mobile table optimization - FULL WIDTH */
+            .table th:nth-child(1), .table td:nth-child(1) { width: 12vw; }  /* Season */
+            .table th:nth-child(2), .table td:nth-child(2) { width: 12vw; }  /* Event */
+            .table th:nth-child(3), .table td:nth-child(3) { width: 12vw; }  /* Day */
+            .table th:nth-child(4), .table td:nth-child(4) { width: 14vw; } /* Date */
+            .table th:nth-child(5), .table td:nth-child(5) { width: 12vw; } /* Time */
+            .table th:nth-child(6), .table td:nth-child(6) { width: 14vw; } /* Division */
+            .table th:nth-child(7), .table td:nth-child(7) { width: 10vw; } /* Home Team */
+            .table th:nth-child(8), .table td:nth-child(8) { width: 10vw; } /* Visitor Team */
+            .table th:nth-child(9), .table td:nth-child(9) { width: 10vw; } /* Venue */
+            .table th:nth-child(10), .table td:nth-child(10) { width: 10vw; } /* Umpires */
+            .table th:nth-child(11), .table td:nth-child(11) { width: 10vw; } /* Concession */
         }
 
         @media (max-width: 480px) {
@@ -736,6 +776,19 @@
                 font-size: 0.65rem;
                 padding: var(--spacing-1) var(--spacing-2);
             }
+            
+            /* Small mobile - FULL WIDTH */
+            .table th:nth-child(1), .table td:nth-child(1) { width: 15vw; }  /* Season */
+            .table th:nth-child(2), .table td:nth-child(2) { width: 15vw; }  /* Event */
+            .table th:nth-child(3), .table td:nth-child(3) { width: 15vw; }  /* Day */
+            .table th:nth-child(4), .table td:nth-child(4) { width: 17vw; } /* Date */
+            .table th:nth-child(5), .table td:nth-child(5) { width: 15vw; } /* Time */
+            .table th:nth-child(6), .table td:nth-child(6) { width: 17vw; } /* Division */
+            .table th:nth-child(7), .table td:nth-child(7) { width: 8vw; }  /* Home Team */
+            .table th:nth-child(8), .table td:nth-child(8) { width: 8vw; }  /* Visitor Team */
+            .table th:nth-child(9), .table td:nth-child(9) { width: 8vw; }  /* Venue */
+            .table th:nth-child(10), .table td:nth-child(10) { width: 8vw; } /* Umpires */
+            .table th:nth-child(11), .table td:nth-child(11) { width: 8vw; } /* Concession */
         }
 
         /* Smooth Scrolling */
