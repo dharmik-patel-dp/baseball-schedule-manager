@@ -1,397 +1,570 @@
 const express = require('express');
 const sqlite3 = require('sqlite3').verbose();
 const multer = require('multer');
-const csv = require('csv-parser');
-const cors = require('cors');
 const path = require('path');
-const fs = require('fs');
-const config = require('./config');
+const helmet = require('helmet');
+const cors = require('cors');
 
 const app = express();
+const PORT = process.env.PORT || 3000;
 
-// Production security middleware
-app.use(helmet()); // Add security headers
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true, limit: '10mb' }));
-app.use(cors(config.cors));
+// Security middleware
+app.use(helmet({
+    contentSecurityPolicy: {
+        directives: {
+            defaultSrc: ["'self'"],
+            styleSrc: ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net", "https://cdnjs.cloudflare.com"],
+            scriptSrc: ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net"],
+            fontSrc: ["'self'", "https://cdnjs.cloudflare.com"],
+            imgSrc: ["'self'", "data:", "https:"],
+        },
+    },
+}));
 
-// Serve static files
+// CORS configuration
+app.use(cors({
+    origin: process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',') : ['*'],
+    credentials: true
+}));
+
+// Body parsing middleware
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// Static files
 app.use(express.static('public'));
-
-// Database setup
-const db = new sqlite3.Database(config.database);
-
-// Create tables if they don't exist
-db.serialize(() => {
-  // Staff directory table
-  db.run(`CREATE TABLE IF NOT EXISTS staff_directory (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT NOT NULL,
-    email TEXT,
-    phone TEXT,
-    parent_name TEXT,
-    parent_email TEXT,
-    parent_phone TEXT,
-    role TEXT DEFAULT 'Staff',
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-  )`);
-
-  // Enhanced Schedule table with concession stand staff
-  db.run(`CREATE TABLE IF NOT EXISTS schedules (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    season TEXT NOT NULL,
-    event_type TEXT NOT NULL,
-    day TEXT NOT NULL,
-    date TEXT NOT NULL,
-    start_time TEXT NOT NULL,
-    am_pm TEXT NOT NULL,
-    division TEXT NOT NULL,
-    home_team TEXT NOT NULL,
-    home_coach TEXT NOT NULL,
-    visitor_team TEXT NOT NULL,
-    visitor_coach TEXT NOT NULL,
-    venue TEXT NOT NULL,
-    plate_umpire TEXT NOT NULL,
-    base_umpire TEXT NOT NULL,
-    concession_stand TEXT NOT NULL,
-    concession_staff TEXT,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-  )`);
-
-  // Umpire requests table
-  db.run(`CREATE TABLE IF NOT EXISTS umpire_requests (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    schedule_id INTEGER,
-    umpire_name TEXT NOT NULL,
-    request_date TEXT NOT NULL,
-    status TEXT DEFAULT 'Pending',
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (schedule_id) REFERENCES schedules (id)
-  )`);
-
-  // Insert sample staff data if table is empty
-  db.get("SELECT COUNT(*) as count FROM staff_directory", [], (err, row) => {
-    if (err) {
-      console.error('Error checking staff count:', err);
-      return;
-    }
-
-    if (row.count === 0) {
-      const sampleStaff = [
-        ['Andrey LeMay', '', '', '', '', '', 'Staff'],
-        ['Arthur DeSouza', '', '', '', '', '', 'Staff'],
-        ['Ben Durkin', '', '', '', '', '', 'Staff'],
-        ['Brady Foote', '', '', '', '', '', 'Staff'],
-        ['Brayden Shea', '', '', '', '', '', 'Staff'],
-        ['Connor Stevens', '', '', '', '', '', 'Staff'],
-        ['Danny Gallo', '', '', '', '', '', 'Staff'],
-        ['Jack Duffy', '', '', '', '', '', 'Staff'],
-        ['James Kane', '', '', '', '', '', 'Staff'],
-        ['Logan Kelly', '', '', '', '', '', 'Staff'],
-        ['Matthew Rurak', '', '', '', '', '', 'Staff'],
-        ['Nathan Nelson', '', '', '', '', '', 'Staff'],
-        ['Ryan Abrams', '', '', '', '', '', 'Staff'],
-        ['Scott Patenaude', '', '', '', '', '', 'Staff'],
-        ['Zach Chachus', '', '', '', '', '', 'Staff'],
-        ['Dylan LeLacheur', 'dlelacheur16@gmail.com', '978-337-8174', 'Matt LeLacheur', 'mlforlowell@gmail.com', '978-944-9333', 'Staff'],
-        ['Emily Lelacheur', '', '', 'Matt LeLacheur', 'mlforlowell@gmail.com', '978-944-9333', 'Staff'],
-        ['Kate LeLacheur', '', '978-995-4048', 'Matt LeLacheur', 'mlforlowell@gmail.com', '978-944-9333', 'Staff'],
-        ['PATCHED UMPIRE', '', '', '', '', '', 'Umpire']
-      ];
-
-      const insertStaff = db.prepare("INSERT INTO staff_directory (name, email, phone, parent_name, parent_email, parent_phone, role) VALUES (?, ?, ?, ?, ?, ?, ?)");
-
-      sampleStaff.forEach(staff => {
-        insertStaff.run(staff);
-      });
-
-      insertStaff.finalize();
-      console.log('Sample staff data inserted');
-    }
-  });
-});
 
 // File upload configuration
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    if (!fs.existsSync(config.uploads)) {
-      fs.mkdirSync(config.uploads, { recursive: true });
+    destination: function (req, file, cb) {
+        cb(null, 'uploads/')
+    },
+    filename: function (req, file, cb) {
+        cb(null, Date.now() + '-' + file.originalname)
     }
-    cb(null, config.uploads);
-  },
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + '-' + file.originalname);
-  }
 });
 
 const upload = multer({ 
-  storage: storage,
-  fileFilter: (req, file, cb) => {
-    if (file.mimetype === 'text/csv') {
-      cb(null, true);
-    } else {
-      cb(new Error('Only CSV files are allowed'), false);
+    storage: storage,
+    fileFilter: function (req, file, cb) {
+        if (file.mimetype === 'text/csv' || file.mimetype === 'application/vnd.ms-excel') {
+            cb(null, true);
+        } else {
+            cb(new Error('Only CSV files are allowed!'), false);
+        }
+    },
+    limits: {
+        fileSize: 5 * 1024 * 1024 // 5MB limit
     }
-  },
-  limits: {
-    fileSize: 5 * 1024 * 1024 // 5MB limit
-  }
+});
+
+// Database setup
+const dbPath = process.env.DATABASE_PATH || path.join(__dirname, 'schedules.db');
+const db = new sqlite3.Database(dbPath);
+
+// Database initialization
+db.serialize(() => {
+    // Create schedules table
+    db.run(`CREATE TABLE IF NOT EXISTS schedules (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        season TEXT NOT NULL,
+        event_type TEXT NOT NULL,
+        day TEXT NOT NULL,
+        date TEXT NOT NULL,
+        start_time TEXT,
+        end_time TEXT,
+        division TEXT,
+        home_team TEXT,
+        visitor_team TEXT,
+        venue TEXT,
+        home_coach TEXT,
+        visitor_coach TEXT,
+        plate_umpire TEXT,
+        base_umpire TEXT,
+        concession_stand TEXT,
+        concession_staff TEXT,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    )`);
+
+    // Create umpire_requests table
+    db.run(`CREATE TABLE IF NOT EXISTS umpire_requests (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        game_id INTEGER,
+        current_plate_umpire TEXT,
+        current_base_umpire TEXT,
+        requested_plate_umpire TEXT,
+        requested_base_umpire TEXT,
+        reason TEXT,
+        status TEXT DEFAULT 'pending',
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    )`);
+
+    // Create staff_directory table
+    db.run(`CREATE TABLE IF NOT EXISTS staff_directory (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL,
+        role TEXT NOT NULL,
+        phone TEXT,
+        email TEXT,
+        parent_name TEXT,
+        parent_phone TEXT,
+        parent_email TEXT,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    )`);
+
+    // Database migration function
+    function migrateDatabase() {
+        console.log('🔧 Checking database schema...');
+
+        // Check if concession_staff column exists
+        db.all("PRAGMA table_info(schedules)", [], (err, rows) => {
+            if (err) {
+                console.error('Error checking table schema:', err);
+                return;
+            }
+
+            const hasConcessionStaff = rows.some(row => row.name === 'concession_staff');
+
+            if (!hasConcessionStaff) {
+                console.log('📝 Adding missing concession_staff column...');
+                db.run("ALTER TABLE schedules ADD COLUMN concession_staff TEXT", (err) => {
+                    if (err) {
+                        console.error('Error adding concession_staff column:', err);
+                    } else {
+                        console.log('✅ Successfully added concession_staff column');
+                    }
+                });
+            } else {
+                console.log('✅ Database schema is up to date');
+            }
+        });
+    }
+
+    // Run database migration
+    migrateDatabase();
+
+    // Insert sample staff data if table is empty
+    db.get("SELECT COUNT(*) as count FROM staff_directory", [], (err, row) => {
+        if (err) {
+            console.error('Error checking staff count:', err);
+            return;
+        }
+
+        if (row.count === 0) {
+            console.log('📝 Inserting sample staff data...');
+            const sampleStaff = [
+                ['Dylan LeLacheur', 'Umpire', '555-0101', 'dylan@example.com', 'John LeLacheur', '555-0102', 'john@example.com'],
+                ['Scott Patenaude', 'Umpire', '555-0103', 'scott@example.com', 'Mary Patenaude', '555-0104', 'mary@example.com'],
+                ['Matthew Rurak', 'Umpire', '555-0105', 'matthew@example.com', 'David Rurak', '555-0106', 'david@example.com'],
+                ['Zach Chachus', 'Umpire', '555-0107', 'zach@example.com', 'Lisa Chachus', '555-0108', 'lisa@example.com'],
+                ['Emily Lelacheur', 'Concession Staff', '555-0109', 'emily@example.com', 'John LeLacheur', '555-0102', 'john@example.com'],
+                ['Danny Gallo', 'Concession Staff', '555-0110', 'danny@example.com', 'Sarah Gallo', '555-0111', 'sarah@example.com']
+            ];
+
+            const insertStaff = db.prepare("INSERT INTO staff_directory (name, role, phone, email, parent_name, parent_phone, parent_email) VALUES (?, ?, ?, ?, ?, ?, ?)");
+            
+            sampleStaff.forEach(staff => {
+                insertStaff.run(staff, (err) => {
+                    if (err) {
+                        console.error('Error inserting staff:', err);
+                    }
+                });
+            });
+            
+            insertStaff.finalize((err) => {
+                if (err) {
+                    console.error('Error finalizing staff insert:', err);
+                } else {
+                    console.log('✅ Sample staff data inserted');
+                }
+            });
+        }
+    });
 });
 
 // API Routes
+
+// Get all schedules
 app.get('/api/schedules', (req, res) => {
-  db.all("SELECT * FROM schedules ORDER BY date, start_time", [], (err, rows) => {
-    if (err) {
-      res.status(500).json({ error: err.message });
-      return;
-    }
-    res.json(rows);
-  });
-});
-
-app.post('/api/schedules', (req, res) => {
-  const { season, event_type, day, date, start_time, am_pm, division, home_team, home_coach, visitor_team, visitor_coach, venue, plate_umpire, base_umpire, concession_stand, concession_staff } = req.body;
-  
-  db.run(`INSERT INTO schedules (season, event_type, day, date, start_time, am_pm, division, home_team, home_coach, visitor_team, visitor_coach, venue, plate_umpire, base_umpire, concession_stand, concession_staff) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-    [season, event_type, day, date, start_time, am_pm, division, home_team, home_coach, visitor_team, visitor_coach, venue, plate_umpire, base_umpire, concession_stand, concession_staff],
-    function(err) {
-      if (err) {
-        res.status(500).json({ error: err.message });
-        return;
-      }
-      res.json({ id: this.lastID, message: 'Schedule created successfully' });
+    const query = `
+        SELECT s.*, 
+               sr.name as requested_plate_umpire_name,
+               sr2.name as requested_base_umpire_name
+        FROM schedules s
+        LEFT JOIN staff_directory sr ON sr.name = s.plate_umpire
+        LEFT JOIN staff_directory sr2 ON sr2.name = s.base_umpire
+        ORDER BY s.date ASC, s.start_time ASC
+    `;
+    
+    db.all(query, [], (err, rows) => {
+        if (err) {
+            console.error('Error fetching schedules:', err);
+            res.status(500).json({ error: err.message });
+            return;
+        }
+        res.json(rows);
     });
 });
 
-app.put('/api/schedules/:id', (req, res) => {
-  const { season, event_type, day, date, start_time, am_pm, division, home_team, home_coach, visitor_team, visitor_coach, venue, plate_umpire, base_umpire, concession_stand, concession_staff } = req.body;
-  
-  db.run(`UPDATE schedules SET season=?, event_type=?, day=?, date=?, start_time=?, am_pm=?, division=?, home_team=?, home_coach=?, visitor_team=?, visitor_coach=?, venue=?, plate_umpire=?, base_umpire=?, concession_stand=?, concession_staff=? WHERE id=?`,
-    [season, event_type, day, date, start_time, am_pm, division, home_team, home_coach, visitor_team, visitor_coach, venue, plate_umpire, base_umpire, concession_stand, concession_staff, req.params.id],
-    function(err) {
-      if (err) {
-        res.status(500).json({ error: err.message });
-        return;
-      }
-      res.json({ message: 'Schedule updated successfully', changes: this.changes });
+// Get filters
+app.get('/api/filters', (req, res) => {
+    const filterFields = ['season', 'event_type', 'day', 'division', 'home_team', 'visitor_team', 'venue', 'home_coach', 'visitor_coach', 'plate_umpire', 'base_umpire', 'concession_stand', 'concession_staff'];
+    
+    const filterOptions = {};
+    
+    filterFields.forEach(field => {
+        const query = `SELECT DISTINCT ${field} FROM schedules WHERE ${field} IS NOT NULL AND ${field} != '' ORDER BY ${field}`;
+        db.all(query, [], (err, rows) => {
+            if (err) {
+                console.error(`Error fetching ${field} options:`, err);
+                return;
+            }
+            filterOptions[field] = rows.map(row => row[field]);
+            
+            // Check if all filters are loaded
+            if (Object.keys(filterOptions).length === filterFields.length) {
+                res.json(filterOptions);
+            }
+        });
     });
 });
 
-app.delete('/api/schedules/:id', (req, res) => {
-  db.run("DELETE FROM schedules WHERE id=?", [req.params.id], function(err) {
-    if (err) {
-      res.status(500).json({ error: err.message });
-      return;
-    }
-    res.json({ message: 'Schedule deleted successfully', changes: this.changes });
-  });
-});
-
-// Staff API endpoints
+// Get all staff
 app.get('/api/staff', (req, res) => {
-  db.all("SELECT * FROM staff_directory ORDER BY name", [], (err, rows) => {
-    if (err) {
-      res.status(500).json({ error: err.message });
-      return;
-    }
-    res.json(rows);
-  });
+    db.all("SELECT * FROM staff_directory ORDER BY name", [], (err, rows) => {
+        if (err) {
+            console.error('Error fetching staff:', err);
+            res.status(500).json({ error: err.message });
+            return;
+        }
+        res.json(rows);
+    });
 });
 
+// Get staff names only
 app.get('/api/staff-names', (req, res) => {
-  db.all("SELECT name FROM staff_directory ORDER BY name", [], (err, rows) => {
-    if (err) {
-      res.status(500).json({ error: err.message });
-      return;
-    }
-    res.json(rows.map(row => row.name));
-  });
+    db.all("SELECT name FROM staff_directory ORDER BY name", [], (err, rows) => {
+        if (err) {
+            console.error('Error fetching staff names:', err);
+            res.status(500).json({ error: err.message });
+            return;
+        }
+        res.json(rows.map(row => row.name));
+    });
 });
 
+// Create new schedule
+app.post('/api/schedules', (req, res) => {
+    const schedule = req.body;
+    const query = `
+        INSERT INTO schedules (
+            season, event_type, day, date, start_time, end_time, division,
+            home_team, visitor_team, venue, home_coach, visitor_coach,
+            plate_umpire, base_umpire, concession_stand, concession_staff
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `;
+    
+    const values = [
+        schedule.season, schedule.event_type, schedule.day, schedule.date,
+        schedule.start_time, schedule.end_time, schedule.division,
+        schedule.home_team, schedule.visitor_team, schedule.venue,
+        schedule.home_coach, schedule.visitor_coach, schedule.plate_umpire,
+        schedule.base_umpire, schedule.concession_stand, schedule.concession_staff
+    ];
+    
+    db.run(query, values, function(err) {
+        if (err) {
+            console.error('Error creating schedule:', err);
+            res.status(500).json({ error: err.message });
+            return;
+        }
+        res.json({ id: this.lastID, message: 'Schedule created successfully' });
+    });
+});
+
+// Update schedule
+app.put('/api/schedules/:id', (req, res) => {
+    const { id } = req.params;
+    const schedule = req.body;
+    
+    const query = `
+        UPDATE schedules SET 
+            season = ?, event_type = ?, day = ?, date = ?, start_time = ?, end_time = ?, division = ?,
+            home_team = ?, visitor_team = ?, venue = ?, home_coach = ?, visitor_coach = ?,
+            plate_umpire = ?, base_umpire = ?, concession_stand = ?, concession_staff = ?,
+            updated_at = CURRENT_TIMESTAMP
+        WHERE id = ?
+    `;
+    
+    const values = [
+        schedule.season, schedule.event_type, schedule.day, schedule.date,
+        schedule.start_time, schedule.end_time, schedule.division,
+        schedule.home_team, schedule.visitor_team, schedule.venue,
+        schedule.home_coach, schedule.visitor_coach, schedule.plate_umpire,
+        schedule.base_umpire, schedule.concession_stand, schedule.concession_staff, id
+    ];
+    
+    db.run(query, values, function(err) {
+        if (err) {
+            console.error('Error updating schedule:', err);
+            res.status(500).json({ error: err.message });
+            return;
+        }
+        if (this.changes === 0) {
+            res.status(404).json({ error: 'Schedule not found' });
+            return;
+        }
+        res.json({ message: 'Schedule updated successfully' });
+    });
+});
+
+// Delete schedule
+app.delete('/api/schedules/:id', (req, res) => {
+    const { id } = req.params;
+    
+    db.run("DELETE FROM schedules WHERE id = ?", [id], function(err) {
+        if (err) {
+            console.error('Error deleting schedule:', err);
+            res.status(500).json({ error: err.message });
+            return;
+        }
+        if (this.changes === 0) {
+            res.status(404).json({ error: 'Schedule not found' });
+            return;
+        }
+        res.json({ message: 'Schedule deleted successfully' });
+    });
+});
+
+// Staff CRUD operations
 app.post('/api/staff', (req, res) => {
-  const { name, email, phone, parent_name, parent_email, parent_phone, role } = req.body;
-  
-  db.run(`INSERT INTO staff_directory (name, email, phone, parent_name, parent_email, parent_phone, role) VALUES (?, ?, ?, ?, ?, ?, ?)`,
-    [name, email, phone, parent_name, parent_email, parent_phone, role],
-    function(err) {
-      if (err) {
-        res.status(500).json({ error: err.message });
-        return;
-      }
-      res.json({ id: this.lastID, message: 'Staff member added successfully' });
+    const staff = req.body;
+    const query = `
+        INSERT INTO staff_directory (name, role, phone, email, parent_name, parent_phone, parent_email)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+    `;
+    
+    const values = [
+        staff.name, staff.role, staff.phone, staff.email,
+        staff.parent_name, staff.parent_phone, staff.parent_email
+    ];
+    
+    db.run(query, values, function(err) {
+        if (err) {
+            console.error('Error creating staff member:', err);
+            res.status(500).json({ error: err.message });
+            return;
+        }
+        res.json({ id: this.lastID, message: 'Staff member created successfully' });
     });
 });
 
 app.put('/api/staff/:id', (req, res) => {
-  const { name, email, phone, parent_name, parent_email, parent_phone, role } = req.body;
-  
-  db.run(`UPDATE staff_directory SET name=?, email=?, phone=?, parent_name=?, parent_email=?, parent_phone=?, role=? WHERE id=?`,
-    [name, email, phone, parent_name, parent_email, parent_phone, role, req.params.id],
-    function(err) {
-      if (err) {
-        res.status(500).json({ error: err.message });
-        return;
-      }
-      res.json({ message: 'Staff member updated successfully', changes: this.changes });
+    const { id } = req.params;
+    const staff = req.body;
+    
+    const query = `
+        UPDATE staff_directory SET 
+            name = ?, role = ?, phone = ?, email = ?, 
+            parent_name = ?, parent_phone = ?, parent_email = ?,
+            updated_at = CURRENT_TIMESTAMP
+        WHERE id = ?
+    `;
+    
+    const values = [
+        staff.name, staff.role, staff.phone, staff.email,
+        staff.parent_name, staff.parent_phone, staff.parent_email, id
+    ];
+    
+    db.run(query, values, function(err) {
+        if (err) {
+            console.error('Error updating staff member:', err);
+            res.status(500).json({ error: err.message });
+            return;
+        }
+        if (this.changes === 0) {
+            res.status(404).json({ error: 'Staff member not found' });
+            return;
+        }
+        res.json({ message: 'Staff member updated successfully' });
     });
 });
 
 app.delete('/api/staff/:id', (req, res) => {
-  db.run("DELETE FROM staff_directory WHERE id=?", [req.params.id], function(err) {
-    if (err) {
-      res.status(500).json({ error: err.message });
-      return;
-    }
-    res.json({ message: 'Staff member deleted successfully', changes: this.changes });
-  });
-});
-
-// Umpire requests API
-app.get('/api/umpire-requests', (req, res) => {
-  db.all("SELECT * FROM umpire_requests ORDER BY created_at DESC", [], (err, rows) => {
-    if (err) {
-      res.status(500).json({ error: err.message });
-      return;
-    }
-    res.json(rows);
-  });
-});
-
-app.post('/api/umpire-requests', (req, res) => {
-  const { schedule_id, umpire_name, request_date } = req.body;
-  
-  db.run(`INSERT INTO umpire_requests (schedule_id, umpire_name, request_date) VALUES (?, ?, ?)`,
-    [schedule_id, umpire_name, request_date],
-    function(err) {
-      if (err) {
-        res.status(500).json({ error: err.message });
-        return;
-      }
-      res.json({ id: this.lastID, message: 'Umpire request submitted successfully' });
+    const { id } = req.params;
+    
+    db.run("DELETE FROM staff_directory WHERE id = ?", [id], function(err) {
+        if (err) {
+            console.error('Error deleting staff member:', err);
+            res.status(500).json({ error: err.message });
+            return;
+        }
+        if (this.changes === 0) {
+            res.status(404).json({ error: 'Staff member not found' });
+            return;
+        }
+        res.json({ message: 'Staff member deleted successfully' });
     });
 });
 
-app.put('/api/umpire-requests/:id/status', (req, res) => {
-  const { status } = req.body;
-  
-  db.run("UPDATE umpire_requests SET status=? WHERE id=?", [status, req.params.id], function(err) {
-    if (err) {
-      res.status(500).json({ error: err.message });
-      return;
-    }
-    res.json({ message: 'Status updated successfully', changes: this.changes });
-  });
+// Umpire request operations
+app.post('/api/umpire-requests', (req, res) => {
+    const request = req.body;
+    const query = `
+        INSERT INTO umpire_requests (
+            game_id, current_plate_umpire, current_base_umpire,
+            requested_plate_umpire, requested_base_umpire, reason
+        ) VALUES (?, ?, ?, ?, ?, ?)
+    `;
+    
+    const values = [
+        request.game_id, request.current_plate_umpire, request.current_base_umpire,
+        request.requested_plate_umpire, request.requested_base_umpire, request.reason
+    ];
+    
+    db.run(query, values, function(err) {
+        if (err) {
+            console.error('Error creating umpire request:', err);
+            res.status(500).json({ error: err.message });
+            return;
+        }
+        res.json({ id: this.lastID, message: 'Umpire request submitted successfully' });
+    });
+});
+
+app.put('/api/umpire-requests/:id', (req, res) => {
+    const { id } = req.params;
+    const { status } = req.body;
+    
+    db.run("UPDATE umpire_requests SET status = ? WHERE id = ?", [status, id], function(err) {
+        if (err) {
+            console.error('Error updating umpire request:', err);
+            res.status(500).json({ error: err.message });
+            return;
+        }
+        if (this.changes === 0) {
+            res.status(404).json({ error: 'Umpire request not found' });
+            return;
+        }
+        res.json({ message: 'Umpire request updated successfully' });
+    });
 });
 
 // CSV upload endpoint
 app.post('/api/upload-csv', upload.single('csvFile'), (req, res) => {
-  if (!req.file) {
-    return res.status(400).json({ error: 'No file uploaded' });
-  }
+    if (!req.file) {
+        return res.status(400).json({ error: 'No file uploaded' });
+    }
 
-  const results = [];
-  fs.createReadStream(req.file.path)
-    .pipe(csv())
-    .on('data', (data) => results.push(data))
-    .on('end', () => {
-      // Process CSV data and insert into database
-      let successCount = 0;
-      let errorCount = 0;
+    const csv = require('csv-parser');
+    const fs = require('fs');
+    const results = [];
 
-      results.forEach((row) => {
-        const { season, event_type, day, date, start_time, am_pm, division, home_team, home_coach, visitor_team, visitor_coach, venue, plate_umpire, base_umpire, concession_stand, concession_staff } = row;
-        
-        db.run(`INSERT INTO schedules (season, event_type, day, date, start_time, am_pm, division, home_team, home_coach, visitor_team, visitor_coach, venue, plate_umpire, base_umpire, concession_stand, concession_staff) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-          [season, event_type, day, date, start_time, am_pm, division, home_team, home_coach, visitor_team, visitor_coach, venue, plate_umpire, base_umpire, concession_stand, concession_staff],
-          function(err) {
-            if (err) {
-              errorCount++;
-              console.error('Error inserting row:', err);
-            } else {
-              successCount++;
-            }
-          });
-      });
+    fs.createReadStream(req.file.path)
+        .pipe(csv())
+        .on('data', (data) => results.push(data))
+        .on('end', () => {
+            // Process CSV data and insert into database
+            let successCount = 0;
+            let errorCount = 0;
 
-      // Clean up uploaded file
-      fs.unlinkSync(req.file.path);
+            results.forEach((row, index) => {
+                const query = `
+                    INSERT INTO schedules (
+                        season, event_type, day, date, start_time, end_time, division,
+                        home_team, visitor_team, venue, home_coach, visitor_coach,
+                        plate_umpire, base_umpire, concession_stand, concession_staff
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                `;
+                
+                const values = [
+                    row.season || 'Spring', row.event_type || 'Baseball', row.day || 'Saturday',
+                    row.date || '', row.start_time || '', row.end_time || '', row.division || '',
+                    row.home_team || '', row.visitor_team || '', row.venue || '',
+                    row.home_coach || '', row.visitor_coach || '', row.plate_umpire || '',
+                    row.base_umpire || '', row.concession_stand || '', row.concession_staff || ''
+                ];
 
-      res.json({ 
-        message: 'CSV processed successfully', 
-        successCount, 
-        errorCount,
-        totalRows: results.length 
-      });
-    })
-    .on('error', (error) => {
-      res.status(500).json({ error: 'Error processing CSV file' });
-    });
+                db.run(query, values, (err) => {
+                    if (err) {
+                        console.error(`Error inserting row ${index + 1}:`, err);
+                        errorCount++;
+                    } else {
+                        successCount++;
+                    }
+                });
+            });
+
+            // Clean up uploaded file
+            fs.unlink(req.file.path, (err) => {
+                if (err) console.error('Error deleting uploaded file:', err);
+            });
+
+            res.json({
+                message: 'CSV processed successfully',
+                totalRows: results.length,
+                successCount,
+                errorCount
+            });
+        })
+        .on('error', (error) => {
+            console.error('Error processing CSV:', error);
+            res.status(500).json({ error: 'Error processing CSV file' });
+        });
 });
 
-// Get filter options
-app.get('/api/filters', (req, res) => {
-  const filterFields = ['season', 'event_type', 'day', 'division', 'home_team', 'visitor_team', 'venue', 'home_coach', 'visitor_coach', 'plate_umpire', 'base_umpire', 'concession_stand', 'concession_staff'];
-  
-  const filterOptions = {};
-  
-  filterFields.forEach(field => {
-    db.all(`SELECT DISTINCT ${field} FROM schedules WHERE ${field} IS NOT NULL AND ${field} != '' ORDER BY ${field}`, [], (err, rows) => {
-      if (err) {
-        console.error(`Error getting ${field} options:`, err);
-        return;
-      }
-      filterOptions[field] = rows.map(row => row[field]);
-      
-      // Check if all fields have been processed
-      if (Object.keys(filterOptions).length === filterFields.length) {
-        res.json(filterOptions);
-      }
-    });
-  });
-});
-
-// Serve the main pages
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
-
+// Serve admin panel
 app.get('/admin', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'admin.html'));
+    res.sendFile(path.join(__dirname, 'public', 'admin.html'));
+});
+
+// Serve main page
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 // Error handling middleware
 app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({ error: 'Something went wrong!' });
+    console.error('Server error:', err);
+    res.status(500).json({ error: 'Internal server error' });
 });
 
 // 404 handler
 app.use((req, res) => {
-  res.status(404).json({ error: 'Route not found' });
+    res.status(404).json({ error: 'Route not found' });
 });
 
 // Start server
-const PORT = config.port;
 app.listen(PORT, () => {
-  console.log(`🚀 Baseball/Softball Schedule Manager running on port ${PORT}`);
-  console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
-  console.log(`🔗 Admin panel: http://localhost:${PORT}/admin`);
-  console.log(`🌐 Public interface: http://localhost:${PORT}`);
+    console.log(`🚀 Baseball/Softball Schedule Manager running on port ${PORT}`);
+    console.log(`🌐 Admin panel: http://localhost:${PORT}/admin`);
+    console.log(`📱 Public interface: http://localhost:${PORT}`);
+    console.log(`✅ Production mode enabled`);
 });
 
 // Graceful shutdown
 process.on('SIGTERM', () => {
-  console.log('SIGTERM received, shutting down gracefully');
-  db.close(() => {
-    console.log('Database connection closed');
-    process.exit(0);
-  });
+    console.log('SIGTERM received, shutting down gracefully');
+    db.close((err) => {
+        if (err) {
+            console.error('Error closing database:', err);
+        } else {
+            console.log('Database connection closed');
+        }
+        process.exit(0);
+    });
 });
 
 process.on('SIGINT', () => {
-  console.log('SIGINT received, shutting down gracefully');
-  db.close(() => {
-    console.log('Database connection closed');
-    process.exit(0);
-  });
+    console.log('SIGINT received, shutting down gracefully');
+    db.close((err) => {
+        if (err) {
+            console.error('Error closing database:', err);
+        } else {
+            console.log('Database connection closed');
+        }
+        process.exit(0);
+    });
 });
