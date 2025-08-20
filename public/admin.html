@@ -17,19 +17,39 @@
     
     <style>
         :root {
-            --primary: #2563eb;
-            --primary-light: #60a5fa;
-            --secondary: #dc2626;
-            --secondary-light: #ef4444;
-            --accent: #f59e0b;
-            --success: #10b981;
-            --success-light: #34d399;
-            --warning: #f59e0b;
-            --warning-light: #fbbf24;
-            --danger: #ef4444;
-            --danger-light: #f87171;
-            --info: #3b82f6;
-            --info-light: #60a5fa;
+            /* Modern Color Palette */
+            --primary-50: #eff6ff;
+            --primary-100: #dbeafe;
+            --primary-200: #bfdbfe;
+            --primary-300: #93c5fd;
+            --primary-400: #60a5fa;
+            --primary-500: #3b82f6;
+            --primary-600: #2563eb;
+            --primary-700: #1d4ed8;
+            --primary-800: #1e40af;
+            --primary-900: #1e3a8a;
+            
+            --secondary-50: #fef7ee;
+            --secondary-100: #fdedd6;
+            --secondary-200: #fad8ad;
+            --secondary-300: #f6c083;
+            --secondary-400: #f2a659;
+            --secondary-500: #ee8c2f;
+            --secondary-600: #e47315;
+            --secondary-700: #c45a0b;
+            --secondary-800: #a4470a;
+            --secondary-900: #843a0a;
+            
+            --success-50: #f0fdf4;
+            --success-100: #dcfce7;
+            --success-200: #bbf7d0;
+            --success-300: #86efac;
+            --success-400: #4ade80;
+            --success-500: #22c55e;
+            --success-600: #16a34a;
+            --success-700: #15803d;
+            --success-800: #166534;
+            --success-900: #14532d;
             
             --gray-50: #f9fafb;
             --gray-100: #f3f4f6;
@@ -45,26 +65,44 @@
             --white: #ffffff;
             --black: #000000;
             
-            --spacing-2: 0.5rem;
-            --spacing-3: 0.75rem;
-            --spacing-4: 1rem;
-            --spacing-6: 1.5rem;
-            --spacing-8: 2rem;
-            --spacing-16: 4rem;
-            --spacing-20: 5rem;
-            
-            --radius-sm: 0.375rem;
-            --radius-md: 0.5rem;
-            --radius-lg: 0.75rem;
-            --radius-xl: 1rem;
-            --radius-2xl: 1.5rem;
-            --radius-3xl: 2rem;
-            
-            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            /* Modern Shadows */
+            --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
             --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
             --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
             --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
             --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+            --shadow-inner: inset 0 2px 4px 0 rgb(0 0 0 / 0.05);
+            
+            /* Modern Border Radius */
+            --radius-none: 0;
+            --radius-sm: 0.125rem;
+            --radius-md: 0.375rem;
+            --radius-lg: 0.5rem;
+            --radius-xl: 0.75rem;
+            --radius-2xl: 1rem;
+            --radius-3xl: 1.5rem;
+            --radius-full: 9999px;
+            
+            /* Modern Spacing */
+            --space-0: 0;
+            --space-1: 0.25rem;
+            --space-2: 0.5rem;
+            --space-3: 0.75rem;
+            --space-4: 1rem;
+            --space-5: 1.25rem;
+            --space-6: 1.5rem;
+            --space-8: 2rem;
+            --space-10: 2.5rem;
+            --space-12: 3rem;
+            --space-16: 4rem;
+            --space-20: 5rem;
+            --space-24: 6rem;
+            --space-32: 8rem;
+            --space-40: 10rem;
+            --space-48: 12rem;
+            --space-56: 14rem;
+            --space-64: 16rem;
         }
 
         * {
@@ -75,42 +113,45 @@
 
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, var(--gray-50) 0%, var(--gray-100) 100%);
+            background: linear-gradient(135deg, var(--gray-50) 0%, var(--primary-50) 100%);
             color: var(--gray-900);
             line-height: 1.6;
             min-height: 100vh;
+            overflow-x: hidden;
         }
 
-        /* Perfect Typography */
+        /* Revolutionary Typography System */
         h1, h2, h3, h4, h5, h6 {
-            font-family: 'Poppins', sans-serif;
-            font-weight: 600;
-            line-height: 1.2;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-weight: 700;
+            line-height: 1.1;
             color: var(--gray-900);
+            letter-spacing: -0.025em;
         }
 
-        h1 { font-size: 3.5rem; margin-bottom: var(--spacing-6); }
-        h2 { font-size: 2.5rem; margin-bottom: var(--spacing-5); }
-        h3 { font-size: 2rem; margin-bottom: var(--spacing-4); }
-        h4 { font-size: 1.5rem; margin-bottom: var(--spacing-3); }
-        h5 { font-size: 1.25rem; margin-bottom: var(--spacing-2); }
-        h6 { font-size: 1.125rem; margin-bottom: var(--spacing-2); }
+        h1 { font-size: clamp(2.5rem, 5vw, 4rem); margin-bottom: var(--space-6); }
+        h2 { font-size: clamp(2rem, 4vw, 3rem); margin-bottom: var(--space-5); }
+        h3 { font-size: clamp(1.5rem, 3vw, 2rem); margin-bottom: var(--space-4); }
+        h4 { font-size: clamp(1.25rem, 2.5vw, 1.5rem); margin-bottom: var(--space-3); }
+        h5 { font-size: clamp(1.125rem, 2vw, 1.25rem); margin-bottom: var(--space-2); }
+        h6 { font-size: clamp(1rem, 1.5vw, 1.125rem); margin-bottom: var(--space-2); }
 
         p {
-            margin-bottom: var(--spacing-4);
+            margin-bottom: var(--space-4);
             color: var(--gray-600);
-            font-size: 1.125rem;
+            font-size: clamp(1rem, 2vw, 1.125rem);
+            line-height: 1.7;
         }
 
-        /* Stunning Admin Header */
+        /* Revolutionary Admin Header */
         .admin-header {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 50%, var(--secondary) 100%);
+            background: linear-gradient(135deg, var(--primary-900) 0%, var(--primary-800) 25%, var(--primary-700) 50%, var(--secondary-600) 75%, var(--secondary-500) 100%);
             color: var(--white);
-            padding: var(--spacing-20) 0;
+            padding: clamp(var(--space-20), 10vw, var(--space-32)) 0;
             position: relative;
             overflow: hidden;
             box-shadow: var(--shadow-2xl);
-            margin-bottom: var(--spacing-16);
+            margin-bottom: var(--space-16);
         }
 
         .admin-header::before {
@@ -121,99 +162,111 @@
             right: 0;
             bottom: 0;
             background: 
-                radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.15) 0%, transparent 50%),
-                radial-gradient(circle at 80% 20%, rgba(245, 158, 11, 0.15) 0%, transparent 50%),
-                radial-gradient(circle at 40% 40%, rgba(16, 185, 129, 0.1) 0%, transparent 50%);
+                radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(238, 140, 47, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(34, 197, 94, 0.2) 0%, transparent 50%);
+            animation: float 20s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            33% { transform: translateY(-20px) rotate(1deg); }
+            66% { transform: translateY(10px) rotate(-1deg); }
         }
 
         .admin-content {
             position: relative;
             z-index: 2;
             text-align: center;
-            max-width: 800px;
+            max-width: 900px;
             margin: 0 auto;
+            padding: 0 var(--space-6);
         }
 
         .admin-title {
-            font-size: 3rem;
-            font-weight: 800;
-            margin-bottom: var(--spacing-4);
-            background: linear-gradient(135deg, var(--white) 0%, var(--gray-100) 100%);
+            font-size: clamp(3rem, 8vw, 5rem);
+            font-weight: 900;
+            margin-bottom: var(--space-4);
+            background: linear-gradient(135deg, var(--white) 0%, var(--primary-100) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
             line-height: 1.1;
+            text-shadow: 0 0 30px rgba(255, 255, 255, 0.3);
         }
 
         .admin-subtitle {
-            font-size: 1.25rem;
+            font-size: clamp(1.25rem, 3vw, 1.5rem);
             font-weight: 400;
-            margin-bottom: var(--spacing-8);
-            color: var(--gray-200);
-            max-width: 600px;
+            margin-bottom: var(--space-8);
+            color: var(--primary-100);
+            max-width: 700px;
             margin-left: auto;
             margin-right: auto;
+            opacity: 0.95;
         }
 
         .admin-nav {
             display: flex;
-            gap: var(--spacing-4);
+            gap: var(--space-4);
             justify-content: center;
             flex-wrap: wrap;
         }
 
-        /* Perfect Navigation Links */
+        /* Revolutionary Navigation Links */
         .nav-link-modern {
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.15);
             color: var(--white);
-            border: 2px solid rgba(255, 255, 255, 0.2);
-            border-radius: var(--radius-xl);
-            padding: var(--spacing-3) var(--spacing-5);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: var(--radius-2xl);
+            padding: var(--space-3) var(--space-5);
             text-decoration: none;
             font-weight: 600;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(20px);
+            transition: all 0.4s ease;
+            backdrop-filter: blur(30px);
             display: inline-flex;
             align-items: center;
-            gap: var(--spacing-2);
-            font-size: 0.875rem;
+            gap: var(--space-2);
+            font-size: clamp(0.875rem, 2vw, 1rem);
+            box-shadow: var(--shadow-lg);
         }
 
         .nav-link-modern:hover {
-            background: rgba(255, 255, 255, 0.2);
-            border-color: rgba(255, 255, 255, 0.4);
+            background: rgba(255, 255, 255, 0.25);
+            border-color: rgba(255, 255, 255, 0.5);
             color: var(--white);
-            transform: translateY(-3px);
+            transform: translateY(-4px) scale(1.02);
             text-decoration: none;
-            box-shadow: var(--shadow-lg);
+            box-shadow: var(--shadow-xl);
         }
 
         .nav-link-modern.active {
-            background: var(--secondary);
-            border-color: var(--secondary);
-            box-shadow: var(--shadow-lg);
+            background: var(--secondary-500);
+            border-color: var(--secondary-500);
+            box-shadow: var(--shadow-xl);
         }
 
-        /* Perfect Container System - Full Width */
+        /* Revolutionary Container System */
         .container-modern {
             max-width: 100%;
             margin: 0 auto;
-            padding: 0 var(--spacing-4);
+            padding: 0 var(--space-6);
             width: 100%;
         }
 
-        /* Stunning Admin Cards - Full Width */
+        /* Revolutionary Admin Cards */
         .admin-card {
             background: var(--white);
             border-radius: var(--radius-3xl);
-            padding: var(--spacing-8);
-            margin: var(--spacing-16) 0;
-            box-shadow: var(--shadow-xl);
+            padding: var(--space-8);
+            margin: var(--space-16) 0;
+            box-shadow: var(--shadow-2xl);
             border: 1px solid var(--gray-200);
-            transition: all 0.3s ease;
+            transition: all 0.4s ease;
             position: relative;
             overflow: hidden;
             width: 100%;
+            backdrop-filter: blur(20px);
         }
 
         .admin-card::before {
@@ -222,12 +275,18 @@
             top: 0;
             left: 0;
             right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, var(--secondary), var(--accent), var(--success));
+            height: 6px;
+            background: linear-gradient(90deg, var(--primary-500), var(--secondary-500), var(--success-500));
+            animation: shimmer 3s ease-in-out infinite;
+        }
+
+        @keyframes shimmer {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
         }
 
         .admin-card:hover {
-            transform: translateY(-4px);
+            transform: translateY(-6px);
             box-shadow: var(--shadow-2xl);
         }
 
@@ -235,36 +294,37 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: var(--spacing-6);
-            padding-bottom: var(--spacing-4);
+            margin-bottom: var(--space-6);
+            padding-bottom: var(--space-4);
             border-bottom: 2px solid var(--gray-200);
         }
 
         .admin-card-title {
-            font-size: 1.75rem;
-            font-weight: 700;
+            font-size: clamp(1.5rem, 4vw, 2rem);
+            font-weight: 800;
             color: var(--gray-900);
             margin: 0;
             display: flex;
             align-items: center;
-            gap: var(--spacing-3);
+            gap: var(--space-3);
         }
 
-        /* Perfect Button System */
+        /* Revolutionary Button System */
         .btn-modern {
             display: inline-flex;
             align-items: center;
-            gap: var(--spacing-2);
-            padding: var(--spacing-3) var(--spacing-5);
-            border-radius: var(--radius-xl);
+            gap: var(--space-3);
+            padding: var(--space-3) var(--space-5);
+            border-radius: var(--radius-2xl);
             font-weight: 600;
-            font-size: 0.875rem;
+            font-size: clamp(0.875rem, 2vw, 1rem);
             text-decoration: none;
             border: none;
             cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
             overflow: hidden;
+            box-shadow: var(--shadow-lg);
         }
 
         .btn-modern::before {
@@ -274,8 +334,8 @@
             left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            transition: left 0.5s;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.6s;
         }
 
         .btn-modern:hover::before {
@@ -283,69 +343,70 @@
         }
 
         .btn-primary-modern {
-            background: linear-gradient(135deg, var(--secondary) 0%, var(--secondary-light) 100%);
+            background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-600) 100%);
             color: var(--white);
-            box-shadow: var(--shadow-lg);
+            box-shadow: var(--shadow-xl);
         }
 
         .btn-primary-modern:hover {
-            transform: translateY(-3px);
+            transform: translateY(-4px) scale(1.02);
             box-shadow: var(--shadow-2xl);
             color: var(--white);
         }
 
         .btn-success-modern {
-            background: linear-gradient(135deg, var(--success) 0%, var(--success-light) 100%);
+            background: linear-gradient(135deg, var(--success-500) 0%, var(--success-600) 100%);
             color: var(--white);
-            box-shadow: var(--shadow-lg);
+            box-shadow: var(--shadow-xl);
         }
 
         .btn-success-modern:hover {
-            transform: translateY(-3px);
+            transform: translateY(-4px) scale(1.02);
             box-shadow: var(--shadow-2xl);
             color: var(--white);
         }
 
         .btn-warning-modern {
-            background: linear-gradient(135deg, var(--warning) 0%, var(--warning-light) 100%);
+            background: linear-gradient(135deg, var(--secondary-500) 0%, var(--secondary-600) 100%);
             color: var(--white);
-            box-shadow: var(--shadow-lg);
+            box-shadow: var(--shadow-xl);
         }
 
         .btn-warning-modern:hover {
-            transform: translateY(-3px);
+            transform: translateY(-4px) scale(1.02);
             box-shadow: var(--shadow-2xl);
             color: var(--white);
         }
 
         .btn-danger-modern {
-            background: linear-gradient(135deg, var(--danger) 0%, var(--danger-light) 100%);
+            background: linear-gradient(135deg, #ef4444, #dc2626);
             color: var(--white);
-            box-shadow: var(--shadow-lg);
+            box-shadow: var(--shadow-xl);
         }
 
         .btn-danger-modern:hover {
-            transform: translateY(-3px);
+            transform: translateY(-4px) scale(1.02);
             box-shadow: var(--shadow-2xl);
             color: var(--white);
         }
 
-        /* Perfect Form Controls */
+        /* Revolutionary Form Controls */
         .form-control-modern {
             border: 2px solid var(--gray-200);
             border-radius: var(--radius-xl);
-            padding: var(--spacing-4) var(--spacing-4);
-            font-size: 1rem;
+            padding: var(--space-4) var(--space-4);
+            font-size: clamp(0.875rem, 2vw, 1rem);
             transition: all 0.3s ease;
             background: var(--white);
             color: var(--gray-900);
             width: 100%;
+            box-shadow: var(--shadow-sm);
         }
 
         .form-control-modern:focus {
             outline: none;
-            border-color: var(--secondary);
-            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+            border-color: var(--primary-500);
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
             transform: translateY(-2px);
         }
 
@@ -356,32 +417,32 @@
         .form-label-modern {
             font-weight: 600;
             color: var(--gray-900);
-            margin-bottom: var(--spacing-2);
+            margin-bottom: var(--space-2);
             display: block;
-            font-size: 0.875rem;
+            font-size: clamp(0.875rem, 2vw, 1rem);
         }
 
-        /* Perfect Table Design - FULL SCREEN WIDTH */
+        /* Revolutionary Table Design */
         .table-modern {
             background: var(--white);
             border-radius: var(--radius-2xl);
             overflow: hidden;
-            box-shadow: var(--shadow-lg);
+            box-shadow: var(--shadow-xl);
             border: 1px solid var(--gray-200);
-            width: 100vw;
-            min-width: 100vw;
-            table-layout: fixed;
+            width: 100%;
+            min-width: 100%;
+            table-layout: auto;
         }
 
         .table-modern th {
-            background: var(--gray-50);
+            background: linear-gradient(135deg, var(--gray-50) 0%, var(--primary-50) 100%);
             color: var(--gray-700);
-            font-weight: 600;
-            padding: var(--spacing-4) var(--spacing-3);
+            font-weight: 700;
+            padding: var(--space-4) var(--space-3);
             border: none;
-            font-size: 0.875rem;
+            font-size: clamp(0.75rem, 1.5vw, 0.875rem);
             text-transform: uppercase;
-            letter-spacing: 0.05em;
+            letter-spacing: 0.1em;
             position: sticky;
             top: 0;
             z-index: 10;
@@ -391,83 +452,46 @@
         }
 
         .table-modern td {
-            padding: var(--spacing-4) var(--spacing-3);
+            padding: var(--space-4) var(--space-3);
             border-bottom: 1px solid var(--gray-100);
             vertical-align: middle;
-            transition: background-color 0.2s ease;
+            transition: all 0.3s ease;
             word-wrap: break-word;
             overflow: hidden;
             text-overflow: ellipsis;
         }
 
         .table-modern tbody tr:hover {
-            background-color: var(--gray-50);
+            background: linear-gradient(135deg, var(--primary-50) 0%, var(--gray-50) 100%);
+            transform: scale(1.01);
+            box-shadow: var(--shadow-md);
         }
 
-        /* FULL SCREEN Column Widths for Admin - No Scrolling */
-        .table-modern th:nth-child(1), .table-modern td:nth-child(1) { width: 8vw; }  /* Season */
-        .table-modern th:nth-child(2), .table-modern td:nth-child(2) { width: 8vw; }  /* Event */
-        .table-modern th:nth-child(3), .table-modern td:nth-child(3) { width: 8vw; }  /* Day */
-        .table-modern th:nth-child(4), .table-modern td:nth-child(4) { width: 10vw; } /* Date */
-        .table-modern th:nth-child(5), .table-modern td:nth-child(5) { width: 8vw; }  /* Time */
-        .table-modern th:nth-child(6), .table-modern td:nth-child(6) { width: 10vw; } /* Division */
-        .table-modern th:nth-child(7), .table-modern td:nth-child(7) { width: 12vw; } /* Home Team */
-        .table-modern th:nth-child(8), .table-modern td:nth-child(8) { width: 12vw; } /* Visitor Team */
-        .table-modern th:nth-child(9), .table-modern td:nth-child(9) { width: 12vw; } /* Venue */
-        .table-modern th:nth-child(10), .table-modern td:nth-child(10) { width: 12vw; } /* Umpires */
-        .table-modern th:nth-child(11), .table-modern td:nth-child(11) { width: 12vw; } /* Concession */
-
-        /* Enhanced Table Responsiveness for Admin - FULL SCREEN */
-        .table-responsive {
-            width: 100vw;
-            max-width: 100vw;
-            overflow: visible;
-            border-radius: var(--radius-2xl);
-        }
-
-        .table-responsive::-webkit-scrollbar {
-            height: 8px;
-        }
-
-        .table-responsive::-webkit-scrollbar-track {
-            background: var(--gray-100);
-            border-radius: var(--radius-lg);
-        }
-
-        .table-responsive::-webkit-scrollbar-thumb {
-            background: var(--gray-400);
-            border-radius: var(--radius-lg);
-        }
-
-        .table-responsive::-webkit-scrollbar-thumb:hover {
-            background: var(--gray-500);
-        }
-
-        /* Perfect Badge System */
+        /* Revolutionary Badge System */
         .badge-modern {
             display: inline-block;
-            padding: var(--spacing-2) var(--spacing-3);
-            border-radius: var(--radius-lg);
-            font-size: 0.75rem;
-            font-weight: 600;
+            padding: var(--space-2) var(--space-3);
+            border-radius: var(--radius-xl);
+            font-size: clamp(0.7rem, 1.5vw, 0.75rem);
+            font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 0.05em;
+            letter-spacing: 0.1em;
             line-height: 1;
             box-shadow: var(--shadow-sm);
         }
 
         .badge-primary {
-            background: linear-gradient(135deg, var(--secondary), var(--secondary-light));
+            background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
             color: var(--white);
         }
 
         .badge-success {
-            background: linear-gradient(135deg, var(--success), var(--success-light));
+            background: linear-gradient(135deg, var(--success-500), var(--success-600));
             color: var(--white);
         }
 
         .badge-warning {
-            background: linear-gradient(135deg, var(--warning), var(--warning-light));
+            background: linear-gradient(135deg, var(--secondary-500), var(--secondary-600));
             color: var(--white);
         }
 
@@ -477,60 +501,24 @@
         }
 
         .badge-info {
-            background: linear-gradient(135deg, var(--info), var(--info-light));
+            background: linear-gradient(135deg, var(--primary-400), var(--primary-500));
             color: var(--white);
         }
 
-        /* Responsive Design - FULL SCREEN Tables */
-        @media (max-width: 1400px) {
-            .table-modern th:nth-child(1), .table-modern td:nth-child(1) { width: 9vw; }  /* Season */
-            .table-modern th:nth-child(2), .table-modern td:nth-child(2) { width: 9vw; }  /* Event */
-            .table-modern th:nth-child(3), .table-modern td:nth-child(3) { width: 9vw; }  /* Day */
-            .table-modern th:nth-child(4), .table-modern td:nth-child(4) { width: 11vw; } /* Date */
-            .table-modern th:nth-child(5), .table-modern td:nth-child(5) { width: 9vw; }  /* Time */
-            .table-modern th:nth-child(6), .table-modern td:nth-child(6) { width: 11vw; } /* Division */
-            .table-modern th:nth-child(7), .table-modern td:nth-child(7) { width: 11vw; } /* Home Team */
-            .table-modern th:nth-child(8), .table-modern td:nth-child(8) { width: 11vw; } /* Visitor Team */
-            .table-modern th:nth-child(9), .table-modern td:nth-child(9) { width: 11vw; } /* Venue */
-            .table-modern th:nth-child(10), .table-modern td:nth-child(10) { width: 11vw; } /* Umpires */
-            .table-modern th:nth-child(11), .table-modern td:nth-child(11) { width: 11vw; } /* Concession */
-        }
-
+        /* Revolutionary Responsive Design */
         @media (max-width: 1200px) {
-            .container-modern {
-                padding: 0 var(--spacing-4);
-                max-width: 100%;
+            .filter-grid {
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             }
-            
-            .admin-card {
-                margin: var(--spacing-8) 0;
-                border-radius: var(--radius-2xl);
-            }
-            
-            .table-responsive {
-                border-radius: var(--radius-2xl);
-            }
-            
-            .table-modern th:nth-child(1), .table-modern td:nth-child(1) { width: 10vw; }  /* Season */
-            .table-modern th:nth-child(2), .table-modern td:nth-child(2) { width: 10vw; }  /* Event */
-            .table-modern th:nth-child(3), .table-modern td:nth-child(3) { width: 10vw; }  /* Day */
-            .table-modern th:nth-child(4), .table-modern td:nth-child(4) { width: 12vw; } /* Date */
-            .table-modern th:nth-child(5), .table-modern td:nth-child(5) { width: 10vw; }  /* Time */
-            .table-modern th:nth-child(6), .table-modern td:nth-child(6) { width: 12vw; } /* Division */
-            .table-modern th:nth-child(7), .table-modern td:nth-child(7) { width: 10vw; } /* Home Team */
-            .table-modern th:nth-child(8), .table-modern td:nth-child(8) { width: 10vw; } /* Visitor Team */
-            .table-modern th:nth-child(9), .table-modern td:nth-child(9) { width: 10vw; } /* Venue */
-            .table-modern th:nth-child(10), .table-modern td:nth-child(10) { width: 10vw; } /* Umpires */
-            .table-modern th:nth-child(11), .table-modern td:nth-child(11) { width: 10vw; } /* Concession */
         }
 
         @media (max-width: 768px) {
             .admin-title {
-                font-size: 2rem;
+                font-size: clamp(2rem, 6vw, 3rem);
             }
             
             .admin-header {
-                padding: var(--spacing-16) 0;
+                padding: var(--space-16) 0;
             }
             
             .admin-nav {
@@ -540,25 +528,24 @@
             
             .nav-link-modern {
                 width: 100%;
-                max-width: 300px;
+                max-width: 350px;
                 justify-content: center;
             }
             
             .admin-card {
-                padding: var(--spacing-6);
-                margin: var(--spacing-8) 0;
+                padding: var(--space-6);
+                margin: var(--space-8) 0;
                 border-radius: var(--radius-2xl);
             }
             
             .admin-card-header {
                 flex-direction: column;
-                gap: var(--spacing-4);
+                gap: var(--space-4);
                 align-items: flex-start;
             }
             
             .container-modern {
-                padding: 0 var(--spacing-4);
-                max-width: 100%;
+                padding: 0 var(--space-4);
             }
             
             .table-responsive {
@@ -568,32 +555,23 @@
             
             .table-modern th,
             .table-modern td {
-                padding: var(--spacing-3) var(--spacing-2);
-                font-size: 0.8rem;
+                padding: var(--space-3) var(--space-2);
+                font-size: clamp(0.75rem, 2vw, 0.875rem);
             }
-            
-            /* Mobile table optimization - FULL WIDTH */
-            .table-modern th:nth-child(1), .table-modern td:nth-child(1) { width: 12vw; }  /* Season */
-            .table-modern th:nth-child(2), .table-modern td:nth-child(2) { width: 12vw; }  /* Event */
-            .table-modern th:nth-child(3), .table-modern td:nth-child(3) { width: 12vw; }  /* Day */
-            .table-modern th:nth-child(4), .table-modern td:nth-child(4) { width: 14vw; } /* Date */
-            .table-modern th:nth-child(5), .table-modern td:nth-child(5) { width: 12vw; } /* Time */
-            .table-modern th:nth-child(6), .table-modern td:nth-child(6) { width: 14vw; } /* Division */
-            .table-modern th:nth-child(7), .table-modern td:nth-child(7) { width: 10vw; } /* Home Team */
-            .table-modern th:nth-child(8), .table-modern td:nth-child(8) { width: 10vw; } /* Visitor Team */
-            .table-modern th:nth-child(9), .table-modern td:nth-child(9) { width: 10vw; } /* Venue */
-            .table-modern th:nth-child(10), .table-modern td:nth-child(10) { width: 10vw; } /* Umpires */
-            .table-modern th:nth-child(11), .table-modern td:nth-child(11) { width: 10vw; } /* Concession */
         }
 
         @media (max-width: 480px) {
             .container-modern {
-                padding: 0 var(--spacing-2);
+                padding: 0 var(--space-3);
+            }
+            
+            .admin-header {
+                padding: var(--space-16) 0;
             }
             
             .admin-card {
-                margin: var(--spacing-6) 0;
-                padding: var(--spacing-4);
+                margin: var(--space-6) 0;
+                padding: var(--space-4);
                 border-radius: var(--radius-xl);
             }
             
@@ -604,49 +582,36 @@
             
             .table-modern th,
             .table-modern td {
-                padding: var(--spacing-2) var(--spacing-1);
-                font-size: 0.75rem;
+                padding: var(--space-2) var(--space-1);
+                font-size: clamp(0.7rem, 2vw, 0.75rem);
             }
             
             .btn-modern {
-                font-size: 0.8rem;
-                padding: var(--spacing-2) var(--spacing-3);
+                font-size: clamp(0.8rem, 2vw, 0.875rem);
+                padding: var(--space-2) var(--space-3);
             }
-            
-            /* Small mobile - FULL WIDTH */
-            .table-modern th:nth-child(1), .table-modern td:nth-child(1) { width: 15vw; }  /* Season */
-            .table-modern th:nth-child(2), .table-modern td:nth-child(2) { width: 15vw; }  /* Event */
-            .table-modern th:nth-child(3), .table-modern td:nth-child(3) { width: 15vw; }  /* Day */
-            .table-modern th:nth-child(4), .table-modern td:nth-child(4) { width: 17vw; } /* Date */
-            .table-modern th:nth-child(5), .table-modern td:nth-child(5) { width: 15vw; } /* Time */
-            .table-modern th:nth-child(6), .table-modern td:nth-child(6) { width: 17vw; } /* Division */
-            .table-modern th:nth-child(7), .table-modern td:nth-child(7) { width: 8vw; }  /* Home Team */
-            .table-modern th:nth-child(8), .table-modern td:nth-child(8) { width: 8vw; }  /* Visitor Team */
-            .table-modern th:nth-child(9), .table-modern td:nth-child(9) { width: 8vw; }  /* Venue */
-            .table-modern th:nth-child(10), .table-modern td:nth-child(10) { width: 8vw; } /* Umpires */
-            .table-modern th:nth-child(11), .table-modern td:nth-child(11) { width: 8vw; } /* Concession */
         }
 
-        /* Animation Classes */
+        /* Revolutionary Animations */
         .fade-in {
-            animation: fadeIn 0.8s ease-out;
+            animation: fadeIn 1s ease-out;
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .slide-up {
-            animation: slideUp 0.6s ease-out;
-        }
-
-        @keyframes slideUp {
             from { opacity: 0; transform: translateY(40px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Focus States */
+        .slide-up {
+            animation: slideUp 0.8s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Revolutionary Focus States */
         .btn-modern:focus,
         .form-control-modern:focus,
         .nav-link-modern:focus {
@@ -654,12 +619,12 @@
             box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.3);
         }
 
-        /* Loading Spinner */
+        /* Revolutionary Loading Spinner */
         .loading-spinner {
             width: 2rem;
             height: 2rem;
             border: 3px solid var(--gray-200);
-            border-top: 3px solid var(--secondary);
+            border-top: 3px solid var(--primary-500);
             border-radius: 50%;
             animation: spin 1s linear infinite;
             margin: 0 auto;
@@ -668,6 +633,26 @@
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
+        }
+
+        /* Revolutionary Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--gray-100);
+            border-radius: var(--radius-lg);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary-400);
+            border-radius: var(--radius-lg);
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-500);
         }
     </style>
 </head>

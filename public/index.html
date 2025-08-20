@@ -10,71 +10,99 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
     <!-- AOS Animation Library -->
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     
     <style>
         :root {
-            --primary: #0f172a;
-            --primary-light: #1e293b;
-            --primary-lighter: #334155;
-            --secondary: #3b82f6;
-            --secondary-light: #60a5fa;
-            --accent: #f59e0b;
-            --accent-light: #fbbf24;
+            /* Modern Color Palette */
+            --primary-50: #eff6ff;
+            --primary-100: #dbeafe;
+            --primary-200: #bfdbfe;
+            --primary-300: #93c5fd;
+            --primary-400: #60a5fa;
+            --primary-500: #3b82f6;
+            --primary-600: #2563eb;
+            --primary-700: #1d4ed8;
+            --primary-800: #1e40af;
+            --primary-900: #1e3a8a;
             
-            --success: #10b981;
-            --success-light: #34d399;
-            --warning: #f59e0b;
-            --warning-light: #fbbf24;
-            --danger: #ef4444;
-            --danger-light: #f87171;
-            --info: #06b6d4;
-            --info-light: #22d3ee;
+            --secondary-50: #fef7ee;
+            --secondary-100: #fdedd6;
+            --secondary-200: #fad8ad;
+            --secondary-300: #f6c083;
+            --secondary-400: #f2a659;
+            --secondary-500: #ee8c2f;
+            --secondary-600: #e47315;
+            --secondary-700: #c45a0b;
+            --secondary-800: #a4470a;
+            --secondary-900: #843a0a;
             
-            --gray-50: #f8fafc;
-            --gray-100: #f1f5f9;
-            --gray-200: #e2e8f0;
-            --gray-300: #cbd5e1;
-            --gray-400: #94a3b8;
-            --gray-500: #64748b;
-            --gray-600: #475569;
-            --gray-700: #334155;
-            --gray-800: #1e293b;
-            --gray-900: #0f172a;
+            --success-50: #f0fdf4;
+            --success-100: #dcfce7;
+            --success-200: #bbf7d0;
+            --success-300: #86efac;
+            --success-400: #4ade80;
+            --success-500: #22c55e;
+            --success-600: #16a34a;
+            --success-700: #15803d;
+            --success-800: #166534;
+            --success-900: #14532d;
+            
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
             
             --white: #ffffff;
             --black: #000000;
             
+            /* Modern Shadows */
             --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.05);
             --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
             --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
             --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
             --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
             --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+            --shadow-inner: inset 0 2px 4px 0 rgb(0 0 0 / 0.05);
             
-            --radius-sm: 0.375rem;
-            --radius-md: 0.5rem;
-            --radius-lg: 0.75rem;
-            --radius-xl: 1rem;
-            --radius-2xl: 1.5rem;
-            --radius-3xl: 2rem;
+            /* Modern Border Radius */
+            --radius-none: 0;
+            --radius-sm: 0.125rem;
+            --radius-md: 0.375rem;
+            --radius-lg: 0.5rem;
+            --radius-xl: 0.75rem;
+            --radius-2xl: 1rem;
+            --radius-3xl: 1.5rem;
+            --radius-full: 9999px;
             
-            --spacing-1: 0.25rem;
-            --spacing-2: 0.5rem;
-            --spacing-3: 0.75rem;
-            --spacing-4: 1rem;
-            --spacing-5: 1.25rem;
-            --spacing-6: 1.5rem;
-            --spacing-8: 2rem;
-            --spacing-10: 2.5rem;
-            --spacing-12: 3rem;
-            --spacing-16: 4rem;
-            --spacing-20: 5rem;
-            --spacing-24: 6rem;
-            --spacing-32: 8rem;
+            /* Modern Spacing */
+            --space-0: 0;
+            --space-1: 0.25rem;
+            --space-2: 0.5rem;
+            --space-3: 0.75rem;
+            --space-4: 1rem;
+            --space-5: 1.25rem;
+            --space-6: 1.5rem;
+            --space-8: 2rem;
+            --space-10: 2.5rem;
+            --space-12: 3rem;
+            --space-16: 4rem;
+            --space-20: 5rem;
+            --space-24: 6rem;
+            --space-32: 8rem;
+            --space-40: 10rem;
+            --space-48: 12rem;
+            --space-56: 14rem;
+            --space-64: 16rem;
         }
 
         * {
@@ -85,42 +113,45 @@
 
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, var(--gray-50) 0%, var(--gray-100) 100%);
+            background: linear-gradient(135deg, var(--gray-50) 0%, var(--primary-50) 100%);
             color: var(--gray-900);
             line-height: 1.6;
             min-height: 100vh;
             font-size: 16px;
+            overflow-x: hidden;
         }
 
-        /* Perfect Typography */
+        /* Revolutionary Typography System */
         h1, h2, h3, h4, h5, h6 {
-            font-family: 'Poppins', sans-serif;
-            font-weight: 600;
-            line-height: 1.2;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-weight: 700;
+            line-height: 1.1;
             color: var(--gray-900);
+            letter-spacing: -0.025em;
         }
 
-        h1 { font-size: 3.5rem; margin-bottom: var(--spacing-6); }
-        h2 { font-size: 2.5rem; margin-bottom: var(--spacing-5); }
-        h3 { font-size: 2rem; margin-bottom: var(--spacing-4); }
-        h4 { font-size: 1.5rem; margin-bottom: var(--spacing-3); }
-        h5 { font-size: 1.25rem; margin-bottom: var(--spacing-2); }
-        h6 { font-size: 1.125rem; margin-bottom: var(--spacing-2); }
+        h1 { font-size: clamp(2.5rem, 5vw, 4rem); margin-bottom: var(--space-6); }
+        h2 { font-size: clamp(2rem, 4vw, 3rem); margin-bottom: var(--space-5); }
+        h3 { font-size: clamp(1.5rem, 3vw, 2rem); margin-bottom: var(--space-4); }
+        h4 { font-size: clamp(1.25rem, 2.5vw, 1.5rem); margin-bottom: var(--space-3); }
+        h5 { font-size: clamp(1.125rem, 2vw, 1.25rem); margin-bottom: var(--space-2); }
+        h6 { font-size: clamp(1rem, 1.5vw, 1.125rem); margin-bottom: var(--space-2); }
 
         p {
-            margin-bottom: var(--spacing-4);
+            margin-bottom: var(--space-4);
             color: var(--gray-600);
-            font-size: 1.125rem;
+            font-size: clamp(1rem, 2vw, 1.125rem);
+            line-height: 1.7;
         }
 
-        /* Stunning Hero Section */
+        /* Revolutionary Hero Section */
         .hero-section {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 50%, var(--secondary) 100%);
+            background: linear-gradient(135deg, var(--primary-900) 0%, var(--primary-800) 25%, var(--primary-700) 50%, var(--secondary-600) 75%, var(--secondary-500) 100%);
             color: var(--white);
-            padding: var(--spacing-32) 0;
+            padding: clamp(var(--space-20), 10vw, var(--space-32)) 0;
             position: relative;
             overflow: hidden;
-            margin-bottom: var(--spacing-20);
+            margin-bottom: var(--space-20);
         }
 
         .hero-section::before {
@@ -131,62 +162,74 @@
             right: 0;
             bottom: 0;
             background: 
-                radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.15) 0%, transparent 50%),
-                radial-gradient(circle at 80% 20%, rgba(245, 158, 11, 0.15) 0%, transparent 50%),
-                radial-gradient(circle at 40% 40%, rgba(16, 185, 129, 0.1) 0%, transparent 50%);
+                radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(238, 140, 47, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(34, 197, 94, 0.2) 0%, transparent 50%);
+            animation: float 20s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            33% { transform: translateY(-20px) rotate(1deg); }
+            66% { transform: translateY(10px) rotate(-1deg); }
         }
 
         .hero-content {
             position: relative;
             z-index: 2;
             text-align: center;
-            max-width: 800px;
+            max-width: 900px;
             margin: 0 auto;
+            padding: 0 var(--space-6);
         }
 
         .hero-title {
-            font-size: 4rem;
-            font-weight: 800;
-            margin-bottom: var(--spacing-6);
-            background: linear-gradient(135deg, var(--white) 0%, var(--gray-100) 100%);
+            font-size: clamp(3rem, 8vw, 5rem);
+            font-weight: 900;
+            margin-bottom: var(--space-6);
+            background: linear-gradient(135deg, var(--white) 0%, var(--primary-100) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
             line-height: 1.1;
+            text-shadow: 0 0 30px rgba(255, 255, 255, 0.3);
         }
 
         .hero-subtitle {
-            font-size: 1.375rem;
+            font-size: clamp(1.25rem, 3vw, 1.5rem);
             font-weight: 400;
-            margin-bottom: var(--spacing-8);
-            color: var(--gray-200);
-            max-width: 600px;
+            margin-bottom: var(--space-8);
+            color: var(--primary-100);
+            max-width: 700px;
             margin-left: auto;
             margin-right: auto;
+            opacity: 0.95;
         }
 
         .hero-buttons {
             display: flex;
-            gap: var(--spacing-4);
+            gap: var(--space-4);
             justify-content: center;
             flex-wrap: wrap;
         }
 
-        /* Perfect Button System */
+        /* Revolutionary Button System */
         .btn {
             display: inline-flex;
             align-items: center;
-            gap: var(--spacing-2);
-            padding: var(--spacing-4) var(--spacing-6);
-            border-radius: var(--radius-xl);
+            gap: var(--space-3);
+            padding: var(--space-4) var(--space-8);
+            border-radius: var(--radius-2xl);
             font-weight: 600;
-            font-size: 1rem;
+            font-size: clamp(0.875rem, 2vw, 1rem);
             text-decoration: none;
             border: none;
             cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
             overflow: hidden;
+            backdrop-filter: blur(20px);
+            box-shadow: var(--shadow-lg);
         }
 
         .btn::before {
@@ -196,8 +239,8 @@
             left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            transition: left 0.5s;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.6s;
         }
 
         .btn:hover::before {
@@ -205,49 +248,50 @@
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
+            background: linear-gradient(135deg, var(--secondary-500) 0%, var(--secondary-600) 100%);
             color: var(--white);
-            box-shadow: var(--shadow-lg);
+            box-shadow: var(--shadow-xl);
         }
 
         .btn-primary:hover {
-            transform: translateY(-3px);
+            transform: translateY(-4px) scale(1.02);
             box-shadow: var(--shadow-2xl);
             color: var(--white);
         }
 
         .btn-secondary {
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.15);
             color: var(--white);
-            border: 2px solid rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(20px);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(30px);
         }
 
         .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.2);
-            border-color: rgba(255, 255, 255, 0.4);
+            background: rgba(255, 255, 255, 0.25);
+            border-color: rgba(255, 255, 255, 0.5);
             color: var(--white);
-            transform: translateY(-3px);
+            transform: translateY(-4px) scale(1.02);
         }
 
-        /* Perfect Container System - Full Width */
+        /* Revolutionary Container System */
         .container {
             max-width: 100%;
             margin: 0 auto;
-            padding: 0 var(--spacing-4);
+            padding: 0 var(--space-6);
             width: 100%;
         }
 
-        /* Stunning Filter Section */
+        /* Revolutionary Filter Section */
         .filter-section {
             background: var(--white);
             border-radius: var(--radius-3xl);
-            padding: var(--spacing-8);
-            margin: var(--spacing-16) 0;
-            box-shadow: var(--shadow-xl);
+            padding: var(--space-8);
+            margin: var(--space-16) 0;
+            box-shadow: var(--shadow-2xl);
             border: 1px solid var(--gray-200);
             position: relative;
             overflow: hidden;
+            backdrop-filter: blur(20px);
         }
 
         .filter-section::before {
@@ -256,43 +300,52 @@
             top: 0;
             left: 0;
             right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, var(--secondary), var(--accent), var(--success));
+            height: 6px;
+            background: linear-gradient(90deg, var(--primary-500), var(--secondary-500), var(--success-500));
+            animation: shimmer 3s ease-in-out infinite;
+        }
+
+        @keyframes shimmer {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
         }
 
         .filter-title {
-            font-size: 1.75rem;
-            font-weight: 700;
-            margin-bottom: var(--spacing-6);
+            font-size: clamp(1.5rem, 4vw, 2rem);
+            font-weight: 800;
+            margin-bottom: var(--space-6);
             color: var(--gray-900);
             display: flex;
             align-items: center;
-            gap: var(--spacing-3);
+            gap: var(--space-3);
+            text-align: center;
+            justify-content: center;
         }
 
         .filter-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: var(--spacing-4);
-            margin-bottom: var(--spacing-6);
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: var(--space-4);
+            margin-bottom: var(--space-6);
         }
 
-        /* Perfect Form Controls */
+        /* Revolutionary Form Controls */
         .form-control {
             border: 2px solid var(--gray-200);
             border-radius: var(--radius-xl);
-            padding: var(--spacing-4) var(--spacing-4);
-            font-size: 1rem;
+            padding: var(--space-4) var(--space-4);
+            font-size: clamp(0.875rem, 2vw, 1rem);
             transition: all 0.3s ease;
             background: var(--white);
             color: var(--gray-900);
             width: 100%;
+            box-shadow: var(--shadow-sm);
         }
 
         .form-control:focus {
             outline: none;
-            border-color: var(--secondary);
-            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+            border-color: var(--primary-500);
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
             transform: translateY(-2px);
         }
 
@@ -301,16 +354,16 @@
         }
 
         .btn-filter {
-            background: linear-gradient(135deg, var(--secondary) 0%, var(--secondary-light) 100%);
+            background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-600) 100%);
             color: var(--white);
             border: none;
-            padding: var(--spacing-4) var(--spacing-8);
+            padding: var(--space-4) var(--space-8);
             border-radius: var(--radius-xl);
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
             box-shadow: var(--shadow-lg);
-            font-size: 1rem;
+            font-size: clamp(0.875rem, 2vw, 1rem);
         }
 
         .btn-filter:hover {
@@ -318,15 +371,16 @@
             box-shadow: var(--shadow-2xl);
         }
 
-        /* Beautiful Info Section */
+        /* Revolutionary Info Section */
         .info-section {
-            background: linear-gradient(135deg, #dbeafe 0%, #eff6ff 100%);
-            border: 1px solid #bfdbfe;
+            background: linear-gradient(135deg, var(--primary-50) 0%, var(--success-50) 100%);
+            border: 1px solid var(--primary-200);
             border-radius: var(--radius-3xl);
-            padding: var(--spacing-6);
-            margin: var(--spacing-16) 0;
+            padding: var(--space-6);
+            margin: var(--space-16) 0;
             position: relative;
             overflow: hidden;
+            box-shadow: var(--shadow-xl);
         }
 
         .info-section::before {
@@ -334,95 +388,91 @@
             position: absolute;
             top: 0;
             left: 0;
-            width: 6px;
+            width: 8px;
             height: 100%;
-            background: linear-gradient(180deg, var(--secondary), var(--accent));
+            background: linear-gradient(180deg, var(--primary-500), var(--success-500));
             border-radius: 0 var(--radius-md) var(--radius-md) 0;
         }
 
         .info-content {
             position: relative;
             z-index: 2;
-            padding-left: var(--spacing-4);
+            padding-left: var(--space-4);
         }
 
         .info-title {
             font-weight: 700;
-            color: var(--secondary);
-            margin-bottom: var(--spacing-3);
+            color: var(--primary-700);
+            margin-bottom: var(--space-3);
             display: flex;
             align-items: center;
-            gap: var(--spacing-2);
-            font-size: 1.25rem;
+            gap: var(--space-2);
+            font-size: clamp(1.125rem, 2.5vw, 1.375rem);
         }
 
         .info-text {
             color: var(--gray-700);
-            margin-bottom: var(--spacing-3);
-            font-size: 1.125rem;
+            margin-bottom: var(--space-3);
+            font-size: clamp(1rem, 2vw, 1.125rem);
         }
 
         .info-note {
-            font-size: 0.875rem;
+            font-size: clamp(0.875rem, 1.5vw, 1rem);
             color: var(--gray-600);
             font-style: italic;
             display: flex;
             align-items: center;
-            gap: var(--spacing-2);
+            gap: var(--space-2);
         }
 
-        /* Stunning Schedule Table - FULL SCREEN */
+        /* Revolutionary Schedule Table */
         .schedule-container {
             background: var(--white);
             border-radius: var(--radius-3xl);
             box-shadow: var(--shadow-2xl);
             border: 1px solid var(--gray-200);
             overflow: hidden;
-            margin: var(--spacing-16) 0;
-            width: 100vw;
-            max-width: 100vw;
-            position: relative;
-            left: 50%;
-            right: 50%;
-            margin-left: -50vw;
-            margin-right: -50vw;
+            margin: var(--space-16) 0;
+            width: 100%;
+            max-width: 100%;
         }
 
         .schedule-header {
-            background: linear-gradient(135deg, var(--gray-900) 0%, var(--gray-800) 100%);
+            background: linear-gradient(135deg, var(--gray-900) 0%, var(--primary-800) 100%);
             color: var(--white);
-            padding: var(--spacing-6) var(--spacing-8);
+            padding: var(--space-6) var(--space-8);
         }
 
         .schedule-title {
-            font-size: 1.75rem;
-            font-weight: 700;
+            font-size: clamp(1.5rem, 4vw, 2rem);
+            font-weight: 800;
             margin: 0;
             display: flex;
             align-items: center;
-            gap: var(--spacing-3);
+            gap: var(--space-3);
+            justify-content: center;
         }
 
-        /* Perfect Table Design - FULL SCREEN WIDTH */
+        /* Revolutionary Table Design */
         .table {
             margin: 0;
             border-collapse: separate;
             border-spacing: 0;
-            width: 100vw;
-            min-width: 100vw;
-            table-layout: fixed;
+            width: 100%;
+            min-width: 100%;
+            table-layout: auto;
         }
 
         .table th {
-            background: var(--gray-50);
+            background: linear-gradient(135deg, var(--gray-50) 0%, var(--primary-50) 100%);
             color: var(--gray-700);
-            font-weight: 600;
-            padding: var(--spacing-5) var(--spacing-3);
+            font-weight: 700;
+            padding: var(--space-4) var(--space-3);
             text-align: left;
-            border-bottom: 2px solid var(--gray-200);
-            font-size: 0.875rem;
+            border-bottom: 3px solid var(--primary-200);
+            font-size: clamp(0.75rem, 1.5vw, 0.875rem);
             text-transform: uppercase;
-            letter-spacing: 0.05em;
+            letter-spacing: 0.1em;
             position: sticky;
             top: 0;
             z-index: 10;
@@ -432,87 +482,54 @@
         }
 
         .table td {
-            padding: var(--spacing-5) var(--spacing-3);
+            padding: var(--space-4) var(--space-3);
             border-bottom: 1px solid var(--gray-100);
             vertical-align: top;
-            transition: background-color 0.2s ease;
+            transition: all 0.3s ease;
             word-wrap: break-word;
             overflow: hidden;
             text-overflow: ellipsis;
         }
 
         .table tbody tr:hover {
-            background-color: var(--gray-50);
+            background: linear-gradient(135deg, var(--primary-50) 0%, var(--gray-50) 100%);
+            transform: scale(1.01);
+            box-shadow: var(--shadow-md);
         }
 
         .table tbody tr:last-child td {
             border-bottom: none;
         }
 
-        /* FULL SCREEN Column Widths - No Scrolling */
-        .table th:nth-child(1), .table td:nth-child(1) { width: 8vw; }  /* Season */
-        .table th:nth-child(2), .table td:nth-child(2) { width: 8vw; }  /* Event */
-        .table th:nth-child(3), .table td:nth-child(3) { width: 8vw; }  /* Day */
-        .table th:nth-child(4), .table td:nth-child(4) { width: 10vw; } /* Date */
-        .table th:nth-child(5), .table td:nth-child(5) { width: 8vw; }  /* Time */
-        .table th:nth-child(6), .table td:nth-child(6) { width: 10vw; } /* Division */
-        .table th:nth-child(7), .table td:nth-child(7) { width: 12vw; } /* Home Team */
-        .table th:nth-child(8), .table td:nth-child(8) { width: 12vw; } /* Visitor Team */
-        .table th:nth-child(9), .table td:nth-child(9) { width: 12vw; } /* Venue */
-        .table th:nth-child(10), .table td:nth-child(10) { width: 12vw; } /* Umpires */
-        .table th:nth-child(11), .table td:nth-child(11) { width: 12vw; } /* Concession */
-
-        /* Enhanced Table Responsiveness - FULL SCREEN */
-        .table-responsive {
-            width: 100vw;
-            max-width: 100vw;
-            overflow: visible;
-            border-radius: var(--radius-3xl);
-        }
-
-        .table-responsive::-webkit-scrollbar {
-            height: 8px;
-        }
-
-        .table-responsive::-webkit-scrollbar-track {
-            background: var(--gray-100);
-            border-radius: var(--radius-lg);
-        }
-
-        .table-responsive::-webkit-scrollbar-thumb {
-            background: var(--gray-400);
-            border-radius: var(--radius-lg);
-        }
-
-        .table-responsive::-webkit-scrollbar-thumb:hover {
-            background: var(--gray-500);
-        }
-
-        /* Perfect Badge System */
+        /* Revolutionary Badge System */
         .badge {
             display: inline-block;
-            padding: var(--spacing-2) var(--spacing-3);
-            border-radius: var(--radius-lg);
-            font-size: 0.75rem;
-            font-weight: 600;
+            padding: var(--space-2) var(--space-3);
+            border-radius: var(--radius-xl);
+            font-size: clamp(0.7rem, 1.5vw, 0.75rem);
+            font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 0.05em;
+            letter-spacing: 0.1em;
             line-height: 1;
             box-shadow: var(--shadow-sm);
+            white-space: nowrap;
+            max-width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .badge-primary {
-            background: linear-gradient(135deg, var(--secondary), var(--secondary-light));
+            background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
             color: var(--white);
         }
 
         .badge-success {
-            background: linear-gradient(135deg, var(--success), var(--success-light));
+            background: linear-gradient(135deg, var(--success-500), var(--success-600));
             color: var(--white);
         }
 
         .badge-warning {
-            background: linear-gradient(135deg, var(--warning), var(--warning-light));
+            background: linear-gradient(135deg, var(--secondary-500), var(--secondary-600));
             color: var(--white);
         }
 
@@ -522,11 +539,11 @@
         }
 
         .badge-info {
-            background: linear-gradient(135deg, var(--info), var(--info-light));
+            background: linear-gradient(135deg, var(--primary-400), var(--primary-500));
             color: var(--white);
         }
 
-        /* Enhanced Concession Display - Optimized for Full Width */
+        /* Revolutionary Concession Display */
         .concession-info {
             min-width: auto;
             max-width: none;
@@ -534,11 +551,11 @@
         }
 
         .staff-info {
-            background: linear-gradient(135deg, #f0fdf4, #ecfdf5);
-            border: 1px solid #bbf7d0;
-            border-radius: var(--radius-lg);
-            padding: var(--spacing-3) var(--spacing-4);
-            margin-top: var(--spacing-2);
+            background: linear-gradient(135deg, var(--success-50), var(--success-100));
+            border: 1px solid var(--success-200);
+            border-radius: var(--radius-xl);
+            padding: var(--space-3) var(--space-4);
+            margin-top: var(--space-2);
             position: relative;
             box-shadow: var(--shadow-sm);
             word-wrap: break-word;
@@ -552,13 +569,13 @@
             top: 0;
             bottom: 0;
             width: 4px;
-            background: linear-gradient(180deg, var(--success), var(--success-light));
+            background: linear-gradient(180deg, var(--success-500), var(--success-600));
             border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
         }
 
         .staff-info i {
-            color: var(--success);
-            margin-right: var(--spacing-2);
+            color: var(--success-600);
+            margin-right: var(--space-2);
         }
 
         .staff-info strong {
@@ -566,69 +583,69 @@
             font-weight: 600;
         }
 
-        /* Perfect Team Display - Optimized for Full Width */
+        /* Revolutionary Team Display */
         .team-display {
             display: flex;
             flex-direction: column;
-            gap: var(--spacing-1);
+            gap: var(--space-1);
             width: 100%;
         }
 
         .team-name {
-            font-weight: 600;
+            font-weight: 700;
             color: var(--gray-900);
-            font-size: 0.9rem;
+            font-size: clamp(0.875rem, 2vw, 1rem);
             word-wrap: break-word;
             width: 100%;
         }
 
         .coach-name {
-            font-size: 0.8rem;
+            font-size: clamp(0.75rem, 1.5vw, 0.875rem);
             color: var(--gray-600);
             font-style: italic;
             word-wrap: break-word;
             width: 100%;
         }
 
-        /* Perfect Umpire Display - Optimized for Full Width */
+        /* Revolutionary Umpire Display */
         .umpire-display {
             display: flex;
             flex-direction: column;
-            gap: var(--spacing-1);
+            gap: var(--space-1);
             width: 100%;
         }
 
         .umpire-role {
-            font-size: 0.7rem;
+            font-size: clamp(0.7rem, 1.5vw, 0.75rem);
             color: var(--gray-500);
             text-transform: uppercase;
-            letter-spacing: 0.05em;
-            font-weight: 500;
+            letter-spacing: 0.1em;
+            font-weight: 600;
         }
 
         .umpire-name {
             font-weight: 600;
             color: var(--gray-900);
-            font-size: 0.8rem;
+            font-size: clamp(0.75rem, 1.5vw, 0.875rem);
             word-wrap: break-word;
             width: 100%;
         }
 
-        /* Loading States */
+        /* Revolutionary Loading States */
         .loading-container {
             text-align: center;
-            padding: var(--spacing-16);
+            padding: var(--space-16);
             color: var(--gray-500);
         }
 
         .loading-spinner {
-            width: 3rem;
-            height: 3rem;
-            border: 3px solid var(--gray-200);
-            border-top: 3px solid var(--secondary);
+            width: 4rem;
+            height: 4rem;
+            border: 4px solid var(--gray-200);
+            border-top: 4px solid var(--primary-500);
             border-radius: 50%;
             animation: spin 1s linear infinite;
-            margin: 0 auto var(--spacing-4);
+            margin: 0 auto var(--space-4);
         }
 
         @keyframes spin {
@@ -638,72 +655,25 @@
 
         .no-data {
             text-align: center;
-            padding: var(--spacing-16);
+            padding: var(--space-16);
             color: var(--gray-500);
         }
 
         .no-data i {
-            font-size: 3rem;
-            margin-bottom: var(--spacing-4);
+            font-size: 4rem;
+            margin-bottom: var(--space-4);
             opacity: 0.5;
+            color: var(--primary-400);
         }
 
-        /* Responsive Design - FULL SCREEN Tables */
-        @media (max-width: 1400px) {
-            .table th:nth-child(1), .table td:nth-child(1) { width: 9vw; }  /* Season */
-            .table th:nth-child(2), .table td:nth-child(2) { width: 9vw; }  /* Event */
-            .table th:nth-child(3), .table td:nth-child(3) { width: 9vw; }  /* Day */
-            .table th:nth-child(4), .table td:nth-child(4) { width: 11vw; } /* Date */
-            .table th:nth-child(5), .table td:nth-child(5) { width: 9vw; }  /* Time */
-            .table th:nth-child(6), .table td:nth-child(6) { width: 11vw; } /* Division */
-            .table th:nth-child(7), .table td:nth-child(7) { width: 11vw; } /* Home Team */
-            .table th:nth-child(8), .table td:nth-child(8) { width: 11vw; } /* Visitor Team */
-            .table th:nth-child(9), .table td:nth-child(9) { width: 11vw; } /* Venue */
-            .table th:nth-child(10), .table td:nth-child(10) { width: 11vw; } /* Umpires */
-            .table th:nth-child(11), .table td:nth-child(11) { width: 11vw; } /* Concession */
-        }
-
+        /* Revolutionary Responsive Design */
         @media (max-width: 1200px) {
-            .container {
-                padding: 0 var(--spacing-4);
-                max-width: 100%;
+            .filter-grid {
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             }
-            
-            .schedule-container {
-                margin: var(--spacing-8) 0;
-                border-radius: var(--radius-2xl);
-            }
-            
-            .table-responsive {
-                border-radius: var(--radius-2xl);
-            }
-            
-            .table th:nth-child(1), .table td:nth-child(1) { width: 10vw; }  /* Season */
-            .table th:nth-child(2), .table td:nth-child(2) { width: 10vw; }  /* Event */
-            .table th:nth-child(3), .table td:nth-child(3) { width: 10vw; }  /* Day */
-            .table th:nth-child(4), .table td:nth-child(4) { width: 12vw; } /* Date */
-            .table th:nth-child(5), .table td:nth-child(5) { width: 10vw; }  /* Time */
-            .table th:nth-child(6), .table td:nth-child(6) { width: 12vw; } /* Division */
-            .table th:nth-child(7), .table td:nth-child(7) { width: 10vw; } /* Home Team */
-            .table th:nth-child(8), .table td:nth-child(8) { width: 10vw; } /* Visitor Team */
-            .table th:nth-child(9), .table td:nth-child(9) { width: 10vw; } /* Venue */
-            .table th:nth-child(10), .table td:nth-child(10) { width: 10vw; } /* Umpires */
-            .table th:nth-child(11), .table td:nth-child(11) { width: 10vw; } /* Concession */
         }
 
         @media (max-width: 768px) {
-            .hero-title {
-                font-size: 2.5rem;
-            }
-            
-            .hero-section {
-                padding: var(--spacing-20) 0;
-            }
-            
-            .filter-grid {
-                grid-template-columns: 1fr;
-            }
-            
             .hero-buttons {
                 flex-direction: column;
                 align-items: center;
@@ -711,19 +681,23 @@
             
             .btn {
                 width: 100%;
-                max-width: 300px;
+                max-width: 350px;
                 justify-content: center;
             }
             
+            .filter-grid {
+                grid-template-columns: 1fr;
+                gap: var(--space-3);
+            }
+            
             .container {
-                padding: 0 var(--spacing-4);
-                max-width: 100%;
+                padding: 0 var(--space-4);
             }
             
             .filter-section,
             .schedule-container {
-                margin: var(--spacing-8) 0;
-                padding: var(--spacing-6);
+                margin: var(--space-8) 0;
+                padding: var(--space-6);
                 border-radius: var(--radius-2xl);
             }
             
@@ -734,69 +708,69 @@
             
             .table th,
             .table td {
-                padding: var(--spacing-3) var(--spacing-2);
-                font-size: 0.8rem;
+                padding: var(--space-3) var(--space-2);
+                font-size: clamp(0.75rem, 2vw, 0.875rem);
             }
-            
-            /* Mobile table optimization - FULL WIDTH */
-            .table th:nth-child(1), .table td:nth-child(1) { width: 12vw; }  /* Season */
-            .table th:nth-child(2), .table td:nth-child(2) { width: 12vw; }  /* Event */
-            .table th:nth-child(3), .table td:nth-child(3) { width: 12vw; }  /* Day */
-            .table th:nth-child(4), .table td:nth-child(4) { width: 14vw; } /* Date */
-            .table th:nth-child(5), .table td:nth-child(5) { width: 12vw; } /* Time */
-            .table th:nth-child(6), .table td:nth-child(6) { width: 14vw; } /* Division */
-            .table th:nth-child(7), .table td:nth-child(7) { width: 10vw; } /* Home Team */
-            .table th:nth-child(8), .table td:nth-child(8) { width: 10vw; } /* Visitor Team */
-            .table th:nth-child(9), .table td:nth-child(9) { width: 10vw; } /* Venue */
-            .table th:nth-child(10), .table td:nth-child(10) { width: 10vw; } /* Umpires */
-            .table th:nth-child(11), .table td:nth-child(11) { width: 10vw; } /* Concession */
         }
 
         @media (max-width: 480px) {
             .container {
-                padding: 0 var(--spacing-2);
+                padding: 0 var(--space-3);
             }
             
+            .hero-section {
+                padding: var(--space-16) 0;
+            }
+            
+            .filter-section,
             .schedule-container {
-                margin: var(--spacing-6) 0;
-                padding: var(--spacing-4);
+                margin: var(--space-6) 0;
+                padding: var(--space-4);
+                border-radius: var(--radius-xl);
             }
             
             .table-responsive {
                 font-size: 0.75rem;
+                border-radius: var(--radius-xl);
             }
             
             .table th,
             .table td {
-                padding: var(--spacing-2) var(--spacing-1);
-                font-size: 0.75rem;
+                padding: var(--space-2) var(--space-1);
+                font-size: clamp(0.7rem, 2vw, 0.75rem);
             }
             
             .badge {
-                font-size: 0.65rem;
-                padding: var(--spacing-1) var(--spacing-2);
+                font-size: clamp(0.65rem, 2vw, 0.7rem);
+                padding: var(--space-1) var(--space-2);
             }
             
-            /* Small mobile - FULL WIDTH */
-            .table th:nth-child(1), .table td:nth-child(1) { width: 15vw; }  /* Season */
-            .table th:nth-child(2), .table td:nth-child(2) { width: 15vw; }  /* Event */
-            .table th:nth-child(3), .table td:nth-child(3) { width: 15vw; }  /* Day */
-            .table th:nth-child(4), .table td:nth-child(4) { width: 17vw; } /* Date */
-            .table th:nth-child(5), .table td:nth-child(5) { width: 15vw; } /* Time */
-            .table th:nth-child(6), .table td:nth-child(6) { width: 17vw; } /* Division */
-            .table th:nth-child(7), .table td:nth-child(7) { width: 8vw; }  /* Home Team */
-            .table th:nth-child(8), .table td:nth-child(8) { width: 8vw; }  /* Visitor Team */
-            .table th:nth-child(9), .table td:nth-child(9) { width: 8vw; }  /* Venue */
-            .table th:nth-child(10), .table td:nth-child(10) { width: 8vw; } /* Umpires */
-            .table th:nth-child(11), .table td:nth-child(11) { width: 8vw; } /* Concession */
+            .btn {
+                padding: var(--space-3) var(--space-6);
+                font-size: clamp(0.8rem, 2vw, 0.875rem);
+            }
         }
 
-        /* Smooth Scrolling */
-        html {
-            scroll-behavior: smooth;
+        /* Revolutionary Animations */
+        .fade-in {
+            animation: fadeIn 1s ease-out;
         }
 
-        /* Focus States */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .slide-up {
+            animation: slideUp 0.8s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Revolutionary Focus States */
         .btn:focus,
         .form-control:focus,
         .btn-filter:focus {
@@ -804,63 +778,36 @@
             box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.3);
         }
 
-        /* Animation Classes */
-        .fade-in {
-            animation: fadeIn 0.8s ease-out;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .slide-up {
-            animation: slideUp 0.6s ease-out;
-        }
-
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(40px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Enhanced Hover Effects */
+        /* Revolutionary Hover Effects */
         .filter-section:hover,
         .schedule-container:hover {
-            transform: translateY(-2px);
+            transform: translateY(-4px);
             box-shadow: var(--shadow-2xl);
         }
 
-        /* Perfect Spacing Utilities */
-        .mb-0 { margin-bottom: 0 !important; }
-        .mb-1 { margin-bottom: var(--spacing-1) !important; }
-        .mb-2 { margin-bottom: var(--spacing-2) !important; }
-        .mb-3 { margin-bottom: var(--spacing-3) !important; }
-        .mb-4 { margin-bottom: var(--spacing-4) !important; }
-        .mb-5 { margin-bottom: var(--spacing-5) !important; }
-        .mb-6 { margin-bottom: var(--spacing-6) !important; }
-        .mb-8 { margin-bottom: var(--spacing-8) !important; }
+        /* Revolutionary Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
 
-        .mt-0 { margin-top: 0 !important; }
-        .mt-1 { margin-top: var(--spacing-1) !important; }
-        .mt-2 { margin-top: var(--spacing-2) !important; }
-        .mt-3 { margin-top: var(--spacing-3) !important; }
-        .mt-4 { margin-top: var(--spacing-4) !important; }
-        .mt-5 { margin-top: var(--spacing-5) !important; }
-        .mt-6 { margin-top: var(--spacing-6) !important; }
-        .mt-8 { margin-top: var(--spacing-8) !important; }
+        ::-webkit-scrollbar-track {
+            background: var(--gray-100);
+            border-radius: var(--radius-lg);
+        }
 
-        .p-0 { padding: 0 !important; }
-        .p-1 { padding: var(--spacing-1) !important; }
-        .p-2 { padding: var(--spacing-2) !important; }
-        .p-3 { padding: var(--spacing-3) !important; }
-        .p-4 { padding: var(--spacing-4) !important; }
-        .p-5 { padding: var(--spacing-5) !important; }
-        .p-6 { padding: var(--spacing-6) !important; }
-        .p-8 { padding: var(--spacing-8) !important; }
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary-400);
+            border-radius: var(--radius-lg);
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-500);
+        }
     </style>
 </head>
 <body>
-    <!-- Stunning Hero Section -->
+    <!-- Revolutionary Hero Section -->
     <header class="hero-section">
         <div class="container">
             <div class="hero-content" data-aos="fade-up">
@@ -884,7 +831,7 @@
     </header>
 
     <div class="container">
-        <!-- Stunning Filter Section -->
+        <!-- Revolutionary Filter Section -->
         <section id="filters" class="filter-section" data-aos="fade-up" data-aos-delay="100">
             <h2 class="filter-title">
                 <i class="fas fa-sliders-h"></i>
@@ -939,7 +886,7 @@
             </div>
         </section>
 
-        <!-- Beautiful Info Section -->
+        <!-- Revolutionary Info Section -->
         <section class="info-section" data-aos="fade-up" data-aos-delay="200">
             <div class="info-content">
                 <h3 class="info-title">
@@ -957,7 +904,7 @@
             </div>
         </section>
 
-        <!-- Stunning Schedule Table -->
+        <!-- Revolutionary Schedule Table -->
         <section id="schedules" class="schedule-container" data-aos="fade-up" data-aos-delay="300">
             <div class="schedule-header">
                 <h2 class="schedule-title">
@@ -994,7 +941,7 @@
             </div>
         </section>
 
-        <!-- Umpire Request Form -->
+        <!-- Revolutionary Umpire Request Form -->
         <section id="umpireRequestForm" class="filter-section" style="display: none;" data-aos="fade-up">
             <h2 class="filter-title">
                 <i class="fas fa-user-edit"></i>
@@ -1044,7 +991,7 @@
     <script>
         // Initialize AOS animations
         AOS.init({
-            duration: 1000,
+            duration: 1200,
             easing: 'ease-out-cubic',
             once: true,
             offset: 100
