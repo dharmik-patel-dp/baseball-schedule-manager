@@ -1334,6 +1334,417 @@
                 border: 1px solid #000;
             }
         }
+
+        /* Revolutionary Filter & Search Games UI - Modern, Neat, Clean & Advanced */
+        
+        .filter-section {
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-xl);
+            box-shadow: 
+                0 4px 6px -1px rgba(0, 0, 0, 0.1),
+                0 2px 4px -1px rgba(0, 0, 0, 0.06),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            margin: var(--space-12) 0;
+            padding: var(--space-8);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .filter-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, 
+                var(--accent-blue) 0%, 
+                var(--accent-purple) 25%, 
+                var(--accent-green) 50%, 
+                var(--accent-orange) 75%, 
+                var(--accent-red) 100%);
+            border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+        }
+
+        .filter-section::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.03) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(147, 51, 234, 0.03) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(16, 185, 129, 0.02) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        .filter-title {
+            font-family: var(--font-heading);
+            font-size: clamp(1.5rem, 6vw, 2rem);
+            font-weight: 700;
+            color: var(--text-primary);
+            text-align: center;
+            margin-bottom: var(--space-6);
+            position: relative;
+            z-index: 2;
+        }
+
+        .filter-title::before {
+            content: '🔍';
+            display: inline-block;
+            margin-right: var(--space-3);
+            font-size: 1.2em;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .filter-subtitle {
+            font-family: var(--font-body);
+            font-size: clamp(0.875rem, 3vw, 1rem);
+            color: var(--text-secondary);
+            text-align: center;
+            margin-bottom: var(--space-8);
+            position: relative;
+            z-index: 2;
+        }
+
+        .filter-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: var(--space-6);
+            margin-bottom: var(--space-8);
+            position: relative;
+            z-index: 2;
+        }
+
+        .filter-group {
+            position: relative;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-lg);
+            padding: var(--space-4);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+        }
+
+        .filter-group:hover {
+            transform: translateY(-2px);
+            box-shadow: 
+                0 4px 6px -1px rgba(0, 0, 0, 0.1),
+                0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            border-color: var(--accent-blue);
+        }
+
+        .filter-group:focus-within {
+            border-color: var(--accent-blue);
+            box-shadow: 
+                0 0 0 3px rgba(59, 130, 246, 0.1),
+                0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .filter-label {
+            display: block;
+            font-family: var(--font-body);
+            font-size: clamp(0.875rem, 3vw, 0.875rem);
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: var(--space-3);
+            position: relative;
+        }
+
+        .filter-label::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple));
+            transition: width 0.3s ease;
+        }
+
+        .filter-group:focus-within .filter-label::after {
+            width: 100%;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: var(--space-4);
+            font-family: var(--font-body);
+            font-size: 16px;
+            color: var(--text-primary);
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-md);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: inset 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+            box-shadow: 
+                0 0 0 3px rgba(59, 130, 246, 0.1),
+                inset 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            background: var(--bg-primary);
+        }
+
+        .form-control:hover {
+            border-color: var(--border-medium);
+            background: var(--bg-primary);
+        }
+
+        .form-control::placeholder {
+            color: var(--text-tertiary);
+            font-style: italic;
+        }
+
+        /* Advanced Select Styling */
+        .form-control[data-type="select"] {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+            background-position: right 12px center;
+            background-repeat: no-repeat;
+            background-size: 16px;
+            padding-right: var(--space-12);
+            cursor: pointer;
+        }
+
+        .form-control[data-type="select"]:hover {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%233b82f6' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+        }
+
+        /* Advanced Date Input Styling */
+        .form-control[type="date"] {
+            position: relative;
+        }
+
+        .form-control[type="date"]::-webkit-calendar-picker-indicator {
+            background: transparent;
+            color: transparent;
+            cursor: pointer;
+            height: 100%;
+            left: 0;
+            position: absolute;
+            right: 0;
+            top: 0;
+            width: 100%;
+        }
+
+        .form-control[type="date"]::-webkit-calendar-picker-indicator:hover {
+            background: rgba(59, 130, 246, 0.1);
+        }
+
+        /* Advanced Time Input Styling */
+        .form-control[type="time"] {
+            position: relative;
+        }
+
+        .form-control[type="time"]::-webkit-calendar-picker-indicator {
+            background: transparent;
+            color: transparent;
+            cursor: pointer;
+            height: 100%;
+            left: 0;
+            position: absolute;
+            right: 0;
+            top: 0;
+            width: 100%;
+        }
+
+        /* Filter Actions Section */
+        .filter-actions {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-4);
+            align-items: center;
+            position: relative;
+            z-index: 2;
+        }
+
+        .btn-filter {
+            background: linear-gradient(135deg, var(--accent-blue) 0%, var(--accent-purple) 100%);
+            color: white;
+            border: none;
+            padding: var(--space-4) var(--space-8);
+            font-family: var(--font-body);
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: var(--radius-lg);
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 
+                0 4px 6px -1px rgba(59, 130, 246, 0.3),
+                0 2px 4px -1px rgba(59, 130, 246, 0.2);
+            position: relative;
+            overflow: hidden;
+            min-height: 48px;
+            min-width: 200px;
+        }
+
+        .btn-filter::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .btn-filter:hover::before {
+            left: 100%;
+        }
+
+        .btn-filter:hover {
+            transform: translateY(-2px);
+            box-shadow: 
+                0 8px 15px -3px rgba(59, 130, 246, 0.4),
+                0 4px 6px -2px rgba(59, 130, 246, 0.3);
+        }
+
+        .btn-filter:active {
+            transform: translateY(0);
+        }
+
+        .btn-filter:focus {
+            outline: none;
+            box-shadow: 
+                0 0 0 3px rgba(59, 130, 246, 0.3),
+                0 8px 15px -3px rgba(59, 130, 246, 0.4);
+        }
+
+        .btn-clear {
+            background: transparent;
+            color: var(--text-secondary);
+            border: 1px solid var(--border-light);
+            padding: var(--space-3) var(--space-6);
+            font-family: var(--font-body);
+            font-size: 14px;
+            font-weight: 500;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            min-height: 40px;
+        }
+
+        .btn-clear:hover {
+            background: var(--bg-secondary);
+            border-color: var(--border-medium);
+            color: var(--text-primary);
+        }
+
+        .btn-clear:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(107, 114, 128, 0.1);
+        }
+
+        /* Filter Status Indicators */
+        .filter-status {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--space-3);
+            margin-top: var(--space-4);
+            padding: var(--space-3) var(--space-4);
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-md);
+            font-family: var(--font-body);
+            font-size: 14px;
+            color: var(--text-secondary);
+            position: relative;
+            z-index: 2;
+        }
+
+        .filter-status.active {
+            background: rgba(16, 185, 129, 0.1);
+            border-color: var(--accent-green);
+            color: var(--accent-green);
+        }
+
+        .filter-status i {
+            font-size: 16px;
+        }
+
+        /* Advanced Filter Animations */
+        @keyframes filterSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .filter-group {
+            animation: filterSlideIn 0.6s ease-out forwards;
+        }
+
+        .filter-group:nth-child(1) { animation-delay: 0.1s; }
+        .filter-group:nth-child(2) { animation-delay: 0.2s; }
+        .filter-group:nth-child(3) { animation-delay: 0.3s; }
+        .filter-group:nth-child(4) { animation-delay: 0.4s; }
+        .filter-group:nth-child(5) { animation-delay: 0.5s; }
+        .filter-group:nth-child(6) { animation-delay: 0.6s; }
+
+        /* Responsive Filter Grid */
+        @media (max-width: 1200px) {
+            .filter-grid {
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                gap: var(--space-5);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .filter-grid {
+                grid-template-columns: 1fr;
+                gap: var(--space-4);
+            }
+
+            .filter-section {
+                padding: var(--space-6);
+                margin: var(--space-8) 0;
+            }
+
+            .filter-title {
+                font-size: clamp(1.25rem, 5vw, 1.5rem);
+            }
+
+            .filter-actions {
+                flex-direction: column;
+                gap: var(--space-3);
+            }
+
+            .btn-filter {
+                width: 100%;
+                max-width: 300px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .filter-section {
+                padding: var(--space-4);
+                margin: var(--space-6) 0;
+            }
+
+            .filter-grid {
+                gap: var(--space-3);
+            }
+
+            .filter-group {
+                padding: var(--space-3);
+            }
+
+            .form-control {
+                padding: var(--space-3);
+                font-size: 16px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -1368,60 +1779,118 @@
     </section>
 
     <div class="container">
-        <!-- Modern Advanced Filter Section -->
+        <!-- Revolutionary Filter & Search Games Section -->
         <section id="filters" class="filter-section">
-            <div class="filter-content">
-                <h2 class="filter-title">
-                    <i class="fas fa-sliders-h"></i>
-                    Filter & Search Games
-                </h2>
-                <div class="filter-grid">
-                    <select id="seasonFilter" class="form-control">
+            <h2 class="filter-title">Filter & Search Games</h2>
+            <p class="filter-subtitle">Find the perfect game with our advanced filtering system</p>
+            
+            <div class="filter-grid">
+                <div class="filter-group">
+                    <label for="seasonFilter" class="filter-label">Season</label>
+                    <select id="seasonFilter" class="form-control" data-type="select">
                         <option value="">All Seasons</option>
                     </select>
-                    <select id="eventTypeFilter" class="form-control">
+                </div>
+                
+                <div class="filter-group">
+                    <label for="eventTypeFilter" class="filter-label">Event Type</label>
+                    <select id="eventTypeFilter" class="form-control" data-type="select">
                         <option value="">All Events</option>
                     </select>
-                    <select id="dayFilter" class="form-control">
+                </div>
+                
+                <div class="filter-group">
+                    <label for="dayFilter" class="filter-label">Day</label>
+                    <select id="dayFilter" class="form-control" data-type="select">
                         <option value="">All Days</option>
                     </select>
-                    <select id="divisionFilter" class="form-control">
+                </div>
+                
+                <div class="filter-group">
+                    <label for="divisionFilter" class="filter-label">Division</label>
+                    <select id="divisionFilter" class="form-control" data-type="select">
                         <option value="">All Divisions</option>
                     </select>
-                    <select id="homeTeamFilter" class="form-control">
+                </div>
+                
+                <div class="filter-group">
+                    <label for="homeTeamFilter" class="filter-label">Home Team</label>
+                    <select id="homeTeamFilter" class="form-control" data-type="select">
                         <option value="">All Home Teams</option>
                     </select>
-                    <select id="visitorTeamFilter" class="form-control">
+                </div>
+                
+                <div class="filter-group">
+                    <label for="visitorTeamFilter" class="filter-label">Visitor Team</label>
+                    <select id="visitorTeamFilter" class="form-control" data-type="select">
                         <option value="">All Visitor Teams</option>
                     </select>
-                    <select id="venueFilter" class="form-control">
+                </div>
+                
+                <div class="filter-group">
+                    <label for="venueFilter" class="filter-label">Venue</label>
+                    <select id="venueFilter" class="form-control" data-type="select">
                         <option value="">All Venues</option>
                     </select>
-                    <select id="homeCoachFilter" class="form-control">
+                </div>
+                
+                <div class="filter-group">
+                    <label for="homeCoachFilter" class="filter-label">Home Coach</label>
+                    <select id="homeCoachFilter" class="form-control" data-type="select">
                         <option value="">All Home Coaches</option>
                     </select>
-                    <select id="visitorCoachFilter" class="form-control">
+                </div>
+                
+                <div class="filter-group">
+                    <label for="visitorCoachFilter" class="filter-label">Visitor Coach</label>
+                    <select id="visitorCoachFilter" class="form-control" data-type="select">
                         <option value="">All Visitor Coaches</option>
                     </select>
-                    <select id="plateUmpireFilter" class="form-control">
+                </div>
+                
+                <div class="filter-group">
+                    <label for="plateUmpireFilter" class="filter-label">Plate Umpire</label>
+                    <select id="plateUmpireFilter" class="form-control" data-type="select">
                         <option value="">All Plate Umpires</option>
                     </select>
-                    <select id="baseUmpireFilter" class="form-control">
+                </div>
+                
+                <div class="filter-group">
+                    <label for="baseUmpireFilter" class="filter-label">Base Umpire</label>
+                    <select id="baseUmpireFilter" class="form-control" data-type="select">
                         <option value="">All Base Umpires</option>
                     </select>
-                    <select id="concessionStandFilter" class="form-control">
+                </div>
+                
+                <div class="filter-group">
+                    <label for="concessionStandFilter" class="filter-label">Concession Stand</label>
+                    <select id="concessionStandFilter" class="form-control" data-type="select">
                         <option value="">All Concession Stands</option>
                     </select>
-                    <select id="concessionStaffFilter" class="form-control">
+                </div>
+                
+                <div class="filter-group">
+                    <label for="concessionStaffFilter" class="filter-label">Concession Staff</label>
+                    <select id="concessionStaffFilter" class="form-control" data-type="select">
                         <option value="">All Concession Staff</option>
                     </select>
                 </div>
-                <div class="text-center">
-                    <button id="applyFilters" class="btn-filter">
-                        <i class="fas fa-search"></i>
-                        Apply Filters
-                    </button>
-                </div>
+            </div>
+            
+            <div class="filter-actions">
+                <button class="btn-filter" onclick="applyFilters()">
+                    <i class="fas fa-search me-2"></i>
+                    Search Games
+                </button>
+                <button class="btn-clear" onclick="clearFilters()">
+                    <i class="fas fa-times me-2"></i>
+                    Clear Filters
+                </button>
+            </div>
+            
+            <div class="filter-status" id="filterStatus">
+                <i class="fas fa-info-circle"></i>
+                <span>Ready to filter games</span>
             </div>
         </section>
 

@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', function() {
     loadSchedules();
     loadFilterOptions();
     setupEventListeners();
+    updateFilterStatus();
 });
 
 // Setup event listeners
@@ -18,8 +19,9 @@ function setupEventListeners() {
     // Filter change events
     const filterElements = [
         'seasonFilter', 'eventTypeFilter', 'dayFilter', 'divisionFilter',
-        'teamFilter', 'venueFilter', 'coachFilter', 'umpireFilter',
-        'concessionFilter', 'concessionStaffFilter', 'dateFilter', 'timeFilter'
+        'homeTeamFilter', 'visitorTeamFilter', 'venueFilter', 'homeCoachFilter',
+        'visitorCoachFilter', 'plateUmpireFilter', 'baseUmpireFilter',
+        'concessionStandFilter', 'concessionStaffFilter', 'dateFilter', 'timeFilter'
     ];
     
     filterElements.forEach(id => {
@@ -82,11 +84,14 @@ function populateFilterDropdowns() {
         'eventTypeFilter': 'event_type',
         'dayFilter': 'day',
         'divisionFilter': 'division',
-        'teamFilter': 'home_team',
+        'homeTeamFilter': 'home_team',
+        'visitorTeamFilter': 'visitor_team',
         'venueFilter': 'venue',
-        'coachFilter': 'home_coach',
-        'umpireFilter': 'plate_umpire',
-        'concessionFilter': 'concession_stand',
+        'homeCoachFilter': 'home_coach',
+        'visitorCoachFilter': 'visitor_coach',
+        'plateUmpireFilter': 'plate_umpire',
+        'baseUmpireFilter': 'base_umpire',
+        'concessionStandFilter': 'concession_stand',
         'concessionStaffFilter': 'concession_staff'
     };
 
@@ -129,11 +134,14 @@ function applyFilters() {
         eventType: document.getElementById('eventTypeFilter')?.value || '',
         day: document.getElementById('dayFilter')?.value || '',
         division: document.getElementById('divisionFilter')?.value || '',
-        team: document.getElementById('teamFilter')?.value || '',
+        homeTeam: document.getElementById('homeTeamFilter')?.value || '',
+        visitorTeam: document.getElementById('visitorTeamFilter')?.value || '',
         venue: document.getElementById('venueFilter')?.value || '',
-        coach: document.getElementById('coachFilter')?.value || '',
-        umpire: document.getElementById('umpireFilter')?.value || '',
-        concession: document.getElementById('concessionFilter')?.value || '',
+        homeCoach: document.getElementById('homeCoachFilter')?.value || '',
+        visitorCoach: document.getElementById('visitorCoachFilter')?.value || '',
+        plateUmpire: document.getElementById('plateUmpireFilter')?.value || '',
+        baseUmpire: document.getElementById('baseUmpireFilter')?.value || '',
+        concessionStand: document.getElementById('concessionStandFilter')?.value || '',
         concessionStaff: document.getElementById('concessionStaffFilter')?.value || '',
         date: document.getElementById('dateFilter')?.value || '',
         time: document.getElementById('timeFilter')?.value || ''
@@ -152,15 +160,21 @@ function applyFilters() {
                     return schedule.day === value;
                 case 'division':
                     return schedule.division === value;
-                case 'team':
-                    return schedule.home_team === value || schedule.visitor_team === value;
+                case 'homeTeam':
+                    return schedule.home_team === value;
+                case 'visitorTeam':
+                    return schedule.visitor_team === value;
                 case 'venue':
                     return schedule.venue === value;
-                case 'coach':
-                    return schedule.home_coach === value || schedule.visitor_coach === value;
-                case 'umpire':
-                    return schedule.plate_umpire === value || schedule.base_umpire === value;
-                case 'concession':
+                case 'homeCoach':
+                    return schedule.home_coach === value;
+                case 'visitorCoach':
+                    return schedule.visitor_coach === value;
+                case 'plateUmpire':
+                    return schedule.plate_umpire === value;
+                case 'baseUmpire':
+                    return schedule.base_umpire === value;
+                case 'concessionStand':
                     if (value === 'No Concession') {
                         return schedule.concession_stand === 'No Concession';
                     } else if (value) {
@@ -183,14 +197,16 @@ function applyFilters() {
     });
 
     renderScheduleTable();
+    updateFilterStatus();
 }
 
 // Clear all filters
 function clearFilters() {
     const filterElements = [
         'seasonFilter', 'eventTypeFilter', 'dayFilter', 'divisionFilter',
-        'teamFilter', 'venueFilter', 'coachFilter', 'umpireFilter',
-        'concessionFilter', 'concessionStaffFilter', 'dateFilter', 'timeFilter'
+        'homeTeamFilter', 'visitorTeamFilter', 'venueFilter', 'homeCoachFilter',
+        'visitorCoachFilter', 'plateUmpireFilter', 'baseUmpireFilter',
+        'concessionStandFilter', 'concessionStaffFilter', 'dateFilter', 'timeFilter'
     ];
     
     filterElements.forEach(id => {
@@ -200,6 +216,7 @@ function clearFilters() {
     
     filteredSchedules = [...allSchedules];
     renderScheduleTable();
+    updateFilterStatus();
 }
 
 // Render schedule table
@@ -439,6 +456,31 @@ function showAlert(message, type) {
         console.error('Error showing alert:', error);
         // Fallback to console log if alert fails
         console.log(`[${type.toUpperCase()}] ${message}`);
+    }
+}
+
+// Update filter status display
+function updateFilterStatus() {
+    const filterStatus = document.getElementById('filterStatus');
+    if (!filterStatus) return;
+    
+    const activeFilters = [
+        'seasonFilter', 'eventTypeFilter', 'dayFilter', 'divisionFilter',
+        'homeTeamFilter', 'visitorTeamFilter', 'venueFilter', 'homeCoachFilter',
+        'visitorCoachFilter', 'plateUmpireFilter', 'baseUmpireFilter',
+        'concessionStandFilter', 'concessionStaffFilter', 'dateFilter', 'timeFilter'
+    ].filter(id => {
+        const element = document.getElementById(id);
+        return element && element.value !== '';
+    });
+    
+    if (activeFilters.length === 0) {
+        filterStatus.innerHTML = '<i class="fas fa-info-circle"></i><span>Ready to filter games</span>';
+        filterStatus.className = 'filter-status';
+    } else {
+        const filterCount = activeFilters.length;
+        filterStatus.innerHTML = `<i class="fas fa-filter"></i><span>${filterCount} active filter${filterCount > 1 ? 's' : ''} applied</span>`;
+        filterStatus.className = 'filter-status active';
     }
 }
 
