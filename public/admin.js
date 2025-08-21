@@ -80,16 +80,24 @@ function populateStaffDropdowns() {
         return;
     }
 
-    const staffOptions = allStaff.map(staff => 
-        `<option value="${staff.name}">${staff.name}${staff.role ? ` (${staff.role})` : ''}</option>`
-    ).join('');
-    
+    const isRole = (s, key) => ((s.role || '').toLowerCase().includes(key));
+
+    const umpireOptions = allStaff
+        .filter(staff => isRole(staff, 'umpire'))
+        .map(staff => `<option value="${staff.name}">${staff.name}</option>`) 
+        .join('');
+
+    const concessionOptions = allStaff
+        .filter(staff => isRole(staff, 'concession'))
+        .map(staff => `<option value="${staff.name}">${staff.name}</option>`)
+        .join('');
+
     // Populate concession staff dropdowns
     const concessionStaffSelects = ['concessionStaff', 'editConcessionStaff'];
     concessionStaffSelects.forEach(selectId => {
         const select = document.getElementById(selectId);
         if (select) {
-            select.innerHTML = '<option value="">Select Staff Member</option>' + staffOptions;
+            select.innerHTML = '<option value="">Select Staff Member</option>' + concessionOptions;
         }
     });
 
@@ -98,7 +106,7 @@ function populateStaffDropdowns() {
     umpireSelects.forEach(selectId => {
         const select = document.getElementById(selectId);
         if (select) {
-            select.innerHTML = '<option value="">Select Umpire</option>' + staffOptions;
+            select.innerHTML = '<option value="">Select Umpire</option>' + umpireOptions;
         }
     });
 }
