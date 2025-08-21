@@ -881,12 +881,12 @@ async function uploadCSV() {
         if (result.committed) {
             await loadSchedules();
             showAlert(`CSV uploaded successfully! ${result.totalRows} rows processed, ${result.successCount} inserted.`, 'success');
-            // Auto-close after short delay
+            // Auto-close after 15 seconds
             setTimeout(() => {
                 const modal = bootstrap.Modal.getInstance(document.getElementById('uploadModal'));
                 if (modal) modal.hide();
                 resetCSVModalState();
-            }, 1200);
+            }, 15000);
         } else {
             // Keep modal open so the admin can see errors
             showAlert(`CSV validation failed. Please review the row errors.`, 'warning');
