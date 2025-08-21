@@ -2,11 +2,13 @@
 let allSchedules = [];
 let filteredSchedules = [];
 let filterOptions = {};
+let allStaff = [];
 
 // Initialize the application
 document.addEventListener('DOMContentLoaded', function() {
     loadSchedules();
     loadFilterOptions();
+    loadStaff();
     setupEventListeners();
     updateFilterStatus();
 });
@@ -44,6 +46,19 @@ async function loadSchedules() {
     } catch (error) {
         console.error('Error loading schedules:', error);
         showAlert('Error loading schedules. Please try again.', 'danger');
+    }
+}
+
+// Load staff directory
+async function loadStaff() {
+    try {
+        const response = await fetch('/api/staff');
+        if (!response.ok) throw new Error('Failed to fetch staff');
+        
+        allStaff = await response.json();
+    } catch (error) {
+        console.error('Error loading staff:', error);
+        allStaff = [];
     }
 }
 
@@ -307,6 +322,29 @@ function formatDate(dateString) {
     }
 }
 
+// Populate umpire dropdowns with available staff
+function populateUmpireDropdowns() {
+    try {
+        // Get available umpires from staff data
+        const umpires = allStaff ? allStaff.filter(staff => staff.role === 'Umpire') : [];
+        
+        const plateUmpireSelect = document.getElementById('requestedPlateUmpire');
+        const baseUmpireSelect = document.getElementById('requestedBaseUmpire');
+        
+        if (plateUmpireSelect) {
+            plateUmpireSelect.innerHTML = '<option value="">No Change</option>' +
+                umpires.map(umpire => `<option value="${umpire.name}">${umpire.name}</option>`).join('');
+        }
+        
+        if (baseUmpireSelect) {
+            baseUmpireSelect.innerHTML = '<option value="">No Change</option>' +
+                umpires.map(umpire => `<option value="${umpire.name}">${umpire.name}</option>`).join('');
+        }
+    } catch (error) {
+        console.error('Error populating umpire dropdowns:', error);
+    }
+}
+
 // Show umpire request form
 function showUmpireRequestForm(gameId) {
     try {
@@ -317,43 +355,29 @@ function showUmpireRequestForm(gameId) {
         }
 
         // Populate form fields
-        const requestGameId = document.getElementById('requestGameId');
-        const gameDetails = document.getElementById('gameDetails');
-        const currentUmpires = document.getElementById('currentUmpires');
+        document.getElementById('requestGameId').value = gameId;
+        document.getElementById('requestGameDate').textContent = formatDate(schedule.date);
+        document.getElementById('requestGameTime').textContent = `${schedule.start_time || 'N/A'} ${schedule.am_pm || ''}`;
+        document.getElementById('requestGameTeams').textContent = `${schedule.home_team || 'N/A'} vs ${schedule.visitor_team || 'N/A'}`;
+        document.getElementById('requestGameVenue').textContent = schedule.venue || 'N/A';
+        document.getElementById('requestGameDivision').textContent = schedule.division || 'N/A';
+        document.getElementById('requestGameEvent').textContent = schedule.event_type || 'N/A';
         
-        if (requestGameId) requestGameId.value = gameId;
+        // Populate current umpires
+        document.getElementById('currentPlateUmpire').textContent = schedule.plate_umpire || 'N/A';
+        document.getElementById('currentBaseUmpire').textContent = schedule.base_umpire || 'N/A';
         
-        if (gameDetails) {
-            gameDetails.innerHTML = `
-                <strong>${schedule.home_team || 'N/A'} vs ${schedule.visitor_team || 'N/A'}</strong><br>
-                ${schedule.date || 'N/A'} at ${schedule.start_time || 'N/A'} ${schedule.am_pm || ''}<br>
-                ${schedule.venue || 'N/A'} - ${schedule.division || 'N/A'}
-            `;
-        }
-        
-        if (currentUmpires) {
-            currentUmpires.innerHTML = `
-                <strong>Plate:</strong> ${schedule.plate_umpire || 'N/A'}<br>
-                <strong>Base:</strong> ${schedule.base_umpire || 'N/A'}
-            `;
-        }
+        // Populate umpire dropdowns with available staff
+        populateUmpireDropdowns();
         
         // Clear previous values
-        const requestedPlateUmpire = document.getElementById('requestedPlateUmpire');
-        const requestedBaseUmpire = document.getElementById('requestedBaseUmpire');
-        const changeReason = document.getElementById('changeReason');
+        document.getElementById('requestedPlateUmpire').value = '';
+        document.getElementById('requestedBaseUmpire').value = '';
+        document.getElementById('changeReason').value = '';
         
-        if (requestedPlateUmpire) requestedPlateUmpire.value = '';
-        if (requestedBaseUmpire) requestedBaseUmpire.value = '';
-        if (changeReason) changeReason.value = '';
-        
-        // Show form
-        const umpireRequestForm = document.getElementById('umpireRequestForm');
-        if (umpireRequestForm) {
-            umpireRequestForm.style.display = 'block';
-            // Scroll to form
-            umpireRequestForm.scrollIntoView({ behavior: 'smooth' });
-        }
+        // Show modal
+        const modal = new bootstrap.Modal(document.getElementById('umpireRequestModal'));
+        modal.show();
     } catch (error) {
         console.error('Error showing umpire request form:', error);
         showAlert('Error showing umpire request form.', 'danger');
@@ -363,9 +387,9 @@ function showUmpireRequestForm(gameId) {
 // Hide umpire request form
 function hideUmpireRequestForm() {
     try {
-        const umpireRequestForm = document.getElementById('umpireRequestForm');
-        if (umpireRequestForm) {
-            umpireRequestForm.style.display = 'none';
+        const modal = bootstrap.Modal.getInstance(document.getElementById('umpireRequestModal'));
+        if (modal) {
+            modal.hide();
         }
     } catch (error) {
         console.error('Error hiding umpire request form:', error);
@@ -373,8 +397,7 @@ function hideUmpireRequestForm() {
 }
 
 // Handle umpire request submission
-async function handleUmpireRequest(event) {
-    event.preventDefault();
+async function handleUmpireRequest() {
     
     const gameId = document.getElementById('requestGameId').value;
     const schedule = allSchedules.find(s => s.id === parseInt(gameId));
