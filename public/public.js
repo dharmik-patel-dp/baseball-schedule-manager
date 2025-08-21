@@ -10,7 +10,20 @@ function testJavaScript() {
     console.log('📊 allSchedules length:', allSchedules.length);
     console.log('🔍 filteredSchedules length:', filteredSchedules.length);
     console.log('📋 filterOptions:', filterOptions);
-    alert('JavaScript is working! Check console for details.');
+    
+    // Update debug info on page
+    const debugContent = document.getElementById('debugContent');
+    if (debugContent) {
+        debugContent.innerHTML = `
+            <p><strong>JavaScript Status:</strong> ✅ Working</p>
+            <p><strong>Total Schedules:</strong> ${allSchedules.length}</p>
+            <p><strong>Filtered Schedules:</strong> ${filteredSchedules.length}</p>
+            <p><strong>Sample Schedule:</strong></p>
+            <pre>${JSON.stringify(allSchedules[0], null, 2)}</pre>
+        `;
+    }
+    
+    alert('JavaScript is working! Check console and debug info below for details.');
 }
 
 // Initialize the application
