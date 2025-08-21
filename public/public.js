@@ -38,8 +38,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Setup event listeners
 function setupEventListeners() {
-    // Umpire request form submission
-    document.getElementById('umpireRequestFormElement').addEventListener('submit', handleUmpireRequest);
+    // Umpire request form submission (the form element doesn't need submit event since we use onclick)
+    // Remove this line as it's causing the error - the form now uses onclick handler
     
     // Filter change events
     const filterElements = [
@@ -471,8 +471,10 @@ async function handleUmpireRequest() {
         showAlert('Umpire change request submitted successfully!', 'success');
         hideUmpireRequestForm();
         
-        // Reset form
-        document.getElementById('umpireRequestFormElement').reset();
+        // Reset form fields manually
+        document.getElementById('requestedPlateUmpire').value = '';
+        document.getElementById('requestedBaseUmpire').value = '';
+        document.getElementById('changeReason').value = '';
         
     } catch (error) {
         console.error('Error submitting request:', error);
@@ -548,6 +550,8 @@ function updateFilterStatus() {
 // Export functions for global access
 window.showUmpireRequestForm = showUmpireRequestForm;
 window.hideUmpireRequestForm = hideUmpireRequestForm;
+window.handleUmpireRequest = handleUmpireRequest;
+window.testJavaScript = testJavaScript;
 window.applyFilters = applyFilters;
 window.clearFilters = clearFilters;
 window.toggleFilters = toggleFilters; 
