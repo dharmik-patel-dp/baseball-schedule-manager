@@ -4,8 +4,18 @@ let filteredSchedules = [];
 let filterOptions = {};
 let allStaff = [];
 
+// Test JavaScript function
+function testJavaScript() {
+    console.log('🧪 JavaScript is working!');
+    console.log('📊 allSchedules length:', allSchedules.length);
+    console.log('🔍 filteredSchedules length:', filteredSchedules.length);
+    console.log('📋 filterOptions:', filterOptions);
+    alert('JavaScript is working! Check console for details.');
+}
+
 // Initialize the application
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('🚀 DOM Content Loaded - Initializing application...');
     loadSchedules();
     loadFilterOptions();
     loadStaff();
@@ -37,14 +47,16 @@ function setupEventListeners() {
 // Load all schedules
 async function loadSchedules() {
     try {
+        console.log('🔄 Loading schedules...');
         const response = await fetch('/api/schedules');
         if (!response.ok) throw new Error('Failed to fetch schedules');
         
         allSchedules = await response.json();
+        console.log('✅ Loaded', allSchedules.length, 'schedules');
         filteredSchedules = [...allSchedules];
         renderScheduleTable();
     } catch (error) {
-        console.error('Error loading schedules:', error);
+        console.error('❌ Error loading schedules:', error);
         showAlert('Error loading schedules. Please try again.', 'danger');
     }
 }
@@ -236,8 +248,12 @@ function clearFilters() {
 
 // Render schedule table
 function renderScheduleTable() {
+    console.log('🔍 renderScheduleTable called with', filteredSchedules.length, 'schedules');
     const tbody = document.getElementById('scheduleTableBody');
-    if (!tbody) return;
+    if (!tbody) {
+        console.error('❌ scheduleTableBody not found');
+        return;
+    }
     
     if (filteredSchedules.length === 0) {
         tbody.innerHTML = `
