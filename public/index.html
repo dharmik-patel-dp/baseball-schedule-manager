@@ -4,962 +4,360 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>⚾🥎 Baseball/Softball Schedule Manager</title>
-    
-    <!-- Modern CSS Framework -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
-    <!-- AOS Animation Library -->
-    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
-    
-    <style>
-        :root {
-            /* Ultra-Modern Color Palette */
-            --bg-primary: #0a0a0a;
-            --bg-secondary: #111111;
-            --bg-tertiary: #1a1a1a;
-            --bg-card: #1e1e1e;
-            --bg-elevated: #252525;
-            
-            --text-primary: #ffffff;
-            --text-secondary: #e0e0e0;
-            --text-muted: #a0a0a0;
-            --text-accent: #00d4ff;
-            
-            --accent-primary: #00d4ff;
-            --accent-secondary: #ff6b6b;
-            --accent-success: #51cf66;
-            --accent-warning: #ffd43b;
-            
-            --border-light: #333333;
-            --border-medium: #404040;
-            --border-accent: #00d4ff;
-            
-            --shadow-soft: 0 8px 32px rgba(0, 0, 0, 0.4);
-            --shadow-medium: 0 16px 64px rgba(0, 0, 0, 0.6);
-            --shadow-strong: 0 24px 96px rgba(0, 0, 0, 0.8);
-            --shadow-glow: 0 0 40px rgba(0, 212, 255, 0.3);
-            
-            --radius-sm: 8px;
-            --radius-md: 12px;
-            --radius-lg: 16px;
-            --radius-xl: 24px;
-            --radius-full: 9999px;
-            
-            --space-xs: 0.5rem;
-            --space-sm: 1rem;
-            --space-md: 1.5rem;
-            --space-lg: 2rem;
-            --space-xl: 3rem;
-            --space-2xl: 4rem;
-            --space-3xl: 6rem;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: var(--bg-primary);
-            color: var(--text-primary);
-            line-height: 1.6;
-            min-height: 100vh;
-            overflow-x: hidden;
-            font-size: 16px;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-        }
-
-        /* Ultra-Modern Typography */
-        h1, h2, h3, h4, h5, h6 {
-            font-weight: 700;
-            line-height: 1.1;
-            color: var(--text-primary);
-            letter-spacing: -0.02em;
-        }
-
-        h1 { font-size: clamp(3rem, 8vw, 5rem); margin-bottom: var(--space-lg); }
-        h2 { font-size: clamp(2rem, 6vw, 3rem); margin-bottom: var(--space-md); }
-        h3 { font-size: clamp(1.5rem, 4vw, 2rem); margin-bottom: var(--space-sm); }
-        h4 { font-size: clamp(1.25rem, 3vw, 1.5rem); margin-bottom: var(--space-sm); }
-
-        p {
-            margin-bottom: var(--space-md);
-            color: var(--text-secondary);
-            font-size: clamp(1rem, 2vw, 1.125rem);
-            line-height: 1.7;
-        }
-
-        /* Ultra-Modern Hero Section */
-        .hero-section {
-            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
-            padding: var(--space-3xl) 0;
-            position: relative;
-            overflow: hidden;
-            margin-bottom: var(--space-2xl);
-        }
-
-        .hero-section::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: 
-                radial-gradient(circle at 20% 80%, rgba(0, 212, 255, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 80% 20%, rgba(255, 107, 107, 0.1) 0%, transparent 50%);
-            animation: float 20s ease-in-out infinite;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0px) rotate(0deg); }
-            33% { transform: translateY(-20px) rotate(1deg); }
-            66% { transform: translateY(10px) rotate(-1deg); }
-        }
-
-        .hero-content {
-            position: relative;
-            z-index: 2;
-            text-align: center;
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 0 var(--space-lg);
-        }
-
-        .hero-title {
-            font-size: clamp(3rem, 10vw, 6rem);
-            font-weight: 900;
-            margin-bottom: var(--space-lg);
-            background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent-primary) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            line-height: 1;
-            text-shadow: 0 0 40px rgba(0, 212, 255, 0.5);
-        }
-
-        .hero-subtitle {
-            font-size: clamp(1.25rem, 3vw, 1.5rem);
-            font-weight: 400;
-            margin-bottom: var(--space-xl);
-            color: var(--text-secondary);
-            max-width: 700px;
-            margin-left: auto;
-            margin-right: auto;
-            opacity: 0.9;
-        }
-
-        .hero-buttons {
-            display: flex;
-            gap: var(--space-md);
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-
-        /* Ultra-Modern Button System */
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            gap: var(--space-sm);
-            padding: var(--space-md) var(--space-xl);
-            border-radius: var(--radius-full);
-            font-weight: 600;
-            font-size: clamp(0.875rem, 2vw, 1rem);
-            text-decoration: none;
-            border: none;
-            cursor: pointer;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            overflow: hidden;
-            backdrop-filter: blur(20px);
-            box-shadow: var(--shadow-soft);
-        }
-
-        .btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            transition: left 0.6s;
-        }
-
-        .btn:hover::before {
-            left: 100%;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, var(--accent-primary) 0%, #0099cc 100%);
-            color: var(--bg-primary);
-            box-shadow: var(--shadow-glow);
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-4px) scale(1.02);
-            box-shadow: var(--shadow-strong), var(--shadow-glow);
-            color: var(--bg-primary);
-        }
-
-        .btn-secondary {
-            background: rgba(255, 255, 255, 0.05);
-            color: var(--text-primary);
-            border: 1px solid var(--border-light);
-            backdrop-filter: blur(30px);
-        }
-
-        .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.1);
-            border-color: var(--border-accent);
-            color: var(--text-primary);
-            transform: translateY(-4px) scale(1.02);
-            box-shadow: var(--shadow-medium);
-        }
-
-        /* Ultra-Modern Container System */
-        .container {
-            max-width: 100%;
-            margin: 0 auto;
-            padding: 0 var(--space-lg);
-            width: 100%;
-        }
-
-        /* Ultra-Modern Filter Section */
-        .filter-section {
-            background: var(--bg-card);
-            border-radius: var(--radius-xl);
-            padding: var(--space-xl);
-            margin: var(--space-2xl) 0;
-            box-shadow: var(--shadow-soft);
-            border: 1px solid var(--border-light);
-            position: relative;
-            overflow: hidden;
-            backdrop-filter: blur(20px);
-        }
-
-        .filter-section::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary), var(--accent-success));
-            animation: shimmer 3s ease-in-out infinite;
-        }
-
-        @keyframes shimmer {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-
-        .filter-title {
-            font-size: clamp(1.5rem, 4vw, 2rem);
-            font-weight: 800;
-            margin-bottom: var(--space-lg);
-            color: var(--text-primary);
-            display: flex;
-            align-items: center;
-            gap: var(--space-sm);
-            text-align: center;
-            justify-content: center;
-        }
-
-        .filter-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: var(--space-md);
-            margin-bottom: var(--space-lg);
-        }
-
-        /* Ultra-Modern Form Controls */
-        .form-control {
-            border: 1px solid var(--border-light);
-            border-radius: var(--radius-md);
-            padding: var(--space-md);
-            font-size: clamp(0.875rem, 2vw, 1rem);
-            transition: all 0.3s ease;
-            background: var(--bg-elevated);
-            color: var(--text-primary);
-            width: 100%;
-            box-shadow: var(--shadow-soft);
-        }
-
-        .form-control:focus {
-            outline: none;
-            border-color: var(--accent-primary);
-            box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.2);
-            transform: translateY(-2px);
-            background: var(--bg-card);
-        }
-
-        .form-control::placeholder {
-            color: var(--text-muted);
-        }
-
-        .btn-filter {
-            background: linear-gradient(135deg, var(--accent-primary) 0%, #0099cc 100%);
-            color: var(--bg-primary);
-            border: none;
-            padding: var(--space-md) var(--space-xl);
-            border-radius: var(--radius-full);
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: var(--shadow-soft);
-            font-size: clamp(0.875rem, 2vw, 1rem);
-        }
-
-        .btn-filter:hover {
-            transform: translateY(-3px);
-            box-shadow: var(--shadow-medium), var(--shadow-glow);
-        }
-
-        /* Ultra-Modern Info Section */
-        .info-section {
-            background: var(--bg-card);
-            border: 1px solid var(--border-light);
-            border-radius: var(--radius-xl);
-            padding: var(--space-lg);
-            margin: var(--space-2xl) 0;
-            position: relative;
-            overflow: hidden;
-            box-shadow: var(--shadow-soft);
-        }
-
-        .info-section::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 4px;
-            height: 100%;
-            background: linear-gradient(180deg, var(--accent-primary), var(--accent-secondary));
-            border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
-        }
-
-        .info-content {
-            position: relative;
-            z-index: 2;
-            padding-left: var(--space-md);
-        }
-
-        .info-title {
-            font-weight: 700;
-            color: var(--accent-primary);
-            margin-bottom: var(--space-sm);
-            display: flex;
-            align-items: center;
-            gap: var(--space-sm);
-            font-size: clamp(1.125rem, 2.5vw, 1.375rem);
-        }
-
-        .info-text {
-            color: var(--text-secondary);
-            margin-bottom: var(--space-sm);
-            font-size: clamp(1rem, 2vw, 1.125rem);
-        }
-
-        .info-note {
-            font-size: clamp(0.875rem, 1.5vw, 1rem);
-            color: var(--text-muted);
-            font-style: italic;
-            display: flex;
-            align-items: center;
-            gap: var(--space-sm);
-        }
-
-        /* Ultra-Modern Schedule Table */
-        .schedule-container {
-            background: var(--bg-card);
-            border-radius: var(--radius-xl);
-            box-shadow: var(--shadow-soft);
-            border: 1px solid var(--border-light);
-            overflow: hidden;
-            margin: var(--space-2xl) 0;
-            width: 100%;
-            max-width: 100%;
-        }
-
-        .schedule-header {
-            background: linear-gradient(135deg, var(--bg-elevated) 0%, var(--bg-tertiary) 100%);
-            color: var(--text-primary);
-            padding: var(--space-lg) var(--space-xl);
-            border-bottom: 1px solid var(--border-light);
-        }
-
-        .schedule-title {
-            font-size: clamp(1.5rem, 4vw, 2rem);
-            font-weight: 800;
-            margin: 0;
-            display: flex;
-            align-items: center;
-            gap: var(--space-sm);
-            justify-content: center;
-        }
-
-        /* Ultra-Modern Table Design */
-        .table {
-            margin: 0;
-            border-collapse: separate;
-            border-spacing: 0;
-            width: 100%;
-            min-width: 100%;
-            table-layout: auto;
-        }
-
-        .table th {
-            background: var(--bg-elevated);
-            color: var(--text-secondary);
-            font-weight: 700;
-            padding: var(--space-md) var(--space-sm);
-            text-align: left;
-            border-bottom: 2px solid var(--border-light);
-            font-size: clamp(0.75rem, 1.5vw, 0.875rem);
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            position: sticky;
-            top: 0;
-            z-index: 10;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .table td {
-            padding: var(--space-md) var(--space-sm);
-            border-bottom: 1px solid var(--border-light);
-            vertical-align: top;
-            transition: all 0.3s ease;
-            word-wrap: break-word;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .table tbody tr:hover {
-            background: var(--bg-elevated);
-            transform: scale(1.01);
-            box-shadow: var(--shadow-soft);
-        }
-
-        .table tbody tr:last-child td {
-            border-bottom: none;
-        }
-
-        /* Ultra-Modern Badge System */
-        .badge {
-            display: inline-block;
-            padding: var(--space-xs) var(--space-sm);
-            border-radius: var(--radius-full);
-            font-size: clamp(0.7rem, 1.5vw, 0.75rem);
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            line-height: 1;
-            box-shadow: var(--shadow-soft);
-            white-space: nowrap;
-            max-width: 100%;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .badge-primary {
-            background: linear-gradient(135deg, var(--accent-primary), #0099cc);
-            color: var(--bg-primary);
-        }
-
-        .badge-success {
-            background: linear-gradient(135deg, var(--accent-success), #40c057);
-            color: var(--bg-primary);
-        }
-
-        .badge-warning {
-            background: linear-gradient(135deg, var(--accent-warning), #fcc419);
-            color: var(--bg-primary);
-        }
-
-        .badge-secondary {
-            background: linear-gradient(135deg, var(--text-muted), #868e96);
-            color: var(--bg-primary);
-        }
-
-        .badge-info {
-            background: linear-gradient(135deg, var(--accent-primary), #0099cc);
-            color: var(--bg-primary);
-        }
-
-        /* Ultra-Modern Concession Display */
-        .concession-info {
-            min-width: auto;
-            max-width: none;
-            width: 100%;
-        }
-
-        .staff-info {
-            background: var(--bg-elevated);
-            border: 1px solid var(--border-light);
-            border-radius: var(--radius-md);
-            padding: var(--space-sm) var(--space-md);
-            margin-top: var(--space-xs);
-            position: relative;
-            box-shadow: var(--shadow-soft);
-            word-wrap: break-word;
-            width: 100%;
-        }
-
-        .staff-info::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 0;
-            bottom: 0;
-            width: 3px;
-            background: linear-gradient(180deg, var(--accent-success), #40c057);
-            border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
-        }
-
-        .staff-info i {
-            color: var(--accent-success);
-            margin-right: var(--space-xs);
-        }
-
-        .staff-info strong {
-            color: var(--text-primary);
-            font-weight: 600;
-        }
-
-        /* Ultra-Modern Team Display */
-        .team-display {
-            display: flex;
-            flex-direction: column;
-            gap: var(--space-xs);
-            width: 100%;
-        }
-
-        .team-name {
-            font-weight: 700;
-            color: var(--text-primary);
-            font-size: clamp(0.875rem, 2vw, 1rem);
-            word-wrap: break-word;
-            width: 100%;
-        }
-
-        .coach-name {
-            font-size: clamp(0.75rem, 1.5vw, 0.875rem);
-            color: var(--text-muted);
-            font-style: italic;
-            word-wrap: break-word;
-            width: 100%;
-        }
-
-        /* Ultra-Modern Umpire Display */
-        .umpire-display {
-            display: flex;
-            flex-direction: column;
-            gap: var(--space-xs);
-            width: 100%;
-        }
-
-        .umpire-role {
-            font-size: clamp(0.7rem, 1.5vw, 0.75rem);
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            font-weight: 600;
-        }
-
-        .umpire-name {
-            font-weight: 600;
-            color: var(--text-primary);
-            font-size: clamp(0.75rem, 1.5vw, 0.875rem);
-            word-wrap: break-word;
-            width: 100%;
-        }
-
-        /* Ultra-Modern Loading States */
-        .loading-container {
-            text-align: center;
-            padding: var(--space-2xl);
-            color: var(--text-muted);
-        }
-
-        .loading-spinner {
-            width: 3rem;
-            height: 3rem;
-            border: 3px solid var(--border-light);
-            border-top: 3px solid var(--accent-primary);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto var(--space-md);
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .no-data {
-            text-align: center;
-            padding: var(--space-2xl);
-            color: var(--text-muted);
-        }
-
-        .no-data i {
-            font-size: 3rem;
-            margin-bottom: var(--space-md);
-            opacity: 0.5;
-            color: var(--accent-primary);
-        }
-
-        /* Ultra-Modern Responsive Design */
-        @media (max-width: 1200px) {
-            .filter-grid {
-                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            }
-        }
-
-        @media (max-width: 768px) {
-            .hero-buttons {
-                flex-direction: column;
-                align-items: center;
-            }
-            
-            .btn {
-                width: 100%;
-                max-width: 350px;
-                justify-content: center;
-            }
-            
-            .filter-grid {
-                grid-template-columns: 1fr;
-                gap: var(--space-sm);
-            }
-            
-            .container {
-                padding: 0 var(--space-md);
-            }
-            
-            .filter-section,
-            .schedule-container {
-                margin: var(--space-xl) 0;
-                padding: var(--space-lg);
-                border-radius: var(--radius-lg);
-            }
-            
-            .table-responsive {
-                font-size: 0.875rem;
-                border-radius: var(--radius-lg);
-            }
-            
-            .table th,
-            .table td {
-                padding: var(--space-sm) var(--space-xs);
-                font-size: clamp(0.75rem, 2vw, 0.875rem);
-            }
-        }
-
-        @media (max-width: 480px) {
-            .container {
-                padding: 0 var(--space-sm);
-            }
-            
-            .hero-section {
-                padding: var(--space-2xl) 0;
-            }
-            
-            .filter-section,
-            .schedule-container {
-                margin: var(--space-lg) 0;
-                padding: var(--space-md);
-                border-radius: var(--radius-md);
-            }
-            
-            .table-responsive {
-                font-size: 0.75rem;
-                border-radius: var(--radius-md);
-            }
-            
-            .table th,
-            .table td {
-                padding: var(--space-xs);
-                font-size: clamp(0.7rem, 2vw, 0.75rem);
-            }
-            
-            .badge {
-                font-size: clamp(0.65rem, 2vw, 0.7rem);
-                padding: var(--space-xs);
-            }
-            
-            .btn {
-                padding: var(--space-sm) var(--space-lg);
-                font-size: clamp(0.8rem, 2vw, 0.875rem);
-            }
-        }
-
-        /* Ultra-Modern Animations */
-        .fade-in {
-            animation: fadeIn 1s ease-out;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(40px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .slide-up {
-            animation: slideUp 0.8s ease-out;
-        }
-
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(50px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Ultra-Modern Focus States */
-        .btn:focus,
-        .form-control:focus,
-        .btn-filter:focus {
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.3);
-        }
-
-        /* Ultra-Modern Hover Effects */
-        .filter-section:hover,
-        .schedule-container:hover {
-            transform: translateY(-4px);
-            box-shadow: var(--shadow-medium);
-        }
-
-        /* Ultra-Modern Scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: var(--bg-secondary);
-            border-radius: var(--radius-md);
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: var(--accent-primary);
-            border-radius: var(--radius-md);
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: #0099cc;
-        }
-
-        /* Ultra-Modern Selection */
-        ::selection {
-            background: var(--accent-primary);
-            color: var(--bg-primary);
-        }
-
-        ::-moz-selection {
-            background: var(--accent-primary);
-            color: var(--bg-primary);
-        }
-    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <!-- Ultra-Modern Hero Section -->
-    <header class="hero-section">
+    <!-- Navigation -->
+    <nav class="navbar">
         <div class="container">
-            <div class="hero-content" data-aos="fade-up">
-                <h1 class="hero-title">⚾🥎 Baseball/Softball Schedule Manager</h1>
-                <p class="hero-subtitle">
-                    Professional scheduling system for baseball and softball leagues. 
-                    View schedules, track concession stands, and manage umpire assignments with ease.
-                </p>
-                <div class="hero-buttons">
-                    <a href="#schedules" class="btn btn-primary">
-                        <i class="fas fa-calendar-alt"></i>
-                        View Schedules
+            <div class="d-flex justify-content-between align-items-center">
+                <a href="#" class="navbar-brand">
+                    <i class="fas fa-baseball-ball"></i>
+                    <span>Schedule Manager</span>
+                </a>
+                <div class="d-flex gap-3">
+                    <a href="#" class="nav-link active">
+                        <i class="fas fa-calendar-alt me-2"></i>Schedule
                     </a>
-                    <a href="#filters" class="btn btn-secondary">
-                        <i class="fas fa-filter"></i>
-                        Filter Games
+                    <a href="#" class="nav-link">
+                        <i class="fas fa-users me-2"></i>Staff
+                    </a>
+                    <a href="#" class="nav-link">
+                        <i class="fas fa-info-circle me-2"></i>About
                     </a>
                 </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Header -->
+    <header class="page-header">
+        <div class="container text-center">
+            <div class="baseball-diamond mb-4"></div>
+            <h1 class="text-gradient mb-3">Baseball & Softball Schedule Manager</h1>
+            <p class="lead mb-4">Stay updated with real-time game schedules, team information, and concession stand availability</p>
+            <div class="d-flex justify-content-center gap-3 flex-wrap">
+                <button class="btn btn-primary btn-lg" onclick="scrollToSchedule()">
+                    <i class="fas fa-calendar-check me-2"></i>View Schedule
+                </button>
+                <button class="btn btn-secondary btn-lg" onclick="scrollToFilters()">
+                    <i class="fas fa-filter me-2"></i>Filter Games
+                </button>
             </div>
         </div>
     </header>
 
     <div class="container">
-        <!-- Ultra-Modern Filter Section -->
-        <section id="filters" class="filter-section" data-aos="fade-up" data-aos-delay="100">
-            <h2 class="filter-title">
-                <i class="fas fa-sliders-h"></i>
-                Filter & Search Games
-            </h2>
-            <div class="filter-grid">
-                <select id="seasonFilter" class="form-control">
-                    <option value="">All Seasons</option>
-                </select>
-                <select id="eventTypeFilter" class="form-control">
-                    <option value="">All Events</option>
-                </select>
-                <select id="dayFilter" class="form-control">
-                    <option value="">All Days</option>
-                </select>
-                <select id="divisionFilter" class="form-control">
-                    <option value="">All Divisions</option>
-                </select>
-                <select id="homeTeamFilter" class="form-control">
-                    <option value="">All Home Teams</option>
-                </select>
-                <select id="visitorTeamFilter" class="form-control">
-                    <option value="">All Visitor Teams</option>
-                </select>
-                <select id="venueFilter" class="form-control">
-                    <option value="">All Venues</option>
-                </select>
-                <select id="homeCoachFilter" class="form-control">
-                    <option value="">All Home Coaches</option>
-                </select>
-                <select id="visitorCoachFilter" class="form-control">
-                    <option value="">All Visitor Coaches</option>
-                </select>
-                <select id="plateUmpireFilter" class="form-control">
-                    <option value="">All Plate Umpires</option>
-                </select>
-                <select id="baseUmpireFilter" class="form-control">
-                    <option value="">All Base Umpires</option>
-                </select>
-                <select id="concessionStandFilter" class="form-control">
-                    <option value="">All Concession Stands</option>
-                </select>
-                <select id="concessionStaffFilter" class="form-control">
-                    <option value="">All Concession Staff</option>
-                </select>
+        <!-- Quick Stats -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i class="fas fa-chart-bar"></i>
+                    Season Overview
+                </h3>
             </div>
-            <div class="text-center">
-                <button id="applyFilters" class="btn-filter">
-                    <i class="fas fa-search"></i>
-                    Apply Filters
+            <div class="row">
+                <div class="col-md-3 mb-3">
+                    <div class="text-center p-4 border-radius bg-light">
+                        <div class="sports-icon mb-2">
+                            <i class="fas fa-baseball-ball"></i>
+                        </div>
+                        <h4 class="text-primary mb-1" id="totalGames">0</h4>
+                        <p class="text-muted mb-0">Total Games</p>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="text-center p-4 border-radius bg-light">
+                        <div class="sports-icon mb-2">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <h4 class="text-success mb-1" id="totalTeams">0</h4>
+                        <p class="text-muted mb-0">Active Teams</p>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="text-center p-4 border-radius bg-light">
+                        <div class="sports-icon mb-2">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </div>
+                        <h4 class="text-warning mb-1" id="totalVenues">0</h4>
+                        <p class="text-muted mb-0">Venues</p>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="text-center p-4 border-radius bg-light">
+                        <div class="sports-icon mb-2">
+                            <i class="fas fa-utensils"></i>
+                        </div>
+                        <h4 class="text-info mb-1" id="concessionStands">0</h4>
+                        <p class="text-muted mb-0">Concession Stands</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Advanced Filters -->
+        <div class="card" id="filtersSection">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i class="fas fa-filter"></i>
+                    Advanced Game Filters
+                </h3>
+            </div>
+            <div class="row">
+                <div class="col-md-2 mb-3">
+                    <div class="form-group">
+                        <label class="form-label">Season</label>
+                        <select class="form-control form-select" id="seasonFilter">
+                            <option value="">All Seasons</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-2 mb-3">
+                    <div class="form-group">
+                        <label class="form-label">Sport</label>
+                        <select class="form-control form-select" id="eventTypeFilter">
+                            <option value="">All Sports</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-2 mb-3">
+                    <div class="form-group">
+                        <label class="form-label">Day</label>
+                        <select class="form-control form-select" id="dayFilter">
+                            <option value="">All Days</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-2 mb-3">
+                    <div class="form-group">
+                        <label class="form-label">Division</label>
+                        <select class="form-control form-select" id="divisionFilter">
+                            <option value="">All Divisions</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-2 mb-3">
+                    <div class="form-group">
+                        <label class="form-label">Team</label>
+                        <select class="form-control form-select" id="teamFilter">
+                            <option value="">All Teams</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-2 mb-3">
+                    <div class="form-group">
+                        <label class="form-label">Venue</label>
+                        <select class="form-control form-select" id="venueFilter">
+                            <option value="">All Venues</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-3 mb-3">
+                    <div class="form-group">
+                        <label class="form-label">Coach</label>
+                        <select class="form-control form-select" id="coachFilter">
+                            <option value="">All Coaches</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="form-group">
+                        <label class="form-label">Umpire</label>
+                        <select class="form-control form-select" id="umpireFilter">
+                            <option value="">All Umpires</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="form-group">
+                        <label class="form-label">Concession Stand</label>
+                        <select class="form-control form-select" id="concessionStandFilter">
+                            <option value="">All Stands</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="form-group">
+                        <label class="form-label">Concession Staff</label>
+                        <select class="form-control form-select" id="concessionStaffFilter">
+                            <option value="">All Staff</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="d-flex justify-content-center gap-3">
+                <button class="btn btn-primary" onclick="applyFilters()">
+                    <i class="fas fa-search me-2"></i>Apply Filters
+                </button>
+                <button class="btn btn-secondary" onclick="clearFilters()">
+                    <i class="fas fa-times me-2"></i>Clear All
                 </button>
             </div>
-        </section>
+        </div>
 
-        <!-- Ultra-Modern Info Section -->
-        <section class="info-section" data-aos="fade-up" data-aos-delay="200">
-            <div class="info-content">
-                <h3 class="info-title">
-                    <i class="fas fa-info-circle"></i>
-                    Concession Stand Information
-                </h3>
-                <p class="info-text">
-                    Each game shows which concession stand is available and which staff member is working. 
-                    Look for the green badge to see which stand will be open for food and drinks!
-                </p>
-                <p class="info-note">
-                    <i class="fas fa-user"></i>
-                    Staff names are displayed below each concession stand when assigned.
-                </p>
-            </div>
-        </section>
-
-        <!-- Ultra-Modern Schedule Table -->
-        <section id="schedules" class="schedule-container" data-aos="fade-up" data-aos-delay="300">
-            <div class="schedule-header">
-                <h2 class="schedule-title">
-                    <i class="fas fa-calendar-check"></i>
+        <!-- Schedule Table -->
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h3 class="card-title">
+                    <i class="fas fa-calendar-alt"></i>
                     Game Schedule
-                </h2>
+                </h3>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-sm btn-outline-primary" onclick="exportSchedule()">
+                        <i class="fas fa-download me-2"></i>Export
+                    </button>
+                    <button class="btn btn-sm btn-outline-secondary" onclick="printSchedule()">
+                        <i class="fas fa-print me-2"></i>Print
+                    </button>
+                </div>
             </div>
-            <div class="table-responsive">
-                <table class="table">
+            <div class="table-container">
+                <table class="table" id="scheduleTable">
                     <thead>
                         <tr>
-                            <th>Season</th>
-                            <th>Event</th>
-                            <th>Day</th>
-                            <th>Date</th>
-                            <th>Time</th>
-                            <th>Division</th>
-                            <th>Home Team</th>
-                            <th>Visitor Team</th>
+                            <th>Date & Time</th>
+                            <th>Sport & Division</th>
+                            <th>Teams</th>
                             <th>Venue</th>
                             <th>Umpires</th>
                             <th>Concession</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody id="scheduleTableBody">
                         <tr>
-                            <td colspan="11" class="loading-container">
-                                <div class="loading-spinner"></div>
-                                <p>Loading schedules...</p>
+                            <td colspan="7" class="text-center p-5">
+                                <div class="loading"></div>
+                                <p class="mt-3 text-muted">Loading schedule...</p>
                             </td>
                         </tr>
                     </tbody>
                 </table>
             </div>
-        </section>
+        </div>
 
-        <!-- Ultra-Modern Umpire Request Form -->
-        <section id="umpireRequestForm" class="filter-section" style="display: none;" data-aos="fade-up">
-            <h2 class="filter-title">
-                <i class="fas fa-user-edit"></i>
-                Umpire Change Request
-            </h2>
+        <!-- Umpire Request Form -->
+        <div class="card" id="umpireRequestForm" style="display: none;">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i class="fas fa-user-edit"></i>
+                    Umpire Change Request
+                </h3>
+            </div>
             <form id="umpireRequestFormElement">
                 <div class="row">
-                    <div class="col-md-6">
-                        <div class="mb-4">
-                            <label for="requestReason" class="form-label">Reason for Change</label>
-                            <textarea id="requestReason" class="form-control" rows="3" required></textarea>
+                    <div class="col-md-6 mb-3">
+                        <div class="form-group">
+                            <label class="form-label">Current Plate Umpire</label>
+                            <input type="text" class="form-control" id="currentPlateUmpire" readonly>
                         </div>
                     </div>
-                    <div class="col-md-6">
-                        <div class="mb-4">
-                            <label class="form-label">Current Umpires</label>
-                            <div class="mb-2">
-                                <strong>Plate:</strong> <span id="currentPlateUmpire"></span>
-                            </div>
-                            <div>
-                                <strong>Base:</strong> <span id="currentBaseUmpire"></span>
-                            </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="form-group">
+                            <label class="form-label">Current Base Umpire</label>
+                            <input type="text" class="form-control" id="currentBaseUmpire" readonly>
                         </div>
                     </div>
                 </div>
-                <div class="text-center">
-                    <button type="submit" class="btn-filter">
-                        <i class="fas fa-paper-plane"></i>
-                        Submit Request
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <div class="form-group">
+                            <label class="form-label">Requested Plate Umpire</label>
+                            <select class="form-control form-select" id="requestedPlateUmpire" required>
+                                <option value="">Select Umpire</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="form-group">
+                            <label class="form-label">Requested Base Umpire</label>
+                            <select class="form-control form-select" id="requestedBaseUmpire" required>
+                                <option value="">Select Umpire</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Reason for Change</label>
+                    <textarea class="form-control" id="requestReason" rows="3" placeholder="Please provide a reason for the umpire change request..." required></textarea>
+                </div>
+                <div class="d-flex justify-content-end gap-3">
+                    <button type="button" class="btn btn-secondary" onclick="hideUmpireRequestForm()">
+                        <i class="fas fa-times me-2"></i>Cancel
                     </button>
-                    <button type="button" id="cancelRequest" class="btn btn-secondary ms-3">
-                        Cancel
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-paper-plane me-2"></i>Submit Request
                     </button>
                 </div>
             </form>
-        </section>
+        </div>
+
+        <!-- Info Section -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i class="fas fa-info-circle"></i>
+                    About This System
+                </h3>
+            </div>
+            <div class="row">
+                <div class="col-md-6 mb-4">
+                    <h5 class="text-primary mb-3">
+                        <i class="fas fa-calendar-check me-2"></i>Schedule Management
+                    </h5>
+                    <p>Our comprehensive scheduling system keeps you updated with real-time game information, including team matchups, venue details, and official assignments.</p>
+                </div>
+                <div class="col-md-6 mb-4">
+                    <h5 class="text-success mb-3">
+                        <i class="fas fa-utensils me-2"></i>Concession Stands
+                    </h5>
+                    <p>Know which concession stands are open and which staff members are working. Plan your refreshments accordingly!</p>
+                </div>
+                <div class="col-md-6 mb-4">
+                    <h5 class="text-warning mb-3">
+                        <i class="fas fa-users me-2"></i>Staff Directory
+                    </h5>
+                    <p>Access complete staff information including coaches, umpires, and concession staff with contact details and roles.</p>
+                </div>
+                <div class="col-md-6 mb-4">
+                    <h5 class="text-info mb-3">
+                        <i class="fas fa-mobile-alt me-2"></i>Mobile Friendly
+                    </h5>
+                    <p>Optimized for all devices - view schedules, check updates, and submit requests from your phone, tablet, or computer.</p>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Alert Container -->
-    <div id="alertContainer" class="position-fixed top-0 end-0 p-3" style="z-index: 1050;"></div>
+    <div id="alertContainer" class="position-fixed" style="top: 20px; right: 20px; z-index: 9999;"></div>
 
     <!-- Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script src="public.js"></script>
-    
     <script>
-        // Initialize AOS animations
-        AOS.init({
-            duration: 1200,
-            easing: 'ease-out-cubic',
-            once: true,
-            offset: 100
-        });
+        // Smooth scrolling functions
+        function scrollToSchedule() {
+            document.getElementById('scheduleTable').scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        function scrollToFilters() {
+            document.getElementById('filtersSection').scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        // Export and print functions
+        function exportSchedule() {
+            // Implementation for exporting schedule
+            showAlert('Export feature coming soon!', 'info');
+        }
+        
+        function printSchedule() {
+            window.print();
+        }
     </script>
 </body>
 </html> 

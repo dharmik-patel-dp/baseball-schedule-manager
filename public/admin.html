@@ -4,678 +4,328 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>⚾🥎 Admin Panel - Baseball/Softball Schedule Manager</title>
-    
-    <!-- Modern CSS Framework -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
-    <!-- AOS Animation Library -->
-    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
-    
-    <style>
-        :root {
-            /* Ultra-Modern Color Palette */
-            --bg-primary: #0a0a0a;
-            --bg-secondary: #111111;
-            --bg-tertiary: #1a1a1a;
-            --bg-card: #1e1e1e;
-            --bg-elevated: #252525;
-            
-            --text-primary: #ffffff;
-            --text-secondary: #e0e0e0;
-            --text-muted: #a0a0a0;
-            --text-accent: #00d4ff;
-            
-            --accent-primary: #00d4ff;
-            --accent-secondary: #ff6b6b;
-            --accent-success: #51cf66;
-            --accent-warning: #ffd43b;
-            
-            --border-light: #333333;
-            --border-medium: #404040;
-            --border-accent: #00d4ff;
-            
-            --shadow-soft: 0 8px 32px rgba(0, 0, 0, 0.4);
-            --shadow-medium: 0 16px 64px rgba(0, 0, 0, 0.6);
-            --shadow-strong: 0 24px 96px rgba(0, 0, 0, 0.8);
-            --shadow-glow: 0 0 40px rgba(0, 212, 255, 0.3);
-            
-            --radius-sm: 8px;
-            --radius-md: 12px;
-            --radius-lg: 16px;
-            --radius-xl: 24px;
-            --radius-full: 9999px;
-            
-            --space-xs: 0.5rem;
-            --space-sm: 1rem;
-            --space-md: 1.5rem;
-            --space-lg: 2rem;
-            --space-xl: 3rem;
-            --space-2xl: 4rem;
-            --space-3xl: 6rem;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: var(--bg-primary);
-            color: var(--text-primary);
-            line-height: 1.6;
-            min-height: 100vh;
-            overflow-x: hidden;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-        }
-
-        /* Ultra-Modern Typography */
-        h1, h2, h3, h4, h5, h6 {
-            font-weight: 700;
-            line-height: 1.1;
-            color: var(--text-primary);
-            letter-spacing: -0.02em;
-        }
-
-        h1 { font-size: clamp(2.5rem, 8vw, 4rem); margin-bottom: var(--space-lg); }
-        h2 { font-size: clamp(2rem, 6vw, 3rem); margin-bottom: var(--space-md); }
-        h3 { font-size: clamp(1.5rem, 4vw, 2rem); margin-bottom: var(--space-sm); }
-        h4 { font-size: clamp(1.25rem, 3vw, 1.5rem); margin-bottom: var(--space-sm); }
-
-        p {
-            margin-bottom: var(--space-md);
-            color: var(--text-secondary);
-            font-size: clamp(1rem, 2vw, 1.125rem);
-            line-height: 1.7;
-        }
-
-        /* Ultra-Modern Admin Header */
-        .admin-header {
-            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
-            color: var(--text-primary);
-            padding: var(--space-3xl) 0;
-            position: relative;
-            overflow: hidden;
-            box-shadow: var(--shadow-strong);
-            margin-bottom: var(--space-2xl);
-        }
-
-        .admin-header::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: 
-                radial-gradient(circle at 20% 80%, rgba(0, 212, 255, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 80% 20%, rgba(255, 107, 107, 0.1) 0%, transparent 50%);
-            animation: float 20s ease-in-out infinite;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0px) rotate(0deg); }
-            33% { transform: translateY(-20px) rotate(1deg); }
-            66% { transform: translateY(10px) rotate(-1deg); }
-        }
-
-        .admin-content {
-            position: relative;
-            z-index: 2;
-            text-align: center;
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 0 var(--space-lg);
-        }
-
-        .admin-title {
-            font-size: clamp(3rem, 10vw, 5rem);
-            font-weight: 900;
-            margin-bottom: var(--space-md);
-            background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent-primary) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            line-height: 1;
-            text-shadow: 0 0 40px rgba(0, 212, 255, 0.5);
-        }
-
-        .admin-subtitle {
-            font-size: clamp(1.25rem, 3vw, 1.5rem);
-            font-weight: 400;
-            margin-bottom: var(--space-xl);
-            color: var(--text-secondary);
-            max-width: 700px;
-            margin-left: auto;
-            margin-right: auto;
-            opacity: 0.9;
-        }
-
-        .admin-nav {
-            display: flex;
-            gap: var(--space-md);
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-
-        /* Ultra-Modern Navigation Links */
-        .nav-link-modern {
-            background: rgba(255, 255, 255, 0.05);
-            color: var(--text-primary);
-            border: 1px solid var(--border-light);
-            border-radius: var(--radius-full);
-            padding: var(--space-sm) var(--space-lg);
-            text-decoration: none;
-            font-weight: 600;
-            transition: all 0.4s ease;
-            backdrop-filter: blur(30px);
-            display: inline-flex;
-            align-items: center;
-            gap: var(--space-sm);
-            font-size: clamp(0.875rem, 2vw, 1rem);
-            box-shadow: var(--shadow-soft);
-        }
-
-        .nav-link-modern:hover {
-            background: rgba(255, 255, 255, 0.1);
-            border-color: var(--border-accent);
-            color: var(--text-primary);
-            transform: translateY(-4px) scale(1.02);
-            text-decoration: none;
-            box-shadow: var(--shadow-medium);
-        }
-
-        .nav-link-modern.active {
-            background: var(--accent-primary);
-            border-color: var(--accent-primary);
-            color: var(--bg-primary);
-            box-shadow: var(--shadow-glow);
-        }
-
-        /* Ultra-Modern Container System */
-        .container-modern {
-            max-width: 100%;
-            margin: 0 auto;
-            padding: 0 var(--space-lg);
-            width: 100%;
-        }
-
-        /* Ultra-Modern Admin Cards */
-        .admin-card {
-            background: var(--bg-card);
-            border-radius: var(--radius-xl);
-            padding: var(--space-xl);
-            margin: var(--space-2xl) 0;
-            box-shadow: var(--shadow-soft);
-            border: 1px solid var(--border-light);
-            transition: all 0.4s ease;
-            position: relative;
-            overflow: hidden;
-            width: 100%;
-            backdrop-filter: blur(20px);
-        }
-
-        .admin-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary), var(--accent-success));
-            animation: shimmer 3s ease-in-out infinite;
-        }
-
-        @keyframes shimmer {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-
-        .admin-card:hover {
-            transform: translateY(-6px);
-            box-shadow: var(--shadow-medium);
-        }
-
-        .admin-card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: var(--space-lg);
-            padding-bottom: var(--space-md);
-            border-bottom: 1px solid var(--border-light);
-        }
-
-        .admin-card-title {
-            font-size: clamp(1.5rem, 4vw, 2rem);
-            font-weight: 800;
-            color: var(--text-primary);
-            margin: 0;
-            display: flex;
-            align-items: center;
-            gap: var(--space-sm);
-        }
-
-        /* Ultra-Modern Button System */
-        .btn-modern {
-            display: inline-flex;
-            align-items: center;
-            gap: var(--space-sm);
-            padding: var(--space-sm) var(--space-lg);
-            border-radius: var(--radius-full);
-            font-weight: 600;
-            font-size: clamp(0.875rem, 2vw, 1rem);
-            text-decoration: none;
-            border: none;
-            cursor: pointer;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            overflow: hidden;
-            box-shadow: var(--shadow-soft);
-        }
-
-        .btn-modern::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            transition: left 0.6s;
-        }
-
-        .btn-modern:hover::before {
-            left: 100%;
-        }
-
-        .btn-primary-modern {
-            background: linear-gradient(135deg, var(--accent-primary) 0%, #0099cc 100%);
-            color: var(--bg-primary);
-            box-shadow: var(--shadow-glow);
-        }
-
-        .btn-primary-modern:hover {
-            transform: translateY(-4px) scale(1.02);
-            box-shadow: var(--shadow-strong), var(--shadow-glow);
-            color: var(--bg-primary);
-        }
-
-        .btn-success-modern {
-            background: linear-gradient(135deg, var(--accent-success) 0%, #40c057 100%);
-            color: var(--bg-primary);
-            box-shadow: var(--shadow-glow);
-        }
-
-        .btn-success-modern:hover {
-            transform: translateY(-4px) scale(1.02);
-            box-shadow: var(--shadow-strong), var(--shadow-glow);
-            color: var(--bg-primary);
-        }
-
-        .btn-warning-modern {
-            background: linear-gradient(135deg, var(--accent-warning) 0%, #fcc419 100%);
-            color: var(--bg-primary);
-            box-shadow: var(--shadow-glow);
-        }
-
-        .btn-warning-modern:hover {
-            transform: translateY(-4px) scale(1.02);
-            box-shadow: var(--shadow-strong), var(--shadow-glow);
-            color: var(--bg-primary);
-        }
-
-        .btn-danger-modern {
-            background: linear-gradient(135deg, #ff6b6b, #ff5252);
-            color: var(--bg-primary);
-            box-shadow: var(--shadow-glow);
-        }
-
-        .btn-danger-modern:hover {
-            transform: translateY(-4px) scale(1.02);
-            box-shadow: var(--shadow-strong), var(--shadow-glow);
-            color: var(--bg-primary);
-        }
-
-        /* Ultra-Modern Form Controls */
-        .form-control-modern {
-            border: 1px solid var(--border-light);
-            border-radius: var(--radius-md);
-            padding: var(--space-md);
-            font-size: clamp(0.875rem, 2vw, 1rem);
-            transition: all 0.3s ease;
-            background: var(--bg-elevated);
-            color: var(--text-primary);
-            width: 100%;
-            box-shadow: var(--shadow-soft);
-        }
-
-        .form-control-modern:focus {
-            outline: none;
-            border-color: var(--accent-primary);
-            box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.2);
-            transform: translateY(-2px);
-            background: var(--bg-card);
-        }
-
-        .form-control-modern::placeholder {
-            color: var(--text-muted);
-        }
-
-        .form-label-modern {
-            font-weight: 600;
-            color: var(--text-primary);
-            margin-bottom: var(--space-sm);
-            display: block;
-            font-size: clamp(0.875rem, 2vw, 1rem);
-        }
-
-        /* Ultra-Modern Table Design */
-        .table-modern {
-            background: var(--bg-card);
-            border-radius: var(--radius-lg);
-            overflow: hidden;
-            box-shadow: var(--shadow-soft);
-            border: 1px solid var(--border-light);
-            width: 100%;
-            min-width: 100%;
-            table-layout: auto;
-        }
-
-        .table-modern th {
-            background: var(--bg-elevated);
-            color: var(--text-secondary);
-            font-weight: 700;
-            padding: var(--space-md) var(--space-sm);
-            border: none;
-            font-size: clamp(0.75rem, 1.5vw, 0.875rem);
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            position: sticky;
-            top: 0;
-            z-index: 10;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .table-modern td {
-            padding: var(--space-md) var(--space-sm);
-            border-bottom: 1px solid var(--border-light);
-            vertical-align: middle;
-            transition: all 0.3s ease;
-            word-wrap: break-word;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .table-modern tbody tr:hover {
-            background: var(--bg-elevated);
-            transform: scale(1.01);
-            box-shadow: var(--shadow-soft);
-        }
-
-        /* Ultra-Modern Badge System */
-        .badge-modern {
-            display: inline-block;
-            padding: var(--space-xs) var(--space-sm);
-            border-radius: var(--radius-full);
-            font-size: clamp(0.7rem, 1.5vw, 0.75rem);
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            line-height: 1;
-            box-shadow: var(--shadow-soft);
-        }
-
-        .badge-primary {
-            background: linear-gradient(135deg, var(--accent-primary), #0099cc);
-            color: var(--bg-primary);
-        }
-
-        .badge-success {
-            background: linear-gradient(135deg, var(--accent-success), #40c057);
-            color: var(--bg-primary);
-        }
-
-        .badge-warning {
-            background: linear-gradient(135deg, var(--accent-warning), #fcc419);
-            color: var(--bg-primary);
-        }
-
-        .badge-secondary {
-            background: linear-gradient(135deg, var(--text-muted), #868e96);
-            color: var(--bg-primary);
-        }
-
-        .badge-info {
-            background: linear-gradient(135deg, var(--accent-primary), #0099cc);
-            color: var(--bg-primary);
-        }
-
-        /* Ultra-Modern Responsive Design */
-        @media (max-width: 1200px) {
-            .filter-grid {
-                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            }
-        }
-
-        @media (max-width: 768px) {
-            .admin-title {
-                font-size: clamp(2rem, 6vw, 3rem);
-            }
-            
-            .admin-header {
-                padding: var(--space-2xl) 0;
-            }
-            
-            .admin-nav {
-                flex-direction: column;
-                align-items: center;
-            }
-            
-            .nav-link-modern {
-                width: 100%;
-                max-width: 350px;
-                justify-content: center;
-            }
-            
-            .admin-card {
-                padding: var(--space-lg);
-                margin: var(--space-xl) 0;
-                border-radius: var(--radius-lg);
-            }
-            
-            .admin-card-header {
-                flex-direction: column;
-                gap: var(--space-md);
-                align-items: flex-start;
-            }
-            
-            .container-modern {
-                padding: 0 var(--space-md);
-            }
-            
-            .table-responsive {
-                font-size: 0.875rem;
-                border-radius: var(--radius-lg);
-            }
-            
-            .table-modern th,
-            .table-modern td {
-                padding: var(--space-sm) var(--space-xs);
-                font-size: clamp(0.75rem, 2vw, 0.875rem);
-            }
-        }
-
-        @media (max-width: 480px) {
-            .container-modern {
-                padding: 0 var(--space-sm);
-            }
-            
-            .admin-header {
-                padding: var(--space-2xl) 0;
-            }
-            
-            .admin-card {
-                margin: var(--space-lg) 0;
-                padding: var(--space-md);
-                border-radius: var(--radius-md);
-            }
-            
-            .table-responsive {
-                font-size: 0.75rem;
-                border-radius: var(--radius-md);
-            }
-            
-            .table-modern th,
-            .table-modern td {
-                padding: var(--space-xs);
-                font-size: clamp(0.7rem, 2vw, 0.75rem);
-            }
-            
-            .btn-modern {
-                font-size: clamp(0.8rem, 2vw, 0.875rem);
-                padding: var(--space-xs) var(--space-sm);
-            }
-        }
-
-        /* Ultra-Modern Animations */
-        .fade-in {
-            animation: fadeIn 1s ease-out;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(40px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .slide-up {
-            animation: slideUp 0.8s ease-out;
-        }
-
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(50px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Ultra-Modern Focus States */
-        .btn-modern:focus,
-        .form-control-modern:focus,
-        .nav-link-modern:focus {
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.3);
-        }
-
-        /* Ultra-Modern Loading Spinner */
-        .loading-spinner {
-            width: 2rem;
-            height: 2rem;
-            border: 3px solid var(--border-light);
-            border-top: 3px solid var(--accent-primary);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        /* Ultra-Modern Scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: var(--bg-secondary);
-            border-radius: var(--radius-md);
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: var(--accent-primary);
-            border-radius: var(--radius-md);
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: #0099cc;
-        }
-
-        /* Ultra-Modern Selection */
-        ::selection {
-            background: var(--accent-primary);
-            color: var(--bg-primary);
-        }
-
-        ::-moz-selection {
-            background: var(--accent-primary);
-            color: var(--bg-primary);
-        }
-    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <!-- Modern Admin Header -->
-    <header class="admin-header">
-        <div class="container-modern">
-            <div class="admin-content">
-                <h1 class="admin-title">⚾🥎 Admin Panel</h1>
-                <p class="admin-subtitle">Manage schedules, staff, and league operations</p>
-                <nav class="admin-nav">
-                    <a href="#schedules" class="nav-link-modern active" onclick="showSection('schedules')">
-                        <i class="fas fa-calendar-alt"></i>
-                        Schedules
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center">
+                <a href="#" class="navbar-brand">
+                    <i class="fas fa-baseball-ball"></i>
+                    <span>Admin Panel</span>
+                </a>
+                <div class="d-flex gap-3">
+                    <a href="#" class="nav-link active" onclick="showSection('schedule')">
+                        <i class="fas fa-calendar-alt me-2"></i>Schedule
                     </a>
-                    <a href="#staff" class="nav-link-modern" onclick="showSection('staff')">
-                        <i class="fas fa-users"></i>
-                        Staff Directory
+                    <a href="#" class="nav-link" onclick="showSection('staff')">
+                        <i class="fas fa-users me-2"></i>Staff
                     </a>
-                    <a href="#csv" class="nav-link-modern" onclick="showSection('csv')">
-                        <i class="fas fa-upload"></i>
-                        CSV Import
+                    <a href="#" class="nav-link" onclick="showSection('csv')">
+                        <i class="fas fa-upload me-2"></i>CSV Upload
                     </a>
-                    <a href="/" class="nav-link-modern">
-                        <i class="fas fa-eye"></i>
-                        View Public Site
+                    <a href="/" class="nav-link">
+                        <i class="fas fa-external-link-alt me-2"></i>Public View
                     </a>
-                </nav>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Header -->
+    <header class="page-header">
+        <div class="container text-center">
+            <div class="baseball-diamond mb-4"></div>
+            <h1 class="text-gradient mb-3">Admin Dashboard</h1>
+            <p class="lead mb-4">Manage schedules, staff, and system operations with our comprehensive admin tools</p>
+            <div class="d-flex justify-content-center gap-3 flex-wrap">
+                <button class="btn btn-primary btn-lg" onclick="showSection('schedule')">
+                    <i class="fas fa-calendar-plus me-2"></i>Create Schedule
+                </button>
+                <button class="btn btn-secondary btn-lg" onclick="showSection('staff')">
+                    <i class="fas fa-user-plus me-2"></i>Add Staff
+                </button>
+                <button class="btn btn-success btn-lg" onclick="showSection('csv')">
+                    <i class="fas fa-upload me-2"></i>Bulk Upload
+                </button>
             </div>
         </div>
     </header>
 
-    <div class="container-modern">
-        <!-- Schedules Section -->
-        <section id="schedules" class="admin-card" data-aos="fade-up">
-            <div class="admin-card-header">
-                <h2 class="admin-card-title">
-                    <i class="fas fa-calendar-plus"></i>
+    <div class="container">
+        <!-- Quick Stats -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i class="fas fa-chart-bar"></i>
+                    System Overview
+                </h3>
+            </div>
+            <div class="row">
+                <div class="col-md-3 mb-3">
+                    <div class="text-center p-4 border-radius bg-light">
+                        <div class="sports-icon mb-2">
+                            <i class="fas fa-calendar-check"></i>
+                        </div>
+                        <h4 class="text-primary mb-1" id="totalSchedules">0</h4>
+                        <p class="text-muted mb-0">Total Schedules</p>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="text-center p-4 border-radius bg-light">
+                        <div class="sports-icon mb-2">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <h4 class="text-success mb-1" id="totalStaff">0</h4>
+                        <p class="text-muted mb-0">Staff Members</p>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="text-center p-4 border-radius bg-light">
+                        <div class="sports-icon mb-2">
+                            <i class="fas fa-baseball-ball"></i>
+                        </div>
+                        <h4 class="text-warning mb-1" id="totalTeams">0</h4>
+                        <p class="text-muted mb-0">Active Teams</p>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="text-center p-4 border-radius bg-light">
+                        <div class="sports-icon mb-2">
+                            <i class="fas fa-utensils"></i>
+                        </div>
+                        <h4 class="text-info mb-1" id="concessionStands">0</h4>
+                        <p class="text-muted mb-0">Concession Stands</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Schedule Management Section -->
+        <div class="card" id="scheduleSection">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h3 class="card-title">
+                    <i class="fas fa-calendar-alt"></i>
                     Schedule Management
-                </h2>
-                <button class="btn-modern btn-primary-modern" onclick="showCreateScheduleModal()">
-                    <i class="fas fa-plus"></i>
-                    Create New Schedule
+                </h3>
+                <button class="btn btn-primary" onclick="showCreateScheduleModal()">
+                    <i class="fas fa-plus me-2"></i>Create New Schedule
                 </button>
             </div>
             
+            <!-- Create Schedule Form -->
+            <form id="createScheduleForm" class="mb-4">
+                <div class="row">
+                    <div class="col-md-2 mb-3">
+                        <div class="form-group">
+                            <label class="form-label">Season</label>
+                            <select class="form-control form-select" id="season" required>
+                                <option value="">Select Season</option>
+                                <option value="Spring">Spring</option>
+                                <option value="Summer">Summer</option>
+                                <option value="Fall">Fall</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-2 mb-3">
+                        <div class="form-group">
+                            <label class="form-label">Sport</label>
+                            <select class="form-control form-select" id="eventType" required>
+                                <option value="">Select Sport</option>
+                                <option value="Baseball">Baseball</option>
+                                <option value="Softball">Softball</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-2 mb-3">
+                        <div class="form-group">
+                            <label class="form-label">Day</label>
+                            <select class="form-control form-select" id="day" required>
+                                <option value="">Select Day</option>
+                                <option value="Monday">Monday</option>
+                                <option value="Tuesday">Tuesday</option>
+                                <option value="Wednesday">Wednesday</option>
+                                <option value="Thursday">Thursday</option>
+                                <option value="Friday">Friday</option>
+                                <option value="Saturday">Saturday</option>
+                                <option value="Sunday">Sunday</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-2 mb-3">
+                        <div class="form-group">
+                            <label class="form-label">Date</label>
+                            <input type="date" class="form-control" id="date" required>
+                        </div>
+                    </div>
+                    <div class="col-md-2 mb-3">
+                        <div class="form-group">
+                            <label class="form-label">Start Time</label>
+                            <input type="time" class="form-control" id="startTime">
+                        </div>
+                    </div>
+                    <div class="col-md-2 mb-3">
+                        <div class="form-group">
+                            <label class="form-label">End Time</label>
+                            <input type="time" class="form-control" id="endTime">
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-2 mb-3">
+                        <div class="form-group">
+                            <label class="form-label">Division</label>
+                            <select class="form-control form-select" id="division" required>
+                                <option value="">Select Division</option>
+                                <option value="8U">8U</option>
+                                <option value="10U">10U</option>
+                                <option value="12U">12U</option>
+                                <option value="14U">14U</option>
+                                <option value="16U">16U</option>
+                                <option value="18U">18U</option>
+                                <option value="Minor 9/10">Minor 9/10</option>
+                                <option value="Major 11/12">Major 11/12</option>
+                                <option value="Junior 13/14">Junior 13/14</option>
+                                <option value="Senior 15/16">Senior 15/16</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-2 mb-3">
+                        <div class="form-group">
+                            <label class="form-label">Home Team</label>
+                            <select class="form-control form-select" id="homeTeam" required>
+                                <option value="">Select Team</option>
+                                <option value="Tigers">Tigers</option>
+                                <option value="Lions">Lions</option>
+                                <option value="Iron Birds">Iron Birds</option>
+                                <option value="Mariners">Mariners</option>
+                                <option value="8U Duke Blue Devils">8U Duke Blue Devils</option>
+                                <option value="8U Florida State Seminoles">8U Florida State Seminoles</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-2 mb-3">
+                        <div class="form-group">
+                            <label class="form-label">Visitor Team</label>
+                            <select class="form-control form-select" id="visitorTeam" required>
+                                <option value="">Select Team</option>
+                                <option value="Tigers">Tigers</option>
+                                <option value="Lions">Lions</option>
+                                <option value="Iron Birds">Iron Birds</option>
+                                <option value="Mariners">Mariners</option>
+                                <option value="8U Duke Blue Devils">8U Duke Blue Devils</option>
+                                <option value="8U Florida State Seminoles">8U Florida State Seminoles</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-2 mb-3">
+                        <div class="form-group">
+                            <label class="form-label">Venue</label>
+                            <select class="form-control form-select" id="venue" required>
+                                <option value="">Select Venue</option>
+                                <optgroup label="LeBlanc Park">
+                                    <option value="LeBlanc Field - LeBlanc Park">LeBlanc Field - LeBlanc Park</option>
+                                </optgroup>
+                                <optgroup label="Father McGuire Park">
+                                    <option value="Mahoney Field - Father McGuire Park">Mahoney Field - Father McGuire Park</option>
+                                </optgroup>
+                                <optgroup label="Gage Park">
+                                    <option value="Whalen Field - Gage Park">Whalen Field - Gage Park</option>
+                                </optgroup>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-2 mb-3">
+                        <div class="form-group">
+                            <label class="form-label">Home Coach</label>
+                            <select class="form-control form-select" id="homeCoach" required>
+                                <option value="">Select Coach</option>
+                                <option value="Alex Normandie">Alex Normandie</option>
+                                <option value="Mike Upton">Mike Upton</option>
+                                <option value="Matt LeLacheur">Matt LeLacheur</option>
+                                <option value="Pate Donavan">Pate Donavan</option>
+                                <option value="Angelica Molligi">Angelica Molligi</option>
+                                <option value="Ashley Schwagor">Ashley Schwagor</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-2 mb-3">
+                        <div class="form-group">
+                            <label class="form-label">Visitor Coach</label>
+                            <select class="form-control form-select" id="visitorCoach" required>
+                                <option value="">Select Coach</option>
+                                <option value="Alex Normandie">Alex Normandie</option>
+                                <option value="Mike Upton">Mike Upton</option>
+                                <option value="Matt LeLacheur">Matt LeLacheur</option>
+                                <option value="Pate Donavan">Pate Donavan</option>
+                                <option value="Angelica Molligi">Angelica Molligi</option>
+                                <option value="Ashley Schwagor">Ashley Schwagor</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-2 mb-3">
+                        <div class="form-group">
+                            <label class="form-label">Plate Umpire</label>
+                            <select class="form-control form-select" id="plateUmpire">
+                                <option value="">Select Umpire</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-2 mb-3">
+                        <div class="form-group">
+                            <label class="form-label">Base Umpire</label>
+                            <select class="form-control form-select" id="baseUmpire">
+                                <option value="">Select Umpire</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-2 mb-3">
+                        <div class="form-group">
+                            <label class="form-label">Concession Stand</label>
+                            <select class="form-control form-select" id="concessionStand">
+                                <option value="">Select Stand</option>
+                                <optgroup label="LeBlanc Park">
+                                    <option value="Boutin Stand - LeBlanc Park">Boutin Stand - LeBlanc Park</option>
+                                </optgroup>
+                                <optgroup label="Father McGuire Park">
+                                    <option value="Mahoney Stand - Father McGuire Park">Mahoney Stand - Father McGuire Park</option>
+                                </optgroup>
+                                <optgroup label="Gage Park">
+                                    <option value="Finn Field Stand - Gage Park">Finn Field Stand - Gage Park</option>
+                                </optgroup>
+                                <option value="No Concession">No Concession</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-2 mb-3">
+                        <div class="form-group">
+                            <label class="form-label">Concession Staff</label>
+                            <select class="form-control form-select" id="concessionStaff">
+                                <option value="">Select Staff</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary btn-lg w-100">
+                            <i class="fas fa-save me-2"></i>Create Schedule
+                        </button>
+                    </div>
+                </div>
+            </form>
+
             <!-- Schedule Table -->
-            <div class="table-responsive">
-                <table class="table table-modern">
+            <div class="table-container">
+                <table class="table" id="scheduleTable">
                     <thead>
                         <tr>
-                            <th>Season</th>
-                            <th>Event</th>
-                            <th>Day</th>
-                            <th>Date</th>
-                            <th>Time</th>
-                            <th>Division</th>
-                            <th>Home Team</th>
-                            <th>Visitor Team</th>
+                            <th>Date & Time</th>
+                            <th>Sport & Division</th>
+                            <th>Teams</th>
                             <th>Venue</th>
                             <th>Umpires</th>
                             <th>Concession</th>
@@ -684,132 +334,509 @@
                     </thead>
                     <tbody id="scheduleTableBody">
                         <tr>
-                            <td colspan="12" class="text-center py-4">
-                                <div class="loading-spinner"></div>
-                                <p class="mt-2">Loading schedules...</p>
+                            <td colspan="7" class="text-center p-5">
+                                <div class="loading"></div>
+                                <p class="mt-3 text-muted">Loading schedules...</p>
                             </td>
                         </tr>
                     </tbody>
                 </table>
             </div>
-        </section>
+        </div>
 
         <!-- Staff Directory Section -->
-        <section id="staff" class="admin-card" style="display: none;" data-aos="fade-up">
-            <div class="admin-card-header">
-                <h2 class="admin-card-title">
-                    <i class="fas fa-users-cog"></i>
+        <div class="card" id="staffSection" style="display: none;">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h3 class="card-title">
+                    <i class="fas fa-users"></i>
                     Staff Directory Management
-                </h2>
-                <button class="btn-modern btn-success-modern" onclick="showAddStaffModal()">
-                    <i class="fas fa-user-plus"></i>
-                    Add Staff Member
+                </h3>
+                <button class="btn btn-primary" onclick="showAddStaffModal()">
+                    <i class="fas fa-user-plus me-2"></i>Add Staff Member
                 </button>
             </div>
             
             <!-- Staff Table -->
-            <div class="table-responsive">
-                <table class="table table-modern">
+            <div class="table-container">
+                <table class="table" id="staffTable">
                     <thead>
                         <tr>
                             <th>Name</th>
                             <th>Role</th>
-                            <th>Phone</th>
-                            <th>Email</th>
-                            <th>Parent Name</th>
-                            <th>Parent Contact</th>
+                            <th>Contact</th>
+                            <th>Parent Info</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody id="staffTableBody">
                         <tr>
-                            <td colspan="7" class="text-center py-4">
-                                <div class="loading-spinner"></div>
-                                <p class="mt-2">Loading staff...</p>
+                            <td colspan="5" class="text-center p-5">
+                                <div class="loading"></div>
+                                <p class="mt-3 text-muted">Loading staff...</p>
                             </td>
                         </tr>
                     </tbody>
                 </table>
             </div>
-        </section>
+        </div>
 
-        <!-- CSV Import Section -->
-        <section id="csv" class="admin-card" style="display: none;" data-aos="fade-up">
-            <div class="admin-card-header">
-                <h2 class="admin-card-title">
-                    <i class="fas fa-file-csv"></i>
-                    Bulk Schedule Import
-                </h2>
+        <!-- CSV Upload Section -->
+        <div class="card" id="csvSection" style="display: none;">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i class="fas fa-upload"></i>
+                    Bulk Schedule Upload
+                </h3>
             </div>
             
             <div class="row">
-                <div class="col-md-6">
-                    <div class="mb-3">
-                        <label for="csvFile" class="form-label-modern">Select CSV File</label>
-                        <input type="file" id="csvFile" class="form-control-modern" accept=".csv" onchange="processCSVFile(this)">
+                <div class="col-md-6 mb-4">
+                    <div class="form-group">
+                        <label class="form-label">Upload CSV File</label>
+                        <input type="file" class="form-control" id="csvFile" accept=".csv" onchange="processCSVFile(this)">
+                        <small class="text-muted">Upload a CSV file with schedule data. Maximum size: 5MB</small>
                     </div>
-                    <button id="uploadCSV" class="btn-modern btn-primary-modern" onclick="uploadCSV()" style="display: none;">
-                        <i class="fas fa-upload"></i>
-                        Upload CSV
+                    <button class="btn btn-primary mt-3" onclick="uploadCSV()" id="uploadBtn" disabled>
+                        <i class="fas fa-upload me-2"></i>Upload CSV
                     </button>
                 </div>
-                <div class="col-md-6">
-                    <div id="csvPreview" style="display: none;">
-                        <h5>CSV Preview</h5>
-                        <div id="previewContent" class="border rounded p-3 bg-light"></div>
+                <div class="col-md-6 mb-4">
+                    <div class="form-group">
+                        <label class="form-label">CSV Format Guide</label>
+                        <div class="p-3 bg-light border-radius">
+                            <p class="mb-2"><strong>Required columns:</strong></p>
+                            <ul class="mb-0 small">
+                                <li>season, event_type, day, date, start_time, division</li>
+                                <li>home_team, visitor_team, venue, home_coach, visitor_coach</li>
+                                <li>plate_umpire, base_umpire, concession_stand, concession_staff</li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
             </div>
-        </section>
+
+            <!-- CSV Preview -->
+            <div id="csvPreview" style="display: none;">
+                <h5 class="mb-3">CSV Preview</h5>
+                <div class="table-container">
+                    <table class="table" id="previewTable">
+                        <thead>
+                            <tr>
+                                <th>Season</th>
+                                <th>Sport</th>
+                                <th>Day</th>
+                                <th>Date</th>
+                                <th>Teams</th>
+                                <th>Venue</th>
+                            </tr>
+                        </thead>
+                        <tbody id="previewTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <!-- Loading Spinner -->
-    <style>
-        .loading-spinner {
-            width: 2rem;
-            height: 2rem;
-            border: 3px solid var(--border-light);
-            border-top: 3px solid var(--secondary);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto;
-        }
+    <!-- Add Staff Modal -->
+    <div class="modal" id="addStaffModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Add Staff Member</h3>
+                <button class="modal-close" onclick="hideAddStaffModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="addStaffForm">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="form-group">
+                                <label class="form-label">Name</label>
+                                <input type="text" class="form-control" id="staffName" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="form-group">
+                                <label class="form-label">Role</label>
+                                <select class="form-control form-select" id="staffRole" required>
+                                    <option value="">Select Role</option>
+                                    <option value="Coach">Coach</option>
+                                    <option value="Umpire">Umpire</option>
+                                    <option value="Concession Staff">Concession Staff</option>
+                                    <option value="Administrator">Administrator</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="form-group">
+                                <label class="form-label">Phone</label>
+                                <input type="tel" class="form-control" id="staffPhone">
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="form-group">
+                                <label class="form-label">Email</label>
+                                <input type="email" class="form-control" id="staffEmail">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="form-group">
+                                <label class="form-label">Parent Name</label>
+                                <input type="text" class="form-control" id="parentName">
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="form-group">
+                                <label class="form-label">Parent Phone</label>
+                                <input type="tel" class="form-control" id="parentPhone">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Parent Email</label>
+                        <input type="email" class="form-control" id="parentEmail">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="hideAddStaffModal()">
+                    <i class="fas fa-times me-2"></i>Cancel
+                </button>
+                <button type="button" class="btn btn-primary" onclick="addStaffMember()">
+                    <i class="fas fa-save me-2"></i>Add Staff Member
+                </button>
+            </div>
+        </div>
+    </div>
 
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-    </style>
+    <!-- Edit Staff Modal -->
+    <div class="modal" id="editStaffModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Edit Staff Member</h3>
+                <button class="modal-close" onclick="hideEditStaffModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="editStaffForm">
+                    <input type="hidden" id="editStaffId">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="form-group">
+                                <label class="form-label">Name</label>
+                                <input type="text" class="form-control" id="editStaffName" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="form-group">
+                                <label class="form-label">Role</label>
+                                <select class="form-control form-select" id="editStaffRole" required>
+                                    <option value="">Select Role</option>
+                                    <option value="Coach">Coach</option>
+                                    <option value="Umpire">Umpire</option>
+                                    <option value="Concession Staff">Concession Staff</option>
+                                    <option value="Administrator">Administrator</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="form-group">
+                                <label class="form-label">Phone</label>
+                                <input type="tel" class="form-control" id="editStaffPhone">
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="form-group">
+                                <label class="form-label">Email</label>
+                                <input type="email" class="form-control" id="editStaffEmail">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="form-group">
+                                <label class="form-label">Parent Name</label>
+                                <input type="text" class="form-control" id="editParentName">
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="form-group">
+                                <label class="form-label">Parent Phone</label>
+                                <input type="tel" class="form-control" id="editParentPhone">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Parent Email</label>
+                        <input type="email" class="form-control" id="editParentEmail">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="hideEditStaffModal()">
+                    <i class="fas fa-times me-2"></i>Cancel
+                </button>
+                <button type="button" class="btn btn-primary" onclick="updateStaffMember()">
+                    <i class="fas fa-save me-2"></i>Update Staff Member
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Schedule Modal -->
+    <div class="modal" id="editScheduleModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Edit Schedule</h3>
+                <button class="modal-close" onclick="hideEditScheduleModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="editScheduleForm">
+                    <input type="hidden" id="editScheduleId">
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <div class="form-group">
+                                <label class="form-label">Season</label>
+                                <select class="form-control form-select" id="editSeason" required>
+                                    <option value="Spring">Spring</option>
+                                    <option value="Summer">Summer</option>
+                                    <option value="Fall">Fall</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="form-group">
+                                <label class="form-label">Sport</label>
+                                <select class="form-control form-select" id="editEventType" required>
+                                    <option value="Baseball">Baseball</option>
+                                    <option value="Softball">Softball</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="form-group">
+                                <label class="form-label">Day</label>
+                                <select class="form-control form-select" id="editDay" required>
+                                    <option value="Monday">Monday</option>
+                                    <option value="Tuesday">Tuesday</option>
+                                    <option value="Wednesday">Wednesday</option>
+                                    <option value="Thursday">Thursday</option>
+                                    <option value="Friday">Friday</option>
+                                    <option value="Saturday">Saturday</option>
+                                    <option value="Sunday">Sunday</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <div class="form-group">
+                                <label class="form-label">Date</label>
+                                <input type="date" class="form-control" id="editDate" required>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="form-group">
+                                <label class="form-label">Start Time</label>
+                                <input type="time" class="form-control" id="editStartTime">
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="form-group">
+                                <label class="form-label">End Time</label>
+                                <input type="time" class="form-control" id="editEndTime">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <div class="form-group">
+                                <label class="form-label">Division</label>
+                                <select class="form-control form-select" id="editDivision" required>
+                                    <option value="8U">8U</option>
+                                    <option value="10U">10U</option>
+                                    <option value="12U">12U</option>
+                                    <option value="14U">14U</option>
+                                    <option value="16U">16U</option>
+                                    <option value="18U">18U</option>
+                                    <option value="Minor 9/10">Minor 9/10</option>
+                                    <option value="Major 11/12">Major 11/12</option>
+                                    <option value="Junior 13/14">Junior 13/14</option>
+                                    <option value="Senior 15/16">Senior 15/16</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="form-group">
+                                <label class="form-label">Home Team</label>
+                                <select class="form-control form-select" id="editHomeTeam" required>
+                                    <option value="Tigers">Tigers</option>
+                                    <option value="Lions">Lions</option>
+                                    <option value="Iron Birds">Iron Birds</option>
+                                    <option value="Mariners">Mariners</option>
+                                    <option value="8U Duke Blue Devils">8U Duke Blue Devils</option>
+                                    <option value="8U Florida State Seminoles">8U Florida State Seminoles</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="form-group">
+                                <label class="form-label">Visitor Team</label>
+                                <select class="form-control form-select" id="editVisitorTeam" required>
+                                    <option value="Tigers">Tigers</option>
+                                    <option value="Lions">Lions</option>
+                                    <option value="Iron Birds">Iron Birds</option>
+                                    <option value="Mariners">Mariners</option>
+                                    <option value="8U Duke Blue Devils">8U Duke Blue Devils</option>
+                                    <option value="8U Florida State Seminoles">8U Florida State Seminoles</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <div class="form-group">
+                                <label class="form-label">Venue</label>
+                                <select class="form-control form-select" id="editVenue" required>
+                                    <option value="LeBlanc Field - LeBlanc Park">LeBlanc Field - LeBlanc Park</option>
+                                    <option value="Mahoney Field - Father McGuire Park">Mahoney Field - Father McGuire Park</option>
+                                    <option value="Whalen Field - Gage Park">Whalen Field - Gage Park</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="form-group">
+                                <label class="form-label">Home Coach</label>
+                                <select class="form-control form-select" id="editHomeCoach" required>
+                                    <option value="Alex Normandie">Alex Normandie</option>
+                                    <option value="Mike Upton">Mike Upton</option>
+                                    <option value="Matt LeLacheur">Matt LeLacheur</option>
+                                    <option value="Pate Donavan">Pate Donavan</option>
+                                    <option value="Angelica Molligi">Angelica Molligi</option>
+                                    <option value="Ashley Schwagor">Ashley Schwagor</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="form-group">
+                                <label class="form-label">Visitor Coach</label>
+                                <select class="form-control form-select" id="editVisitorCoach" required>
+                                    <option value="Alex Normandie">Alex Normandie</option>
+                                    <option value="Mike Upton">Mike Upton</option>
+                                    <option value="Matt LeLacheur">Matt LeLacheur</option>
+                                    <option value="Pate Donavan">Pate Donavan</option>
+                                    <option value="Angelica Molligi">Angelica Molligi</option>
+                                    <option value="Ashley Schwagor">Ashley Schwagor</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <div class="form-group">
+                                <label class="form-label">Plate Umpire</label>
+                                <select class="form-control form-select" id="editPlateUmpire">
+                                    <option value="">Select Umpire</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="form-group">
+                                <label class="form-label">Base Umpire</label>
+                                <select class="form-control form-select" id="editBaseUmpire">
+                                    <option value="">Select Umpire</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="form-group">
+                                <label class="form-label">Concession Stand</label>
+                                <select class="form-control form-select" id="editConcessionStand">
+                                    <option value="">Select Stand</option>
+                                    <optgroup label="LeBlanc Park">
+                                        <option value="Boutin Stand - LeBlanc Park">Boutin Stand - LeBlanc Park</option>
+                                    </optgroup>
+                                    <optgroup label="Father McGuire Park">
+                                        <option value="Mahoney Stand - Father McGuire Park">Mahoney Stand - Father McGuire Park</option>
+                                    </optgroup>
+                                    <optgroup label="Gage Park">
+                                        <option value="Finn Field Stand - Gage Park">Finn Field Stand - Gage Park</option>
+                                    </optgroup>
+                                    <option value="No Concession">No Concession</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <div class="form-group">
+                                <label class="form-label">Concession Staff</label>
+                                <select class="form-control form-select" id="editConcessionStaff">
+                                    <option value="">Select Staff</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="hideEditScheduleModal()">
+                    <i class="fas fa-times me-2"></i>Cancel
+                </button>
+                <button type="button" class="btn btn-primary" onclick="updateSchedule()">
+                    <i class="fas fa-save me-2"></i>Update Schedule
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Alert Container -->
+    <div id="alertContainer" class="position-fixed" style="top: 20px; right: 20px; z-index: 9999;"></div>
 
     <!-- Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script src="admin.js"></script>
-    
     <script>
-        // Initialize AOS animations
-        AOS.init({
-            duration: 800,
-            easing: 'ease-out-cubic',
-            once: true,
-            offset: 100
-        });
-
-        // Navigation functionality
+        // Section navigation
         function showSection(sectionName) {
             // Hide all sections
-            document.querySelectorAll('.admin-card').forEach(card => {
-                card.style.display = 'none';
-            });
+            document.getElementById('scheduleSection').style.display = 'none';
+            document.getElementById('staffSection').style.display = 'none';
+            document.getElementById('csvSection').style.display = 'none';
             
             // Show selected section
-            document.getElementById(sectionName).style.display = 'block';
+            document.getElementById(sectionName + 'Section').style.display = 'block';
             
-            // Update active nav link
-            document.querySelectorAll('.nav-link-modern').forEach(link => {
-                link.classList.remove('active');
-            });
+            // Update navigation
+            document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
             event.target.classList.add('active');
+        }
+        
+        // Modal functions
+        function showAddStaffModal() {
+            document.getElementById('addStaffModal').classList.add('show');
+        }
+        
+        function hideAddStaffModal() {
+            document.getElementById('addStaffModal').classList.remove('show');
+        }
+        
+        function showEditStaffModal() {
+            document.getElementById('editStaffModal').classList.add('show');
+        }
+        
+        function hideEditStaffModal() {
+            document.getElementById('editStaffModal').classList.remove('show');
+        }
+        
+        function showEditScheduleModal() {
+            document.getElementById('editScheduleModal').classList.add('show');
+        }
+        
+        function hideEditScheduleModal() {
+            document.getElementById('editScheduleModal').classList.remove('show');
         }
     </script>
 </body>
