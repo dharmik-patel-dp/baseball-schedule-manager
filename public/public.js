@@ -6,7 +6,6 @@ let allStaff = [];
 
 // Immediate test - this should run as soon as the script loads
 console.log('🚀 public.js loaded successfully!');
-alert('JavaScript is working! The Request Change buttons should appear now.');
 
 // Test JavaScript function
 function testJavaScript() {
