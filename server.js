@@ -366,6 +366,32 @@ app.put('/api/umpire-requests/:id/status', (req, res) => {
   });
 });
 
+// Approve umpire request
+app.put('/api/umpire-requests/:id/approve', (req, res) => {
+  const { id } = req.params;
+
+  db.run('UPDATE umpire_requests SET status = "approved" WHERE id = ?', [id], function(err) {
+    if (err) {
+      res.status(500).json({ error: err.message });
+      return;
+    }
+    res.json({ message: 'Request approved successfully' });
+  });
+});
+
+// Deny umpire request
+app.put('/api/umpire-requests/:id/deny', (req, res) => {
+  const { id } = req.params;
+
+  db.run('UPDATE umpire_requests SET status = "denied" WHERE id = ?', [id], function(err) {
+    if (err) {
+      res.status(500).json({ error: err.message });
+      return;
+    }
+    res.json({ message: 'Request denied successfully' });
+  });
+});
+
 // CSV upload endpoint
 const upload = multer({ dest: 'uploads/' });
 
