@@ -4,6 +4,10 @@ let filteredSchedules = [];
 let filterOptions = {};
 let allStaff = [];
 
+// Immediate test - this should run as soon as the script loads
+console.log('🚀 public.js loaded successfully!');
+alert('JavaScript is working! The Request Change buttons should appear now.');
+
 // Test JavaScript function
 function testJavaScript() {
     console.log('🧪 JavaScript is working!');
@@ -33,11 +37,17 @@ function testJavaScript() {
 // Initialize the application
 document.addEventListener('DOMContentLoaded', function() {
     console.log('🚀 DOM Content Loaded - Initializing application...');
-    loadSchedules();
-    loadFilterOptions();
-    loadStaff();
-    setupEventListeners();
-    updateFilterStatus();
+    console.log('🎯 About to call loadSchedules...');
+    
+    // Force immediate execution
+    setTimeout(() => {
+        console.log('⏰ Timeout executed - forcing loadSchedules...');
+        loadSchedules();
+        loadFilterOptions();
+        loadStaff();
+        setupEventListeners();
+        updateFilterStatus();
+    }, 100);
 });
 
 // Setup event listeners
