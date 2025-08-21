@@ -8,6 +8,8 @@ let filteredSchedules = [];
 
 // Initialize the application
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('🚀 DOM Content Loaded - Starting application initialization');
+    
     loadSchedules();
     loadUmpireRequests();
     loadConcessionStaffRequests();
@@ -25,6 +27,23 @@ document.addEventListener('DOMContentLoaded', function() {
             setTimeout(updateStats, 500);
         };
     }
+    
+    // Ensure request dropdowns are populated after everything loads
+    setTimeout(() => {
+        console.log('🔍 First check - populating request dropdowns...');
+        populateRequestDropdowns();
+    }, 2000);
+    
+    // Additional checks to ensure dropdowns are populated
+    setTimeout(() => {
+        console.log('🔍 Second check - populating request dropdowns...');
+        populateRequestDropdowns();
+    }, 5000);
+    
+    setTimeout(() => {
+        console.log('🔍 Final check - populating request dropdowns...');
+        populateRequestDropdowns();
+    }, 10000);
     
     // Set up periodic refresh to show real-time updates
     setInterval(() => {
@@ -184,15 +203,20 @@ function populateFilterDropdowns() {
 
 // Populate request form dropdowns
 function populateRequestDropdowns() {
+    console.log('🔄 Starting to populate request dropdowns...');
+    console.log('Current filterOptions:', filterOptions);
+    console.log('Current allSchedules length:', allSchedules ? allSchedules.length : 'undefined');
+    
     try {
         // Get staff names for umpire requests
-        let staffNames = filterOptions.concession_staff || [];
+        let staffNames = filterOptions?.concession_staff || [];
+        console.log('Initial staff names from filterOptions:', staffNames);
         
         // If no staff data is available, try to get it from the schedules
         if (staffNames.length === 0 && allSchedules && allSchedules.length > 0) {
             const uniqueStaff = [...new Set(allSchedules.map(s => s.concession_staff).filter(Boolean))];
             staffNames = uniqueStaff;
-            console.log('Using staff names from schedules:', staffNames);
+            console.log('Using staff names from schedules:', uniqueStaff);
         }
         
         // If still no staff data, use a fallback list
@@ -200,6 +224,8 @@ function populateRequestDropdowns() {
             staffNames = ['Dylan LeLacheur', 'Scott Patenaude', 'Arthur DeSouza', 'Brady Foote', 'James Kane', 'Logan Kelly', 'Connor Stevens', 'Jack Duffy', 'Nathan Nelson', 'Ryan Abrams', 'Matthew Rurak', 'Zach Chachus', 'Andrey LeMay', 'Ben Durkin', 'Emily Lelacheur', 'Kate LeLacheur', 'Danny Gallo', 'Brayden Shea'];
             console.log('Using fallback staff names:', staffNames);
         }
+        
+        console.log('Final staff names to use:', staffNames);
         
         // Populate plate umpire dropdown
         const plateUmpireSelect = document.getElementById('requestedPlateUmpire');
@@ -211,7 +237,9 @@ function populateRequestDropdowns() {
                 option.textContent = name;
                 plateUmpireSelect.appendChild(option);
             });
-            console.log('Plate umpire dropdown populated with', staffNames.length, 'options');
+            console.log('✅ Plate umpire dropdown populated with', staffNames.length, 'options');
+        } else {
+            console.error('❌ Plate umpire dropdown element not found!');
         }
         
         // Populate base umpire dropdown
@@ -224,7 +252,9 @@ function populateRequestDropdowns() {
                 option.textContent = name;
                 baseUmpireSelect.appendChild(option);
             });
-            console.log('Base umpire dropdown populated with', staffNames.length, 'options');
+            console.log('✅ Base umpire dropdown populated with', staffNames.length, 'options');
+        } else {
+            console.error('❌ Base umpire dropdown element not found!');
         }
         
         // Populate concession staff dropdown
@@ -237,14 +267,64 @@ function populateRequestDropdowns() {
                 option.textContent = name;
                 concessionStaffSelect.appendChild(option);
             });
-            console.log('Concession staff dropdown populated with', staffNames.length, 'options');
+            console.log('✅ Concession staff dropdown populated with', staffNames.length, 'options');
+        } else {
+            console.error('❌ Concession staff dropdown element not found!');
         }
+        
+        // Verify the dropdowns are populated
+        setTimeout(() => {
+            verifyDropdownPopulation();
+        }, 100);
+        
     } catch (error) {
-        console.error('Error populating request dropdowns:', error);
+        console.error('❌ Error populating request dropdowns:', error);
         // Fallback: populate with basic options
         populateRequestDropdownsFallback();
     }
 }
+
+// Verify that dropdowns are properly populated
+function verifyDropdownPopulation() {
+    console.log('🔍 Verifying dropdown population...');
+    
+    const plateUmpireSelect = document.getElementById('requestedPlateUmpire');
+    const baseUmpireSelect = document.getElementById('requestedBaseUmpire');
+    const concessionStaffSelect = document.getElementById('requestedConcessionStaff');
+    
+    if (plateUmpireSelect && plateUmpireSelect.options.length <= 1) {
+        console.warn('⚠️ Plate umpire dropdown has insufficient options, repopulating...');
+        populateRequestDropdownsFallback();
+    }
+    
+    if (baseUmpireSelect && baseUmpireSelect.options.length <= 1) {
+        console.warn('⚠️ Base umpire dropdown has insufficient options, repopulating...');
+        populateRequestDropdownsFallback();
+    }
+    
+    if (concessionStaffSelect && concessionStaffSelect.options.length <= 1) {
+        console.warn('⚠️ Concession staff dropdown has insufficient options, repopulating...');
+        populateRequestDropdownsFallback();
+    }
+    
+    console.log('✅ Dropdown verification complete');
+}
+
+// Make functions available globally for debugging
+window.populateRequestDropdowns = populateRequestDropdowns;
+window.populateRequestDropdownsFallback = populateRequestDropdownsFallback;
+window.verifyDropdownPopulation = verifyDropdownPopulation;
+window.debugDropdowns = function() {
+    console.log('🔍 Debugging dropdowns...');
+    console.log('filterOptions:', filterOptions);
+    console.log('allSchedules length:', allSchedules ? allSchedules.length : 'undefined');
+    console.log('requestedPlateUmpire element:', document.getElementById('requestedPlateUmpire'));
+    console.log('requestedBaseUmpire element:', document.getElementById('requestedBaseUmpire'));
+    console.log('requestedConcessionStaff element:', document.getElementById('requestedConcessionStaff'));
+    
+    // Try to populate dropdowns
+    populateRequestDropdowns();
+};
 
 // Fallback function to populate request dropdowns
 function populateRequestDropdownsFallback() {
