@@ -262,6 +262,7 @@ function clearFilters() {
 // Render schedule table
 function renderScheduleTable() {
     console.log('🔍 renderScheduleTable called with', filteredSchedules.length, 'schedules');
+    console.log('🎯 DEBUG: This function is definitely being called!');
     const tbody = document.getElementById('scheduleTableBody');
     if (!tbody) {
         console.error('❌ scheduleTableBody not found');
