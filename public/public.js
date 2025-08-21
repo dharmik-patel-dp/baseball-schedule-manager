@@ -89,6 +89,14 @@ async function loadSchedules() {
         allSchedules = await response.json();
         filteredSchedules = [...allSchedules];
         renderScheduleTable();
+        
+        // Ensure request dropdowns are populated even if filter options fail
+        setTimeout(() => {
+            if (!filterOptions || !filterOptions.concession_staff || filterOptions.concession_staff.length === 0) {
+                console.log('Filter options not loaded, populating request dropdowns from schedules');
+                populateRequestDropdowns();
+            }
+        }, 1000);
     } catch (error) {
         console.error('Error loading schedules:', error);
         showAlert('Error loading schedules. Please try again.', 'danger');
@@ -178,7 +186,20 @@ function populateFilterDropdowns() {
 function populateRequestDropdowns() {
     try {
         // Get staff names for umpire requests
-        const staffNames = filterOptions.concession_staff || [];
+        let staffNames = filterOptions.concession_staff || [];
+        
+        // If no staff data is available, try to get it from the schedules
+        if (staffNames.length === 0 && allSchedules && allSchedules.length > 0) {
+            const uniqueStaff = [...new Set(allSchedules.map(s => s.concession_staff).filter(Boolean))];
+            staffNames = uniqueStaff;
+            console.log('Using staff names from schedules:', staffNames);
+        }
+        
+        // If still no staff data, use a fallback list
+        if (staffNames.length === 0) {
+            staffNames = ['Dylan LeLacheur', 'Scott Patenaude', 'Arthur DeSouza', 'Brady Foote', 'James Kane', 'Logan Kelly', 'Connor Stevens', 'Jack Duffy', 'Nathan Nelson', 'Ryan Abrams', 'Matthew Rurak', 'Zach Chachus', 'Andrey LeMay', 'Ben Durkin', 'Emily Lelacheur', 'Kate LeLacheur', 'Danny Gallo', 'Brayden Shea'];
+            console.log('Using fallback staff names:', staffNames);
+        }
         
         // Populate plate umpire dropdown
         const plateUmpireSelect = document.getElementById('requestedPlateUmpire');
@@ -190,6 +211,7 @@ function populateRequestDropdowns() {
                 option.textContent = name;
                 plateUmpireSelect.appendChild(option);
             });
+            console.log('Plate umpire dropdown populated with', staffNames.length, 'options');
         }
         
         // Populate base umpire dropdown
@@ -202,6 +224,7 @@ function populateRequestDropdowns() {
                 option.textContent = name;
                 baseUmpireSelect.appendChild(option);
             });
+            console.log('Base umpire dropdown populated with', staffNames.length, 'options');
         }
         
         // Populate concession staff dropdown
@@ -214,9 +237,53 @@ function populateRequestDropdowns() {
                 option.textContent = name;
                 concessionStaffSelect.appendChild(option);
             });
+            console.log('Concession staff dropdown populated with', staffNames.length, 'options');
         }
     } catch (error) {
         console.error('Error populating request dropdowns:', error);
+        // Fallback: populate with basic options
+        populateRequestDropdownsFallback();
+    }
+}
+
+// Fallback function to populate request dropdowns
+function populateRequestDropdownsFallback() {
+    const fallbackStaff = ['Dylan LeLacheur', 'Scott Patenaude', 'Arthur DeSouza', 'Brady Foote', 'James Kane', 'Logan Kelly', 'Connor Stevens', 'Jack Duffy', 'Nathan Nelson', 'Ryan Abrams', 'Matthew Rurak', 'Zach Chachus', 'Andrey LeMay', 'Ben Durkin', 'Emily Lelacheur', 'Kate LeLacheur', 'Danny Gallo', 'Brayden Shea'];
+    
+    // Populate plate umpire dropdown
+    const plateUmpireSelect = document.getElementById('requestedPlateUmpire');
+    if (plateUmpireSelect) {
+        plateUmpireSelect.innerHTML = '<option value="">No change</option>';
+        fallbackStaff.forEach(name => {
+            const option = document.createElement('option');
+            option.value = name;
+            option.textContent = name;
+            plateUmpireSelect.appendChild(option);
+        });
+    }
+    
+    // Populate base umpire dropdown
+    const baseUmpireSelect = document.getElementById('requestedBaseUmpire');
+    if (baseUmpireSelect) {
+        baseUmpireSelect.innerHTML = '<option value="">No change</option>';
+        fallbackStaff.forEach(name => {
+            const option = document.createElement('option');
+            option.value = name;
+            option.textContent = name;
+            baseUmpireSelect.appendChild(option);
+        });
+    }
+    
+    // Populate concession staff dropdown
+    const concessionStaffSelect = document.getElementById('requestedConcessionStaff');
+    if (concessionStaffSelect) {
+        concessionStaffSelect.innerHTML = '<option value="">Select Staff Member</option>';
+        fallbackStaff.forEach(name => {
+            const option = document.createElement('option');
+            option.value = name;
+            option.textContent = name;
+            concessionStaffSelect.appendChild(option);
+        });
     }
 }
 
