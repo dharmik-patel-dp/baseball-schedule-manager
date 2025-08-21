@@ -15,8 +15,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Setup event listeners
 function setupEventListeners() {
+    // Schedule form submission
+    document.getElementById('scheduleForm').addEventListener('submit', handleScheduleSubmit);
+    
     // CSV file input
-    document.getElementById('csvFile').addEventListener('change', processCSVFile);
+    document.getElementById('csvFile').addEventListener('change', handleCSVFileSelect);
+    
+    // CSV drag and drop
+    const csvUploadArea = document.getElementById('csvUploadArea');
+    csvUploadArea.addEventListener('dragover', handleDragOver);
+    csvUploadArea.addEventListener('drop', handleDrop);
+    csvUploadArea.addEventListener('dragleave', handleDragLeave);
 }
 
 // Load all schedules
@@ -39,8 +48,8 @@ async function loadUmpireRequests() {
         const response = await fetch('/api/umpire-requests');
         if (!response.ok) throw new Error('Failed to fetch umpire requests');
         
-        const requests = await response.json();
-        renderUmpireRequestsTable(requests);
+        allUmpireRequests = await response.json();
+        renderUmpireRequestsTable();
     } catch (error) {
         console.error('Error loading umpire requests:', error);
         showAlert('Error loading umpire requests. Please try again.', 'danger');
@@ -755,9 +764,8 @@ function processCSVFile(file) {
                 return;
             }
             
-            // Show preview and enable upload button
+            // Show preview
             showCSVPreview();
-            document.getElementById('uploadCSV').style.display = 'inline-block';
         } catch (error) {
             console.error('Error processing CSV:', error);
             showAlert('Error processing CSV file. Please check the file format.', 'danger');
@@ -904,12 +912,6 @@ function showAlert(message, type) {
     }
 }
 
-// Show create schedule modal
-function showCreateScheduleModal() {
-    const modal = new bootstrap.Modal(document.getElementById('createScheduleModal'));
-    modal.show();
-}
-
 // Export functions for global access
 window.editSchedule = editSchedule;
 window.updateSchedule = updateSchedule;
@@ -923,115 +925,4 @@ window.showAddStaffModal = showAddStaffModal;
 window.addStaffMember = addStaffMember;
 window.editStaff = editStaff;
 window.updateStaffMember = updateStaffMember;
-window.deleteStaff = deleteStaff;
-window.showCreateScheduleModal = showCreateScheduleModal;
-window.refreshUmpireRequests = refreshUmpireRequests;
-window.approveUmpireRequest = approveUmpireRequest;
-window.denyUmpireRequest = denyUmpireRequest;
-
-// Umpire Request Management Functions
-async function loadUmpireRequests() {
-    try {
-        const response = await fetch('/api/umpire-requests');
-        if (!response.ok) throw new Error('Failed to fetch umpire requests');
-        
-        const requests = await response.json();
-        renderUmpireRequestsTable(requests);
-    } catch (error) {
-        console.error('Error loading umpire requests:', error);
-        showAlert('Error loading umpire requests.', 'danger');
-    }
-}
-
-function renderUmpireRequestsTable(requests) {
-    const tbody = document.getElementById('umpireRequestsTableBody');
-    if (!tbody) return;
-    
-    if (requests.length === 0) {
-        tbody.innerHTML = `
-            <tr>
-                <td colspan="6" class="text-center py-4">
-                    <i class="fas fa-info-circle me-2"></i>No umpire change requests found.
-                </td>
-            </tr>
-        `;
-        return;
-    }
-    
-    tbody.innerHTML = requests.map(request => `
-        <tr>
-            <td>
-                <div><strong>Game ID:</strong> ${request.game_id}</div>
-                <div><small class="text-muted">Submitted: ${new Date(request.created_at).toLocaleDateString()}</small></div>
-            </td>
-            <td>
-                <div><strong>Plate:</strong> ${request.current_plate_umpire || 'N/A'}</div>
-                <div><strong>Base:</strong> ${request.current_base_umpire || 'N/A'}</div>
-            </td>
-            <td>
-                <div><strong>Plate:</strong> ${request.requested_plate_umpire || 'No Change'}</div>
-                <div><strong>Base:</strong> ${request.requested_base_umpire || 'No Change'}</div>
-            </td>
-            <td>${request.reason || 'N/A'}</td>
-            <td>
-                <span class="badge badge-${request.status === 'pending' ? 'warning' : request.status === 'approved' ? 'success' : 'danger'}">
-                    ${request.status || 'pending'}
-                </span>
-            </td>
-            <td>
-                ${request.status === 'pending' ? `
-                    <button class="btn btn-sm btn-success me-2" onclick="approveUmpireRequest(${request.id})">
-                        <i class="fas fa-check"></i> Approve
-                    </button>
-                    <button class="btn btn-sm btn-danger" onclick="denyUmpireRequest(${request.id})">
-                        <i class="fas fa-times"></i> Deny
-                    </button>
-                ` : `
-                    <span class="text-muted">Processed</span>
-                `}
-            </td>
-        </tr>
-    `).join('');
-}
-
-async function approveUmpireRequest(requestId) {
-    try {
-        console.log('🔄 Approving request:', requestId);
-        const response = await fetch(`/api/umpire-requests/${requestId}/approve`, {
-            method: 'PUT'
-        });
-        
-        if (!response.ok) throw new Error('Failed to approve request');
-        
-        const result = await response.json();
-        console.log('✅ Approval successful:', result);
-        showAlert('Umpire request approved successfully!', 'success');
-        loadUmpireRequests();
-    } catch (error) {
-        console.error('❌ Error approving request:', error);
-        showAlert('Error approving request.', 'danger');
-    }
-}
-
-async function denyUmpireRequest(requestId) {
-    try {
-        console.log('🔄 Denying request:', requestId);
-        const response = await fetch(`/api/umpire-requests/${requestId}/deny`, {
-            method: 'PUT'
-        });
-        
-        if (!response.ok) throw new Error('Failed to deny request');
-        
-        const result = await response.json();
-        console.log('✅ Denial successful:', result);
-        showAlert('Umpire request denied successfully!', 'success');
-        loadUmpireRequests();
-    } catch (error) {
-        console.error('❌ Error denying request:', error);
-        showAlert('Error denying request.', error);
-    }
-}
-
-function refreshUmpireRequests() {
-    loadUmpireRequests();
-} 
+window.deleteStaff = deleteStaff; 

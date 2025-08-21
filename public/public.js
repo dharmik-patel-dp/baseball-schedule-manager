@@ -2,64 +2,24 @@
 let allSchedules = [];
 let filteredSchedules = [];
 let filterOptions = {};
-let allStaff = [];
-
-// Immediate test - this should run as soon as the script loads
-console.log('🚀 public.js loaded successfully!');
-
-// Test JavaScript function
-function testJavaScript() {
-    console.log('🧪 JavaScript is working!');
-    console.log('📊 allSchedules length:', allSchedules.length);
-    console.log('🔍 filteredSchedules length:', filteredSchedules.length);
-    console.log('📋 filterOptions:', filterOptions);
-    
-    // Update debug info on page
-    const debugContent = document.getElementById('debugContent');
-    if (debugContent) {
-        debugContent.innerHTML = `
-            <p><strong>JavaScript Status:</strong> ✅ Working</p>
-            <p><strong>Total Schedules:</strong> ${allSchedules.length}</p>
-            <p><strong>Filtered Schedules:</strong> ${filteredSchedules.length}</p>
-            <p><strong>Sample Schedule:</strong></p>
-            <pre>${JSON.stringify(allSchedules[0], null, 2)}</pre>
-        `;
-    }
-    
-    alert('JavaScript is working! Check console and debug info below for details.');
-    
-    // Force render the table again
-    console.log('🔄 Forcing table re-render...');
-    renderScheduleTable();
-}
 
 // Initialize the application
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('🚀 DOM Content Loaded - Initializing application...');
-    console.log('🎯 About to call loadSchedules...');
-    
-    // Force immediate execution
-    setTimeout(() => {
-        console.log('⏰ Timeout executed - forcing loadSchedules...');
-        loadSchedules();
-        loadFilterOptions();
-        loadStaff();
-        setupEventListeners();
-        updateFilterStatus();
-    }, 100);
+    loadSchedules();
+    loadFilterOptions();
+    setupEventListeners();
 });
 
 // Setup event listeners
 function setupEventListeners() {
-    // Umpire request form submission (the form element doesn't need submit event since we use onclick)
-    // Remove this line as it's causing the error - the form now uses onclick handler
+    // Umpire request form submission
+    document.getElementById('umpireRequestFormElement').addEventListener('submit', handleUmpireRequest);
     
     // Filter change events
     const filterElements = [
         'seasonFilter', 'eventTypeFilter', 'dayFilter', 'divisionFilter',
-        'homeTeamFilter', 'visitorTeamFilter', 'venueFilter', 'homeCoachFilter',
-        'visitorCoachFilter', 'plateUmpireFilter', 'baseUmpireFilter',
-        'concessionStandFilter', 'concessionStaffFilter', 'dateFilter', 'timeFilter'
+        'teamFilter', 'venueFilter', 'coachFilter', 'umpireFilter',
+        'concessionFilter', 'concessionStaffFilter', 'dateFilter', 'timeFilter'
     ];
     
     filterElements.forEach(id => {
@@ -73,31 +33,15 @@ function setupEventListeners() {
 // Load all schedules
 async function loadSchedules() {
     try {
-        console.log('🔄 Loading schedules...');
         const response = await fetch('/api/schedules');
         if (!response.ok) throw new Error('Failed to fetch schedules');
         
         allSchedules = await response.json();
-        console.log('✅ Loaded', allSchedules.length, 'schedules');
         filteredSchedules = [...allSchedules];
         renderScheduleTable();
     } catch (error) {
-        console.error('❌ Error loading schedules:', error);
+        console.error('Error loading schedules:', error);
         showAlert('Error loading schedules. Please try again.', 'danger');
-    }
-}
-
-// Load staff directory
-async function loadStaff() {
-    try {
-        const response = await fetch('/api/staff-names');
-        if (!response.ok) throw new Error('Failed to fetch staff');
-        
-        allStaff = await response.json();
-        console.log('✅ Staff loaded:', allStaff);
-    } catch (error) {
-        console.error('❌ Error loading staff:', error);
-        allStaff = [];
     }
 }
 
@@ -138,14 +82,11 @@ function populateFilterDropdowns() {
         'eventTypeFilter': 'event_type',
         'dayFilter': 'day',
         'divisionFilter': 'division',
-        'homeTeamFilter': 'home_team',
-        'visitorTeamFilter': 'visitor_team',
+        'teamFilter': 'home_team',
         'venueFilter': 'venue',
-        'homeCoachFilter': 'home_coach',
-        'visitorCoachFilter': 'visitor_coach',
-        'plateUmpireFilter': 'plate_umpire',
-        'baseUmpireFilter': 'base_umpire',
-        'concessionStandFilter': 'concession_stand',
+        'coachFilter': 'home_coach',
+        'umpireFilter': 'plate_umpire',
+        'concessionFilter': 'concession_stand',
         'concessionStaffFilter': 'concession_staff'
     };
 
@@ -188,14 +129,11 @@ function applyFilters() {
         eventType: document.getElementById('eventTypeFilter')?.value || '',
         day: document.getElementById('dayFilter')?.value || '',
         division: document.getElementById('divisionFilter')?.value || '',
-        homeTeam: document.getElementById('homeTeamFilter')?.value || '',
-        visitorTeam: document.getElementById('visitorTeamFilter')?.value || '',
+        team: document.getElementById('teamFilter')?.value || '',
         venue: document.getElementById('venueFilter')?.value || '',
-        homeCoach: document.getElementById('homeCoachFilter')?.value || '',
-        visitorCoach: document.getElementById('visitorCoachFilter')?.value || '',
-        plateUmpire: document.getElementById('plateUmpireFilter')?.value || '',
-        baseUmpire: document.getElementById('baseUmpireFilter')?.value || '',
-        concessionStand: document.getElementById('concessionStandFilter')?.value || '',
+        coach: document.getElementById('coachFilter')?.value || '',
+        umpire: document.getElementById('umpireFilter')?.value || '',
+        concession: document.getElementById('concessionFilter')?.value || '',
         concessionStaff: document.getElementById('concessionStaffFilter')?.value || '',
         date: document.getElementById('dateFilter')?.value || '',
         time: document.getElementById('timeFilter')?.value || ''
@@ -214,21 +152,15 @@ function applyFilters() {
                     return schedule.day === value;
                 case 'division':
                     return schedule.division === value;
-                case 'homeTeam':
-                    return schedule.home_team === value;
-                case 'visitorTeam':
-                    return schedule.visitor_team === value;
+                case 'team':
+                    return schedule.home_team === value || schedule.visitor_team === value;
                 case 'venue':
                     return schedule.venue === value;
-                case 'homeCoach':
-                    return schedule.home_coach === value;
-                case 'visitorCoach':
-                    return schedule.visitor_coach === value;
-                case 'plateUmpire':
-                    return schedule.plate_umpire === value;
-                case 'baseUmpire':
-                    return schedule.base_umpire === value;
-                case 'concessionStand':
+                case 'coach':
+                    return schedule.home_coach === value || schedule.visitor_coach === value;
+                case 'umpire':
+                    return schedule.plate_umpire === value || schedule.base_umpire === value;
+                case 'concession':
                     if (value === 'No Concession') {
                         return schedule.concession_stand === 'No Concession';
                     } else if (value) {
@@ -251,16 +183,14 @@ function applyFilters() {
     });
 
     renderScheduleTable();
-    updateFilterStatus();
 }
 
 // Clear all filters
 function clearFilters() {
     const filterElements = [
         'seasonFilter', 'eventTypeFilter', 'dayFilter', 'divisionFilter',
-        'homeTeamFilter', 'visitorTeamFilter', 'venueFilter', 'homeCoachFilter',
-        'visitorCoachFilter', 'plateUmpireFilter', 'baseUmpireFilter',
-        'concessionStandFilter', 'concessionStaffFilter', 'dateFilter', 'timeFilter'
+        'teamFilter', 'venueFilter', 'coachFilter', 'umpireFilter',
+        'concessionFilter', 'concessionStaffFilter', 'dateFilter', 'timeFilter'
     ];
     
     filterElements.forEach(id => {
@@ -270,18 +200,12 @@ function clearFilters() {
     
     filteredSchedules = [...allSchedules];
     renderScheduleTable();
-    updateFilterStatus();
 }
 
 // Render schedule table
 function renderScheduleTable() {
-    console.log('🔍 renderScheduleTable called with', filteredSchedules.length, 'schedules');
-    console.log('🎯 DEBUG: This function is definitely being called!');
     const tbody = document.getElementById('scheduleTableBody');
-    if (!tbody) {
-        console.error('❌ scheduleTableBody not found');
-        return;
-    }
+    if (!tbody) return;
     
     if (filteredSchedules.length === 0) {
         tbody.innerHTML = `
@@ -294,15 +218,7 @@ function renderScheduleTable() {
         return;
     }
 
-    tbody.innerHTML = filteredSchedules.map(schedule => {
-        console.log('🎯 Rendering schedule ID:', schedule.id, 'with data:', {
-            home_team: schedule.home_team,
-            visitor_team: schedule.visitor_team,
-            venue: schedule.venue
-        });
-        console.log('🔍 Schedule object:', schedule);
-        
-        return `
+    tbody.innerHTML = filteredSchedules.map(schedule => `
         <tr>
             <td><span class="badge bg-primary">${schedule.season || 'N/A'}</span></td>
             <td>
@@ -349,14 +265,12 @@ function renderScheduleTable() {
                 </div>
             </td>
             <td>
-                <button class="btn-request-change" onclick="showUmpireRequestForm(${schedule.id})">
-                    <i class="fas fa-edit me-1"></i>
-                    Request Change
+                <button class="btn btn-sm btn-outline-primary" onclick="showUmpireRequestForm(${schedule.id})">
+                    <i class="fas fa-edit me-1"></i>Request Change
                 </button>
             </td>
         </tr>
-    `;
-    }).join('');
+    `).join('');
 }
 
 // Format date for display
@@ -376,40 +290,6 @@ function formatDate(dateString) {
     }
 }
 
-// Populate umpire dropdowns with available staff
-function populateUmpireDropdowns() {
-    try {
-        console.log('🔄 Populating umpire dropdowns...');
-        console.log('📊 allStaff:', allStaff);
-        
-        // Get available umpires from staff data
-        const umpires = allStaff ? allStaff.filter(staff => staff.role === 'Umpire') : [];
-        console.log('👨‍⚖️ Umpires found:', umpires);
-        
-        const plateUmpireSelect = document.getElementById('requestedPlateUmpire');
-        const baseUmpireSelect = document.getElementById('requestedBaseUmpire');
-        
-        console.log('🔍 Plate umpire select element:', plateUmpireSelect);
-        console.log('🔍 Base umpire select element:', baseUmpireSelect);
-        
-        if (plateUmpireSelect) {
-            const options = '<option value="">No Change</option>' +
-                umpires.map(umpire => `<option value="${umpire.name}">${umpire.name}</option>`).join('');
-            plateUmpireSelect.innerHTML = options;
-            console.log('✅ Plate umpire options set:', options);
-        }
-        
-        if (baseUmpireSelect) {
-            const options = '<option value="">No Change</option>' +
-                umpires.map(umpire => `<option value="${umpire.name}">${umpire.name}</option>`).join('');
-            baseUmpireSelect.innerHTML = options;
-            console.log('✅ Base umpire options set:', options);
-        }
-    } catch (error) {
-        console.error('❌ Error populating umpire dropdowns:', error);
-    }
-}
-
 // Show umpire request form
 function showUmpireRequestForm(gameId) {
     try {
@@ -420,29 +300,43 @@ function showUmpireRequestForm(gameId) {
         }
 
         // Populate form fields
-        document.getElementById('requestGameId').value = gameId;
-        document.getElementById('requestGameDate').textContent = formatDate(schedule.date);
-        document.getElementById('requestGameTime').textContent = `${schedule.start_time || 'N/A'} ${schedule.am_pm || ''}`;
-        document.getElementById('requestGameTeams').textContent = `${schedule.home_team || 'N/A'} vs ${schedule.visitor_team || 'N/A'}`;
-        document.getElementById('requestGameVenue').textContent = schedule.venue || 'N/A';
-        document.getElementById('requestGameDivision').textContent = schedule.division || 'N/A';
-        document.getElementById('requestGameEvent').textContent = schedule.event_type || 'N/A';
+        const requestGameId = document.getElementById('requestGameId');
+        const gameDetails = document.getElementById('gameDetails');
+        const currentUmpires = document.getElementById('currentUmpires');
         
-        // Populate current umpires
-        document.getElementById('currentPlateUmpire').textContent = schedule.plate_umpire || 'N/A';
-        document.getElementById('currentBaseUmpire').textContent = schedule.base_umpire || 'N/A';
+        if (requestGameId) requestGameId.value = gameId;
         
-        // Populate umpire dropdowns with available staff
-        populateUmpireDropdowns();
+        if (gameDetails) {
+            gameDetails.innerHTML = `
+                <strong>${schedule.home_team || 'N/A'} vs ${schedule.visitor_team || 'N/A'}</strong><br>
+                ${schedule.date || 'N/A'} at ${schedule.start_time || 'N/A'} ${schedule.am_pm || ''}<br>
+                ${schedule.venue || 'N/A'} - ${schedule.division || 'N/A'}
+            `;
+        }
+        
+        if (currentUmpires) {
+            currentUmpires.innerHTML = `
+                <strong>Plate:</strong> ${schedule.plate_umpire || 'N/A'}<br>
+                <strong>Base:</strong> ${schedule.base_umpire || 'N/A'}
+            `;
+        }
         
         // Clear previous values
-        document.getElementById('requestedPlateUmpire').value = '';
-        document.getElementById('requestedBaseUmpire').value = '';
-        document.getElementById('changeReason').value = '';
+        const requestedPlateUmpire = document.getElementById('requestedPlateUmpire');
+        const requestedBaseUmpire = document.getElementById('requestedBaseUmpire');
+        const changeReason = document.getElementById('changeReason');
         
-        // Show modal
-        const modal = new bootstrap.Modal(document.getElementById('umpireRequestModal'));
-        modal.show();
+        if (requestedPlateUmpire) requestedPlateUmpire.value = '';
+        if (requestedBaseUmpire) requestedBaseUmpire.value = '';
+        if (changeReason) changeReason.value = '';
+        
+        // Show form
+        const umpireRequestForm = document.getElementById('umpireRequestForm');
+        if (umpireRequestForm) {
+            umpireRequestForm.style.display = 'block';
+            // Scroll to form
+            umpireRequestForm.scrollIntoView({ behavior: 'smooth' });
+        }
     } catch (error) {
         console.error('Error showing umpire request form:', error);
         showAlert('Error showing umpire request form.', 'danger');
@@ -452,9 +346,9 @@ function showUmpireRequestForm(gameId) {
 // Hide umpire request form
 function hideUmpireRequestForm() {
     try {
-        const modal = bootstrap.Modal.getInstance(document.getElementById('umpireRequestModal'));
-        if (modal) {
-            modal.hide();
+        const umpireRequestForm = document.getElementById('umpireRequestForm');
+        if (umpireRequestForm) {
+            umpireRequestForm.style.display = 'none';
         }
     } catch (error) {
         console.error('Error hiding umpire request form:', error);
@@ -462,7 +356,8 @@ function hideUmpireRequestForm() {
 }
 
 // Handle umpire request submission
-async function handleUmpireRequest() {
+async function handleUmpireRequest(event) {
+    event.preventDefault();
     
     const gameId = document.getElementById('requestGameId').value;
     const schedule = allSchedules.find(s => s.id === parseInt(gameId));
@@ -498,10 +393,8 @@ async function handleUmpireRequest() {
         showAlert('Umpire change request submitted successfully!', 'success');
         hideUmpireRequestForm();
         
-        // Reset form fields manually
-        document.getElementById('requestedPlateUmpire').value = '';
-        document.getElementById('requestedBaseUmpire').value = '';
-        document.getElementById('changeReason').value = '';
+        // Reset form
+        document.getElementById('umpireRequestFormElement').reset();
         
     } catch (error) {
         console.error('Error submitting request:', error);
@@ -549,36 +442,9 @@ function showAlert(message, type) {
     }
 }
 
-// Update filter status display
-function updateFilterStatus() {
-    const filterStatus = document.getElementById('filterStatus');
-    if (!filterStatus) return;
-    
-    const activeFilters = [
-        'seasonFilter', 'eventTypeFilter', 'dayFilter', 'divisionFilter',
-        'homeTeamFilter', 'visitorTeamFilter', 'venueFilter', 'homeCoachFilter',
-        'visitorCoachFilter', 'plateUmpireFilter', 'baseUmpireFilter',
-        'concessionStandFilter', 'concessionStaffFilter', 'dateFilter', 'timeFilter'
-    ].filter(id => {
-        const element = document.getElementById(id);
-        return element && element.value !== '';
-    });
-    
-    if (activeFilters.length === 0) {
-        filterStatus.innerHTML = '<i class="fas fa-info-circle"></i><span>Ready to filter games</span>';
-        filterStatus.className = 'filter-status';
-    } else {
-        const filterCount = activeFilters.length;
-        filterStatus.innerHTML = `<i class="fas fa-filter"></i><span>${filterCount} active filter${filterCount > 1 ? 's' : ''} applied</span>`;
-        filterStatus.className = 'filter-status active';
-    }
-}
-
 // Export functions for global access
 window.showUmpireRequestForm = showUmpireRequestForm;
 window.hideUmpireRequestForm = hideUmpireRequestForm;
-window.handleUmpireRequest = handleUmpireRequest;
-window.testJavaScript = testJavaScript;
 window.applyFilters = applyFilters;
 window.clearFilters = clearFilters;
 window.toggleFilters = toggleFilters; 

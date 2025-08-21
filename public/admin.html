@@ -17,50 +17,51 @@
     
     <style>
         :root {
-            /* Minimalist Color Palette */
-            --bg-primary: #ffffff;
-            --bg-secondary: #fafafa;
-            --bg-tertiary: #f5f5f5;
-            --bg-dark: #000000;
+            /* Ultra-Modern Color Palette */
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #111111;
+            --bg-tertiary: #1a1a1a;
+            --bg-card: #1e1e1e;
+            --bg-elevated: #252525;
             
-            --text-primary: #171717;
-            --text-secondary: #525252;
-            --text-tertiary: #737373;
-            --text-muted: #a3a3a3;
+            --text-primary: #ffffff;
+            --text-secondary: #e0e0e0;
+            --text-muted: #a0a0a0;
+            --text-accent: #00d4ff;
             
-            --accent-blue: #3b82f6;
-            --accent-green: #10b981;
-            --accent-orange: #f59e0b;
-            --accent-red: #ef4444;
-            --accent-purple: #8b5cf6;
+            --accent-primary: #00d4ff;
+            --accent-secondary: #ff6b6b;
+            --accent-success: #51cf66;
+            --accent-warning: #ffd43b;
             
-            --border-light: #e5e5e5;
-            --border-medium: #d4d4d4;
-            --border-dark: #a3a3a3;
+            --border-light: #333333;
+            --border-medium: #404040;
+            --border-accent: #00d4ff;
             
-            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-            --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+            --shadow-soft: 0 8px 32px rgba(0, 0, 0, 0.4);
+            --shadow-medium: 0 16px 64px rgba(0, 0, 0, 0.6);
+            --shadow-strong: 0 24px 96px rgba(0, 0, 0, 0.8);
+            --shadow-glow: 0 0 40px rgba(0, 212, 255, 0.3);
             
-            --radius-sm: 0.375rem;
-            --radius-md: 0.5rem;
-            --radius-lg: 0.75rem;
-            --radius-xl: 1rem;
-            --radius-2xl: 1.5rem;
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 24px;
+            --radius-full: 9999px;
             
-            --space-1: 0.25rem;
-            --space-2: 0.5rem;
-            --space-3: 0.75rem;
-            --space-4: 1rem;
-            --space-5: 1.25rem;
-            --space-6: 1.5rem;
-            --space-8: 2rem;
-            --space-10: 2.5rem;
-            --space-12: 3rem;
-            --space-16: 4rem;
-            --space-20: 5rem;
-            --space-24: 6rem;
+            --space-xs: 0.5rem;
+            --space-sm: 1rem;
+            --space-md: 1.5rem;
+            --space-lg: 2rem;
+            --space-xl: 3rem;
+            --space-2xl: 4rem;
+            --space-3xl: 6rem;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
         body {
@@ -68,257 +69,298 @@
             background: var(--bg-primary);
             color: var(--text-primary);
             line-height: 1.6;
-            font-size: 14px;
+            min-height: 100vh;
+            overflow-x: hidden;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
         }
 
-        /* Minimalist Typography */
+        /* Ultra-Modern Typography */
         h1, h2, h3, h4, h5, h6 {
-            font-weight: 600;
-            line-height: 1.2;
+            font-weight: 700;
+            line-height: 1.1;
             color: var(--text-primary);
-            letter-spacing: -0.025em;
+            letter-spacing: -0.02em;
         }
 
-        h1 { font-size: 2.25rem; margin-bottom: var(--space-6); }
-        h2 { font-size: 1.875rem; margin-bottom: var(--space-5); }
-        h3 { font-size: 1.5rem; margin-bottom: var(--space-4); }
-        h4 { font-size: 1.25rem; margin-bottom: var(--space-3); }
-        h5 { font-size: 1.125rem; margin-bottom: var(--space-2); }
-        h6 { font-size: 1rem; margin-bottom: var(--space-2); }
+        h1 { font-size: clamp(2.5rem, 8vw, 4rem); margin-bottom: var(--space-lg); }
+        h2 { font-size: clamp(2rem, 6vw, 3rem); margin-bottom: var(--space-md); }
+        h3 { font-size: clamp(1.5rem, 4vw, 2rem); margin-bottom: var(--space-sm); }
+        h4 { font-size: clamp(1.25rem, 3vw, 1.5rem); margin-bottom: var(--space-sm); }
 
         p {
-            margin-bottom: var(--space-4);
+            margin-bottom: var(--space-md);
             color: var(--text-secondary);
-            font-size: 0.875rem;
-            line-height: 1.6;
+            font-size: clamp(1rem, 2vw, 1.125rem);
+            line-height: 1.7;
         }
 
-        /* Minimalist Admin Header */
+        /* Ultra-Modern Admin Header */
         .admin-header {
-            background: var(--bg-primary);
-            border-bottom: 1px solid var(--border-light);
-            padding: var(--space-6) 0;
-            position: sticky;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            color: var(--text-primary);
+            padding: var(--space-3xl) 0;
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--shadow-strong);
+            margin-bottom: var(--space-2xl);
+        }
+
+        .admin-header::before {
+            content: '';
+            position: absolute;
             top: 0;
-            z-index: 100;
-            backdrop-filter: blur(20px);
-            background: rgba(255, 255, 255, 0.95);
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(0, 212, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 107, 107, 0.1) 0%, transparent 50%);
+            animation: float 20s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            33% { transform: translateY(-20px) rotate(1deg); }
+            66% { transform: translateY(10px) rotate(-1deg); }
         }
 
         .admin-content {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            max-width: 1200px;
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            max-width: 900px;
             margin: 0 auto;
-            padding: 0 var(--space-6);
+            padding: 0 var(--space-lg);
         }
 
         .admin-title {
-            font-family: 'JetBrains Mono', monospace;
-            font-weight: 600;
-            font-size: 1.25rem;
-            color: var(--text-primary);
-            text-decoration: none;
+            font-size: clamp(3rem, 10vw, 5rem);
+            font-weight: 900;
+            margin-bottom: var(--space-md);
+            background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent-primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1;
+            text-shadow: 0 0 40px rgba(0, 212, 255, 0.5);
         }
 
         .admin-subtitle {
-            font-size: 1rem;
+            font-size: clamp(1.25rem, 3vw, 1.5rem);
+            font-weight: 400;
+            margin-bottom: var(--space-xl);
             color: var(--text-secondary);
-            margin: 0;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            opacity: 0.9;
         }
 
-        .nav-links {
+        .admin-nav {
             display: flex;
-            gap: var(--space-8);
-            align-items: center;
+            gap: var(--space-md);
+            justify-content: center;
+            flex-wrap: wrap;
         }
 
+        /* Ultra-Modern Navigation Links */
         .nav-link-modern {
-            color: var(--text-secondary);
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-primary);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-full);
+            padding: var(--space-sm) var(--space-lg);
             text-decoration: none;
-            font-weight: 500;
-            font-size: 0.875rem;
-            transition: color 0.2s ease;
-            padding: var(--space-2) var(--space-3);
-            border-radius: var(--radius-md);
+            font-weight: 600;
+            transition: all 0.4s ease;
+            backdrop-filter: blur(30px);
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-sm);
+            font-size: clamp(0.875rem, 2vw, 1rem);
+            box-shadow: var(--shadow-soft);
         }
 
         .nav-link-modern:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--border-accent);
             color: var(--text-primary);
-            background: var(--bg-secondary);
+            transform: translateY(-4px) scale(1.02);
             text-decoration: none;
+            box-shadow: var(--shadow-medium);
         }
 
         .nav-link-modern.active {
-            color: var(--accent-blue);
-            background: var(--bg-secondary);
+            background: var(--accent-primary);
+            border-color: var(--accent-primary);
+            color: var(--bg-primary);
+            box-shadow: var(--shadow-glow);
         }
 
-        /* Minimalist Container */
+        /* Ultra-Modern Container System */
         .container-modern {
-            max-width: 1200px;
+            max-width: 100%;
             margin: 0 auto;
-            padding: 0 var(--space-6);
-        }
-
-        /* Minimalist Admin Cards */
-        .admin-card {
-            background: var(--bg-primary);
-            border: 1px solid var(--border-light);
-            border-radius: var(--radius-lg);
-            padding: var(--space-8);
-            margin: var(--space-16) 0;
-            box-shadow: var(--shadow-sm);
-            transition: all 0.2s ease;
-            position: relative;
-            overflow: hidden;
+            padding: 0 var(--space-lg);
             width: 100%;
         }
 
+        /* Ultra-Modern Admin Cards */
+        .admin-card {
+            background: var(--bg-card);
+            border-radius: var(--radius-xl);
+            padding: var(--space-xl);
+            margin: var(--space-2xl) 0;
+            box-shadow: var(--shadow-soft);
+            border: 1px solid var(--border-light);
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+            backdrop-filter: blur(20px);
+        }
+
+        .admin-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary), var(--accent-success));
+            animation: shimmer 3s ease-in-out infinite;
+        }
+
+        @keyframes shimmer {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
         .admin-card:hover {
-            box-shadow: var(--shadow-md);
+            transform: translateY(-6px);
+            box-shadow: var(--shadow-medium);
         }
 
         .admin-card-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: var(--space-6);
-            padding-bottom: var(--space-4);
+            margin-bottom: var(--space-lg);
+            padding-bottom: var(--space-md);
             border-bottom: 1px solid var(--border-light);
         }
 
-        .admin-card-actions {
-            display: flex;
-            gap: var(--space-3);
-            align-items: center;
-        }
-
         .admin-card-title {
-            font-size: 1.25rem;
-            font-weight: 600;
+            font-size: clamp(1.5rem, 4vw, 2rem);
+            font-weight: 800;
             color: var(--text-primary);
             margin: 0;
             display: flex;
             align-items: center;
-            gap: var(--space-3);
+            gap: var(--space-sm);
         }
 
-        /* Minimalist Buttons */
+        /* Ultra-Modern Button System */
         .btn-modern {
             display: inline-flex;
             align-items: center;
-            gap: var(--space-2);
-            padding: var(--space-3) var(--space-5);
-            border-radius: var(--radius-md);
-            font-weight: 500;
-            font-size: 0.875rem;
+            gap: var(--space-sm);
+            padding: var(--space-sm) var(--space-lg);
+            border-radius: var(--radius-full);
+            font-weight: 600;
+            font-size: clamp(0.875rem, 2vw, 1rem);
             text-decoration: none;
             border: none;
             cursor: pointer;
-            transition: all 0.2s ease;
-            background: var(--bg-primary);
-            color: var(--text-primary);
-            border: 1px solid var(--border-medium);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--shadow-soft);
         }
 
-        .btn-modern:hover {
-            background: var(--bg-tertiary);
-            border-color: var(--border-dark);
-            text-decoration: none;
-            color: var(--text-primary);
+        .btn-modern::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.6s;
+        }
+
+        .btn-modern:hover::before {
+            left: 100%;
         }
 
         .btn-primary-modern {
-            background: var(--accent-blue);
-            color: white;
-            border-color: var(--accent-blue);
+            background: linear-gradient(135deg, var(--accent-primary) 0%, #0099cc 100%);
+            color: var(--bg-primary);
+            box-shadow: var(--shadow-glow);
         }
 
         .btn-primary-modern:hover {
-            background: #2563eb;
-            border-color: #2563eb;
-            color: white;
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: var(--shadow-strong), var(--shadow-glow);
+            color: var(--bg-primary);
         }
 
         .btn-success-modern {
-            background: var(--accent-green);
-            color: white;
-            border-color: var(--accent-green);
+            background: linear-gradient(135deg, var(--accent-success) 0%, #40c057 100%);
+            color: var(--bg-primary);
+            box-shadow: var(--shadow-glow);
         }
 
         .btn-success-modern:hover {
-            background: #059669;
-            border-color: #059669;
-            color: white;
-        }
-
-        .btn-secondary-modern {
-            background: var(--bg-secondary);
-            color: var(--text-secondary);
-            border-color: var(--border-medium);
-        }
-
-        .btn-secondary-modern:hover {
-            background: var(--bg-tertiary);
-            border-color: var(--border-dark);
-            color: var(--text-primary);
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: var(--shadow-strong), var(--shadow-glow);
+            color: var(--bg-primary);
         }
 
         .btn-warning-modern {
-            background: var(--accent-orange);
-            color: white;
-            border-color: var(--accent-orange);
+            background: linear-gradient(135deg, var(--accent-warning) 0%, #fcc419 100%);
+            color: var(--bg-primary);
+            box-shadow: var(--shadow-glow);
         }
 
         .btn-warning-modern:hover {
-            background: #d97706;
-            border-color: #d97706;
-            color: white;
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: var(--shadow-strong), var(--shadow-glow);
+            color: var(--bg-primary);
         }
 
         .btn-danger-modern {
-            background: var(--accent-red);
-            color: white;
-            border-color: var(--accent-red);
+            background: linear-gradient(135deg, #ff6b6b, #ff5252);
+            color: var(--bg-primary);
+            box-shadow: var(--shadow-glow);
         }
 
         .btn-danger-modern:hover {
-            background: #dc2626;
-            border-color: #dc2626;
-            color: white;
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: var(--shadow-strong), var(--shadow-glow);
+            color: var(--bg-primary);
         }
 
-        .btn-info-modern {
-            background: var(--accent-blue);
-            color: white;
-            border-color: var(--accent-blue);
-        }
-
-        .btn-info-modern:hover {
-            background: #2563eb;
-            border-color: #2563eb;
-        }
-
-        /* Minimalist Form Controls */
+        /* Ultra-Modern Form Controls */
         .form-control-modern {
-            border: 1px solid var(--border-medium);
+            border: 1px solid var(--border-light);
             border-radius: var(--radius-md);
-            padding: var(--space-3) var(--space-4);
-            font-size: 0.875rem;
-            transition: all 0.2s ease;
-            background: var(--bg-primary);
+            padding: var(--space-md);
+            font-size: clamp(0.875rem, 2vw, 1rem);
+            transition: all 0.3s ease;
+            background: var(--bg-elevated);
             color: var(--text-primary);
             width: 100%;
+            box-shadow: var(--shadow-soft);
         }
 
         .form-control-modern:focus {
             outline: none;
-            border-color: var(--accent-blue);
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.2);
+            transform: translateY(-2px);
+            background: var(--bg-card);
         }
 
         .form-control-modern::placeholder {
@@ -326,19 +368,19 @@
         }
 
         .form-label-modern {
-            font-weight: 500;
+            font-weight: 600;
             color: var(--text-primary);
-            margin-bottom: var(--space-2);
+            margin-bottom: var(--space-sm);
             display: block;
-            font-size: 0.875rem;
+            font-size: clamp(0.875rem, 2vw, 1rem);
         }
 
-        /* Minimalist Table */
+        /* Ultra-Modern Table Design */
         .table-modern {
-            background: var(--bg-primary);
+            background: var(--bg-card);
             border-radius: var(--radius-lg);
             overflow: hidden;
-            box-shadow: var(--shadow-sm);
+            box-shadow: var(--shadow-soft);
             border: 1px solid var(--border-light);
             width: 100%;
             min-width: 100%;
@@ -346,358 +388,235 @@
         }
 
         .table-modern th {
-            background: var(--bg-secondary);
+            background: var(--bg-elevated);
             color: var(--text-secondary);
-            font-weight: 600;
-            padding: var(--space-4) var(--space-4);
+            font-weight: 700;
+            padding: var(--space-md) var(--space-sm);
             border: none;
-            font-size: 0.75rem;
+            font-size: clamp(0.75rem, 1.5vw, 0.875rem);
             text-transform: uppercase;
-            letter-spacing: 0.05em;
+            letter-spacing: 0.1em;
             position: sticky;
             top: 0;
             z-index: 10;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .table-modern td {
-            padding: var(--space-4) var(--space-4);
+            padding: var(--space-md) var(--space-sm);
             border-bottom: 1px solid var(--border-light);
             vertical-align: middle;
-            transition: background-color 0.2s ease;
+            transition: all 0.3s ease;
+            word-wrap: break-word;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .table-modern tbody tr:hover {
-            background-color: var(--bg-secondary);
+            background: var(--bg-elevated);
+            transform: scale(1.01);
+            box-shadow: var(--shadow-soft);
         }
 
-        .table-modern tbody tr:last-child td {
-            border-bottom: none;
-        }
-
-        /* Minimalist Badges */
+        /* Ultra-Modern Badge System */
         .badge-modern {
             display: inline-block;
-            padding: var(--space-1) var(--space-2);
-            border-radius: var(--radius-sm);
-            font-size: 0.75rem;
-            font-weight: 500;
+            padding: var(--space-xs) var(--space-sm);
+            border-radius: var(--radius-full);
+            font-size: clamp(0.7rem, 1.5vw, 0.75rem);
+            font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 0.05em;
+            letter-spacing: 0.1em;
             line-height: 1;
+            box-shadow: var(--shadow-soft);
         }
 
         .badge-primary {
-            background: var(--accent-blue);
-            color: white;
+            background: linear-gradient(135deg, var(--accent-primary), #0099cc);
+            color: var(--bg-primary);
         }
 
         .badge-success {
-            background: var(--accent-green);
-            color: white;
+            background: linear-gradient(135deg, var(--accent-success), #40c057);
+            color: var(--bg-primary);
         }
 
         .badge-warning {
-            background: var(--accent-orange);
-            color: white;
+            background: linear-gradient(135deg, var(--accent-warning), #fcc419);
+            color: var(--bg-primary);
         }
 
         .badge-secondary {
-            background: var(--text-muted);
-            color: white;
+            background: linear-gradient(135deg, var(--text-muted), #868e96);
+            color: var(--bg-primary);
         }
 
         .badge-info {
-            background: var(--accent-purple);
-            color: white;
+            background: linear-gradient(135deg, var(--accent-primary), #0099cc);
+            color: var(--bg-primary);
         }
 
-        /* Revolutionary Mobile & Tablet Responsiveness - ALL FUNCTIONALITIES WORKING */
-        
-        /* Base Mobile-First Design */
-        .container-modern {
-            max-width: 100%;
-            margin: 0 auto;
-            padding: 0 var(--space-4);
-            width: 100%;
-        }
-
-        /* Mobile Admin Header */
-        .admin-header {
-            padding: var(--space-4) 0;
-        }
-
-        .admin-content {
-            flex-direction: column;
-            gap: var(--space-4);
-            text-align: center;
-        }
-
-        .nav-links {
-            gap: var(--space-3);
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-
-        .nav-link-modern {
-            padding: var(--space-2) var(--space-3);
-            border-radius: var(--radius-md);
-            background: var(--bg-secondary);
-            border: 1px solid var(--border-light);
-            min-height: 44px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        /* Mobile Admin Cards */
-        .admin-card {
-            margin: var(--space-8) 0;
-            padding: var(--space-6);
-        }
-
-        .admin-card-header {
-            flex-direction: column;
-            gap: var(--space-4);
-            align-items: flex-start;
-        }
-
-        .admin-card-title {
-            font-size: clamp(1.125rem, 5vw, 1.25rem);
-            text-align: center;
-            width: 100%;
-        }
-
-        /* Mobile Form Controls */
-        .form-control-modern {
-            font-size: 16px; /* Prevents zoom on iOS */
-            padding: var(--space-4);
-            border-radius: var(--radius-lg);
-            min-height: 44px;
-        }
-
-        .form-label-modern {
-            font-size: clamp(0.875rem, 3vw, 1rem);
-            margin-bottom: var(--space-3);
-        }
-
-        /* Mobile Buttons */
-        .btn-modern {
-            width: 100%;
-            max-width: 300px;
-            justify-content: center;
-            margin-bottom: var(--space-2);
-            min-height: 44px;
-            font-size: 16px;
-        }
-
-        /* Mobile Table */
-        .table-responsive {
-            width: 100%;
-            max-width: 100%;
-            overflow-x: auto;
-            border-radius: var(--radius-lg);
-            -webkit-overflow-scrolling: touch;
-        }
-
-        .table-modern {
-            width: 100%;
-            min-width: 800px;
-            font-size: clamp(0.75rem, 2.5vw, 0.875rem);
-        }
-
-        .table-modern th,
-        .table-modern td {
-            padding: var(--space-3) var(--space-2);
-            white-space: nowrap;
-            min-width: 80px;
-            min-height: 44px;
-        }
-
-        /* Mobile Badges */
-        .badge-modern {
-            font-size: clamp(0.65rem, 2.5vw, 0.75rem);
-            padding: var(--space-1) var(--space-2);
-            white-space: nowrap;
-            min-height: 32px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        /* Tablet Responsiveness */
-        @media (min-width: 768px) and (max-width: 1024px) {
-            .container-modern {
-                padding: 0 var(--space-6);
+        /* Ultra-Modern Responsive Design */
+        @media (max-width: 1200px) {
+            .filter-grid {
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             }
+        }
 
-            .admin-content {
-                flex-direction: row;
-                justify-content: space-between;
-                text-align: left;
+        @media (max-width: 768px) {
+            .admin-title {
+                font-size: clamp(2rem, 6vw, 3rem);
             }
-
-            .nav-links {
-                gap: var(--space-6);
+            
+            .admin-header {
+                padding: var(--space-2xl) 0;
             }
-
-            .admin-card {
-                margin: var(--space-12) 0;
-                padding: var(--space-8);
-            }
-
-            .admin-card-header {
-                flex-direction: row;
-                justify-content: space-between;
+            
+            .admin-nav {
+                flex-direction: column;
                 align-items: center;
             }
-
-            .admin-card-title {
-                text-align: left;
-                width: auto;
-            }
-
-            .btn-modern {
-                width: auto;
-                max-width: none;
-                margin-bottom: 0;
-            }
-
-            .table-modern {
-                min-width: 900px;
-                font-size: 0.875rem;
-            }
-
-            .table-modern th,
-            .table-modern td {
-                padding: var(--space-4) var(--space-3);
-            }
-        }
-
-        /* Large Mobile Responsiveness */
-        @media (min-width: 480px) and (max-width: 767px) {
-            .container-modern {
-                padding: 0 var(--space-5);
-            }
-
-            .admin-card {
-                margin: var(--space-6) 0;
-                padding: var(--space-5);
-            }
-
-            .table-modern {
-                min-width: 750px;
-            }
-        }
-
-        /* Small Mobile Responsiveness */
-        @media (max-width: 479px) {
-            .container-modern {
-                padding: 0 var(--space-3);
-            }
-
-            .admin-header {
-                padding: var(--space-3) 0;
-            }
-
-            .admin-card {
-                margin: var(--space-6) 0;
-                padding: var(--space-4);
-            }
-
-            .admin-card-title {
-                font-size: clamp(1rem, 4.5vw, 1.125rem);
-            }
-
-            .form-control-modern {
-                padding: var(--space-3);
-                font-size: 16px;
-            }
-
-            .btn-modern {
-                padding: var(--space-3) var(--space-5);
-                font-size: 16px;
-            }
-
-            .table-modern {
-                min-width: 700px;
-                font-size: 0.7rem;
-            }
-
-            .table-modern th,
-            .table-modern td {
-                padding: var(--space-2) var(--space-1);
-            }
-
-            .badge-modern {
-                font-size: 0.6rem;
-                padding: var(--space-1);
-            }
-        }
-
-        /* Touch Device Optimizations */
-        @media (hover: none) and (pointer: coarse) {
-            .btn-modern,
-            .nav-link-modern,
-            .form-control-modern {
-                min-height: 44px;
-            }
-
-            .table-modern th,
-            .table-modern td {
-                min-height: 44px;
-            }
-
-            .badge-modern {
-                min-height: 32px;
-            }
-        }
-
-        /* High DPI Display Optimizations */
-        @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
-            .table-modern {
-                border-width: 0.5px;
-            }
-
-            .border-light {
-                border-width: 0.5px;
-            }
-        }
-
-        /* Landscape Mobile Optimizations */
-        @media (max-width: 767px) and (orientation: landscape) {
-            .admin-header {
-                padding: var(--space-3) 0;
-            }
-
-            .admin-card {
-                margin: var(--space-4) 0;
-                padding: var(--space-4);
-            }
-        }
-
-        /* Print Styles */
-        @media print {
-            .admin-header {
-                display: none;
-            }
-
-            .admin-card {
-                margin: 0;
-                box-shadow: none;
-                border: 1px solid #000;
-            }
-
-            .table-modern {
+            
+            .nav-link-modern {
                 width: 100%;
-                min-width: auto;
-                font-size: 12px;
+                max-width: 350px;
+                justify-content: center;
             }
-
+            
+            .admin-card {
+                padding: var(--space-lg);
+                margin: var(--space-xl) 0;
+                border-radius: var(--radius-lg);
+            }
+            
+            .admin-card-header {
+                flex-direction: column;
+                gap: var(--space-md);
+                align-items: flex-start;
+            }
+            
+            .container-modern {
+                padding: 0 var(--space-md);
+            }
+            
+            .table-responsive {
+                font-size: 0.875rem;
+                border-radius: var(--radius-lg);
+            }
+            
             .table-modern th,
             .table-modern td {
-                padding: 4px;
-                border: 1px solid #000;
+                padding: var(--space-sm) var(--space-xs);
+                font-size: clamp(0.75rem, 2vw, 0.875rem);
             }
+        }
+
+        @media (max-width: 480px) {
+            .container-modern {
+                padding: 0 var(--space-sm);
+            }
+            
+            .admin-header {
+                padding: var(--space-2xl) 0;
+            }
+            
+            .admin-card {
+                margin: var(--space-lg) 0;
+                padding: var(--space-md);
+                border-radius: var(--radius-md);
+            }
+            
+            .table-responsive {
+                font-size: 0.75rem;
+                border-radius: var(--radius-md);
+            }
+            
+            .table-modern th,
+            .table-modern td {
+                padding: var(--space-xs);
+                font-size: clamp(0.7rem, 2vw, 0.75rem);
+            }
+            
+            .btn-modern {
+                font-size: clamp(0.8rem, 2vw, 0.875rem);
+                padding: var(--space-xs) var(--space-sm);
+            }
+        }
+
+        /* Ultra-Modern Animations */
+        .fade-in {
+            animation: fadeIn 1s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .slide-up {
+            animation: slideUp 0.8s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Ultra-Modern Focus States */
+        .btn-modern:focus,
+        .form-control-modern:focus,
+        .nav-link-modern:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.3);
+        }
+
+        /* Ultra-Modern Loading Spinner */
+        .loading-spinner {
+            width: 2rem;
+            height: 2rem;
+            border: 3px solid var(--border-light);
+            border-top: 3px solid var(--accent-primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Ultra-Modern Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-secondary);
+            border-radius: var(--radius-md);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--accent-primary);
+            border-radius: var(--radius-md);
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #0099cc;
+        }
+
+        /* Ultra-Modern Selection */
+        ::selection {
+            background: var(--accent-primary);
+            color: var(--bg-primary);
+        }
+
+        ::-moz-selection {
+            background: var(--accent-primary);
+            color: var(--bg-primary);
         }
     </style>
 </head>
@@ -708,7 +627,7 @@
             <div class="admin-content">
                 <h1 class="admin-title">⚾🥎 Admin Panel</h1>
                 <p class="admin-subtitle">Manage schedules, staff, and league operations</p>
-                <nav class="nav-links">
+                <nav class="admin-nav">
                     <a href="#schedules" class="nav-link-modern active" onclick="showSection('schedules')">
                         <i class="fas fa-calendar-alt"></i>
                         Schedules
@@ -721,10 +640,6 @@
                         <i class="fas fa-upload"></i>
                         CSV Import
                     </a>
-                    <a href="#umpire-requests" class="nav-link-modern" onclick="showSection('umpire-requests')">
-                        <i class="fas fa-user-edit"></i>
-                        Umpire Requests
-                    </a>
                     <a href="/" class="nav-link-modern">
                         <i class="fas fa-eye"></i>
                         View Public Site
@@ -733,9 +648,6 @@
             </div>
         </div>
     </header>
-
-    <!-- Alert Container -->
-    <div id="alertContainer" class="position-fixed top-0 end-0 p-3" style="z-index: 9999;"></div>
 
     <div class="container-modern">
         <!-- Schedules Section -->
@@ -753,18 +665,9 @@
             
             <!-- Schedule Table -->
             <div class="table-responsive">
-                <div class="mb-3">
-                    <button id="bulkDeleteBtn" class="btn-modern btn-danger-modern" onclick="bulkDelete()" style="display: none;">
-                        <i class="fas fa-trash"></i>
-                        Delete Selected
-                    </button>
-                </div>
                 <table class="table table-modern">
                     <thead>
                         <tr>
-                            <th>
-                                <input type="checkbox" id="selectAll" onchange="toggleSelectAll()">
-                            </th>
                             <th>Season</th>
                             <th>Event</th>
                             <th>Day</th>
@@ -853,575 +756,11 @@
                 <div class="col-md-6">
                     <div id="csvPreview" style="display: none;">
                         <h5>CSV Preview</h5>
-                        <div class="table-responsive">
-                            <table class="table table-sm">
-                                <thead>
-                                    <tr>
-                                        <th>Season</th>
-                                        <th>Event</th>
-                                        <th>Day</th>
-                                        <th>Date</th>
-                                        <th>Time</th>
-                                        <th>Division</th>
-                                        <th>Home Team</th>
-                                        <th>Visitor Team</th>
-                                        <th>Venue</th>
-                                        <th>Umpires</th>
-                                        <th>Concession</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="csvPreviewBody">
-                                </tbody>
-                            </table>
-                        </div>
+                        <div id="previewContent" class="border rounded p-3 bg-light"></div>
                     </div>
                 </div>
             </div>
         </section>
-
-        <!-- Umpire Request Management Section -->
-        <section id="umpire-requests" class="admin-card" style="display: none;" data-aos="fade-up">
-            <div class="admin-card-header">
-                <h2 class="admin-card-title">
-                    <i class="fas fa-user-edit"></i>
-                    Umpire Change Requests
-                </h2>
-                <div class="admin-card-actions">
-                    <button class="btn-modern btn-info-modern" onclick="refreshUmpireRequests()">
-                        <i class="fas fa-sync-alt"></i>
-                        Refresh
-                    </button>
-                </div>
-            </div>
-            
-            <!-- Umpire Requests Table -->
-            <div class="table-responsive">
-                <table class="table table-modern">
-                    <thead>
-                        <tr>
-                            <th>Game Details</th>
-                            <th>Current Umpires</th>
-                            <th>Requested Changes</th>
-                            <th>Reason</th>
-                            <th>Status</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="umpireRequestsTableBody">
-                        <tr>
-                            <td colspan="6" class="text-center py-4">
-                                <div class="loading-spinner"></div>
-                                <p class="mt-2">Loading umpire requests...</p>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </section>
-    </div>
-
-    <!-- Schedule Creation Modal -->
-    <div class="modal fade" id="createScheduleModal" tabindex="-1" aria-labelledby="createScheduleModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="createScheduleModalLabel">Create New Schedule</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="scheduleForm">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="season" class="form-label-modern">Season</label>
-                                    <select id="season" class="form-control-modern" required>
-                                        <option value="">Select Season</option>
-                                        <option value="Spring">Spring</option>
-                                        <option value="Summer">Summer</option>
-                                        <option value="Fall">Fall</option>
-                                        <option value="Winter">Winter</option>
-                                    </select>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="eventType" class="form-label-modern">Event Type</label>
-                                    <select id="eventType" class="form-control-modern" required>
-                                        <option value="">Select Event Type</option>
-                                        <option value="Baseball">Baseball</option>
-                                        <option value="Softball">Softball</option>
-                                    </select>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="day" class="form-label-modern">Day</label>
-                                    <select id="day" class="form-control-modern" required>
-                                        <option value="">Select Day</option>
-                                        <option value="Monday">Monday</option>
-                                        <option value="Tuesday">Tuesday</option>
-                                        <option value="Wednesday">Wednesday</option>
-                                        <option value="Thursday">Thursday</option>
-                                        <option value="Friday">Friday</option>
-                                        <option value="Saturday">Saturday</option>
-                                        <option value="Sunday">Sunday</option>
-                                    </select>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="date" class="form-label-modern">Date</label>
-                                    <input type="date" id="date" class="form-control-modern" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="startTime" class="form-label-modern">Start Time</label>
-                                    <input type="time" id="startTime" class="form-control-modern" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="amPm" class="form-label-modern">AM/PM</label>
-                                    <select id="amPm" class="form-control-modern" required>
-                                        <option value="">Select AM/PM</option>
-                                        <option value="AM">AM</option>
-                                        <option value="PM">PM</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="division" class="form-label-modern">Division</label>
-                                    <select id="division" class="form-control-modern" required>
-                                        <option value="">Select Division</option>
-                                        <option value="T-Ball">T-Ball</option>
-                                        <option value="Coach Pitch">Coach Pitch</option>
-                                        <option value="Machine Pitch">Machine Pitch</option>
-                                        <option value="Kid Pitch">Kid Pitch</option>
-                                        <option value="Junior">Junior</option>
-                                        <option value="Senior">Senior</option>
-                                    </select>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="homeTeam" class="form-label-modern">Home Team</label>
-                                    <select id="homeTeam" class="form-control-modern" required>
-                                        <option value="">Select Home Team</option>
-                                        <option value="Tigers">Tigers</option>
-                                        <option value="Lions">Lions</option>
-                                        <option value="Bears">Bears</option>
-                                        <option value="Eagles">Eagles</option>
-                                        <option value="Sharks">Sharks</option>
-                                        <option value="Dragons">Dragons</option>
-                                        <option value="Knights">Knights</option>
-                                        <option value="Warriors">Warriors</option>
-                                    </select>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="homeCoach" class="form-label-modern">Home Coach</label>
-                                    <select id="homeCoach" class="form-control-modern" required>
-                                        <option value="">Select Home Coach</option>
-                                        <option value="Coach Johnson">Coach Johnson</option>
-                                        <option value="Coach Smith">Coach Smith</option>
-                                        <option value="Coach Davis">Coach Davis</option>
-                                        <option value="Coach Wilson">Coach Wilson</option>
-                                        <option value="Coach Brown">Coach Brown</option>
-                                        <option value="Coach Taylor">Coach Taylor</option>
-                                    </select>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="visitorTeam" class="form-label-modern">Visitor Team</label>
-                                    <select id="visitorTeam" class="form-control-modern" required>
-                                        <option value="">Select Visitor Team</option>
-                                        <option value="Tigers">Tigers</option>
-                                        <option value="Lions">Lions</option>
-                                        <option value="Bears">Bears</option>
-                                        <option value="Eagles">Eagles</option>
-                                        <option value="Sharks">Sharks</option>
-                                        <option value="Dragons">Dragons</option>
-                                        <option value="Knights">Knights</option>
-                                        <option value="Warriors">Warriors</option>
-                                    </select>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="visitorCoach" class="form-label-modern">Visitor Coach</label>
-                                    <select id="visitorCoach" class="form-control-modern" required>
-                                        <option value="">Select Visitor Coach</option>
-                                        <option value="Coach Johnson">Coach Johnson</option>
-                                        <option value="Coach Smith">Coach Smith</option>
-                                        <option value="Coach Davis">Coach Davis</option>
-                                        <option value="Coach Wilson">Coach Wilson</option>
-                                        <option value="Coach Brown">Coach Brown</option>
-                                        <option value="Coach Taylor">Coach Taylor</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="venue" class="form-label-modern">Venue</label>
-                                    <select id="venue" class="form-control-modern" required>
-                                        <option value="">Select Venue</option>
-                                        <option value="Field 1">Field 1</option>
-                                        <option value="Field 2">Field 2</option>
-                                        <option value="Field 3">Field 3</option>
-                                        <option value="Field 4">Field 4</option>
-                                        <option value="Field 5">Field 5</option>
-                                        <option value="Field 6">Field 6</option>
-                                    </select>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="plateUmpire" class="form-label-modern">Plate Umpire</label>
-                                    <select id="plateUmpire" class="form-control-modern">
-                                        <option value="">Select Plate Umpire</option>
-                                    </select>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="baseUmpire" class="form-label-modern">Base Umpire</label>
-                                    <select id="baseUmpire" class="form-control-modern">
-                                        <option value="">Select Base Umpire</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="concessionStand" class="form-label-modern">Concession Stand</label>
-                                    <select id="concessionStand" class="form-control-modern">
-                                        <option value="">Select Concession Stand</option>
-                                        <option value="No Concession">No Concession</option>
-                                        <optgroup label="Main Concession Stands">
-                                            <option value="Main Stand 1">Main Stand 1</option>
-                                            <option value="Main Stand 2">Main Stand 2</option>
-                                            <option value="Main Stand 3">Main Stand 3</option>
-                                        </optgroup>
-                                        <optgroup label="Field Concession Stands">
-                                            <option value="Field 1 Stand">Field 1 Stand</option>
-                                            <option value="Field 2 Stand">Field 2 Stand</option>
-                                            <option value="Field 3 Stand">Field 3 Stand</option>
-                                            <option value="Field 4 Stand">Field 4 Stand</option>
-                                            <option value="Field 5 Stand">Field 5 Stand</option>
-                                            <option value="Field 6 Stand">Field 6 Stand</option>
-                                        </optgroup>
-                                        <optgroup label="Specialty Stands">
-                                            <option value="Ice Cream Stand">Ice Cream Stand</option>
-                                            <option value="Snack Stand">Snack Stand</option>
-                                            <option value="Drink Stand">Drink Stand</option>
-                                        </optgroup>
-                                    </select>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="concessionStaff" class="form-label-modern">Concession Staff</label>
-                                    <select id="concessionStaff" class="form-control-modern">
-                                        <option value="">Select Concession Staff</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn-modern btn-secondary-modern" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn-modern btn-primary-modern" onclick="handleScheduleSubmit()">Create Schedule</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Schedule Edit Modal -->
-    <div class="modal fade" id="editScheduleModal" tabindex="-1" aria-labelledby="editScheduleModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="editScheduleModalLabel">Edit Schedule</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="editScheduleForm">
-                        <input type="hidden" id="editScheduleId">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="editSeason" class="form-label-modern">Season</label>
-                                    <select id="editSeason" class="form-control-modern" required>
-                                        <option value="">Select Season</option>
-                                        <option value="Spring">Spring</option>
-                                        <option value="Summer">Summer</option>
-                                        <option value="Fall">Fall</option>
-                                        <option value="Winter">Winter</option>
-                                    </select>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="editEventType" class="form-label-modern">Event Type</label>
-                                    <select id="editEventType" class="form-control-modern" required>
-                                        <option value="">Select Event Type</option>
-                                        <option value="Baseball">Baseball</option>
-                                        <option value="Softball">Softball</option>
-                                    </select>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="editDay" class="form-label-modern">Day</label>
-                                    <select id="editDay" class="form-control-modern" required>
-                                        <option value="">Select Day</option>
-                                        <option value="Monday">Monday</option>
-                                        <option value="Tuesday">Tuesday</option>
-                                        <option value="Wednesday">Wednesday</option>
-                                        <option value="Thursday">Thursday</option>
-                                        <option value="Friday">Friday</option>
-                                        <option value="Saturday">Saturday</option>
-                                        <option value="Sunday">Sunday</option>
-                                    </select>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="editDate" class="form-label-modern">Date</label>
-                                    <input type="date" id="editDate" class="form-control-modern" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="editStartTime" class="form-label-modern">Start Time</label>
-                                    <input type="time" id="editStartTime" class="form-control-modern" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="editAmPm" class="form-label-modern">AM/PM</label>
-                                    <select id="editAmPm" class="form-control-modern" required>
-                                        <option value="">Select AM/PM</option>
-                                        <option value="AM">AM</option>
-                                        <option value="PM">PM</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="editDivision" class="form-label-modern">Division</label>
-                                    <select id="editDivision" class="form-control-modern" required>
-                                        <option value="">Select Division</option>
-                                        <option value="T-Ball">T-Ball</option>
-                                        <option value="Coach Pitch">Coach Pitch</option>
-                                        <option value="Machine Pitch">Machine Pitch</option>
-                                        <option value="Kid Pitch">Kid Pitch</option>
-                                        <option value="Junior">Junior</option>
-                                        <option value="Senior">Senior</option>
-                                    </select>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="editHomeTeam" class="form-label-modern">Home Team</label>
-                                    <select id="editHomeTeam" class="form-control-modern" required>
-                                        <option value="">Select Home Team</option>
-                                        <option value="Tigers">Tigers</option>
-                                        <option value="Lions">Lions</option>
-                                        <option value="Bears">Bears</option>
-                                        <option value="Eagles">Eagles</option>
-                                        <option value="Sharks">Sharks</option>
-                                        <option value="Dragons">Dragons</option>
-                                        <option value="Knights">Knights</option>
-                                        <option value="Warriors">Warriors</option>
-                                    </select>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="editHomeCoach" class="form-label-modern">Home Coach</label>
-                                    <select id="editHomeCoach" class="form-control-modern" required>
-                                        <option value="">Select Home Coach</option>
-                                        <option value="Coach Johnson">Coach Johnson</option>
-                                        <option value="Coach Smith">Coach Smith</option>
-                                        <option value="Coach Davis">Coach Davis</option>
-                                        <option value="Coach Wilson">Coach Wilson</option>
-                                        <option value="Coach Brown">Coach Brown</option>
-                                        <option value="Coach Taylor">Coach Taylor</option>
-                                    </select>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="editVisitorTeam" class="form-label-modern">Visitor Team</label>
-                                    <select id="editVisitorTeam" class="form-control-modern" required>
-                                        <option value="">Select Visitor Team</option>
-                                        <option value="Tigers">Tigers</option>
-                                        <option value="Lions">Lions</option>
-                                        <option value="Bears">Bears</option>
-                                        <option value="Eagles">Eagles</option>
-                                        <option value="Sharks">Sharks</option>
-                                        <option value="Dragons">Dragons</option>
-                                        <option value="Knights">Knights</option>
-                                        <option value="Warriors">Warriors</option>
-                                    </select>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="editVisitorCoach" class="form-label-modern">Visitor Coach</label>
-                                    <select id="editVisitorCoach" class="form-control-modern" required>
-                                        <option value="">Select Visitor Coach</option>
-                                        <option value="Coach Johnson">Coach Johnson</option>
-                                        <option value="Coach Smith">Coach Smith</option>
-                                        <option value="Coach Davis">Coach Davis</option>
-                                        <option value="Coach Wilson">Coach Wilson</option>
-                                        <option value="Coach Brown">Coach Brown</option>
-                                        <option value="Coach Taylor">Coach Taylor</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="editVenue" class="form-label-modern">Venue</label>
-                                    <select id="editVenue" class="form-control-modern" required>
-                                        <option value="">Select Venue</option>
-                                        <option value="Field 1">Field 1</option>
-                                        <option value="Field 2">Field 2</option>
-                                        <option value="Field 3">Field 3</option>
-                                        <option value="Field 4">Field 4</option>
-                                        <option value="Field 5">Field 5</option>
-                                        <option value="Field 6">Field 6</option>
-                                    </select>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="editPlateUmpire" class="form-label-modern">Plate Umpire</label>
-                                    <select id="editPlateUmpire" class="form-control-modern">
-                                        <option value="">Select Plate Umpire</option>
-                                    </select>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="editBaseUmpire" class="form-label-modern">Base Umpire</label>
-                                    <select id="editBaseUmpire" class="form-control-modern">
-                                        <option value="">Select Base Umpire</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="editConcessionStand" class="form-label-modern">Concession Stand</label>
-                                    <select id="editConcessionStand" class="form-control-modern">
-                                        <option value="">Select Concession Stand</option>
-                                        <option value="No Concession">No Concession</option>
-                                        <optgroup label="Main Concession Stands">
-                                            <option value="Main Stand 1">Main Stand 1</option>
-                                            <option value="Main Stand 2">Main Stand 2</option>
-                                            <option value="Main Stand 3">Main Stand 3</option>
-                                        </optgroup>
-                                        <optgroup label="Field Concession Stands">
-                                            <option value="Field 1 Stand">Field 1 Stand</option>
-                                            <option value="modern">Field 2 Stand</option>
-                                            <option value="Field 3 Stand">Field 3 Stand</option>
-                                            <option value="Field 4 Stand">Field 4 Stand</option>
-                                            <option value="Field 5 Stand">Field 5 Stand</option>
-                                            <option value="Field 6 Stand">Field 6 Stand</option>
-                                        </optgroup>
-                                        <optgroup label="Specialty Stands">
-                                            <option value="Ice Cream Stand">Ice Cream Stand</option>
-                                            <option value="Snack Stand">Snack Stand</option>
-                                            <option value="Drink Stand">Drink Stand</option>
-                                        </optgroup>
-                                    </select>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="editConcessionStaff" class="form-label-modern">Concession Staff</label>
-                                    <select id="editConcessionStaff" class="form-control-modern">
-                                        <option value="">Select Concession Staff</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn-modern btn-secondary-modern" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn-modern btn-primary-modern" onclick="updateSchedule()">Update Schedule</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Staff Add Modal -->
-    <div class="modal fade" id="addStaffModal" tabindex="-1" aria-labelledby="addStaffModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="addStaffModalLabel">Add Staff Member</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="addStaffForm">
-                        <div class="mb-3">
-                            <label for="staffName" class="form-label-modern">Name</label>
-                            <input type="text" id="staffName" class="form-control-modern" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="staffEmail" class="form-label-modern">Email</label>
-                            <input type="email" id="staffEmail" class="form-control-modern">
-                        </div>
-                        <div class="mb-3">
-                            <label for="staffPhone" class="form-label-modern">Phone</label>
-                            <input type="tel" id="staffPhone" class="form-control-modern">
-                        </div>
-                        <div class="mb-3">
-                            <label for="staffParentName" class="form-label-modern">Parent Name</label>
-                            <input type="text" id="staffParentName" class="form-control-modern">
-                        </div>
-                        <div class="mb-3">
-                            <label for="staffParentEmail" class="form-label-modern">Parent Email</label>
-                            <input type="email" id="staffParentEmail" class="form-control-modern">
-                        </div>
-                        <div class="mb-3">
-                            <label for="staffParentPhone" class="form-label-modern">Parent Phone</label>
-                            <input type="tel" id="staffParentPhone" class="form-control-modern">
-                        </div>
-                        <div class="mb-3">
-                            <label for="staffRole" class="form-label-modern">Role</label>
-                            <select id="staffRole" class="form-control-modern">
-                                <option value="Staff">Staff</option>
-                                <option value="Coach">Coach</option>
-                                <option value="Umpire">Umpire</option>
-                                <option value="Manager">Manager</option>
-                            </select>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn-modern btn-secondary-modern" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn-modern btn-primary-modern" onclick="addStaffMember()">Add Staff Member</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Staff Edit Modal -->
-    <div class="modal fade" id="editStaffModal" tabindex="-1" aria-labelledby="editStaffModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <label for="editStaffName" class="form-label-modern">Name</label>
-                    <input type="text" id="editStaffName" class="form-control-modern" required>
-                </div>
-                <div class="modal-body">
-                    <form id="editStaffForm">
-                        <input type="hidden" id="editStaffId">
-                        <div class="mb-3">
-                            <label for="editStaffName" class="form-label-modern">Name</label>
-                            <input type="text" id="editStaffName" class="form-label-modern" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="editStaffEmail" class="form-label-modern">Email</label>
-                            <input type="email" id="editStaffEmail" class="form-control-modern">
-                        </div>
-                        <div class="mb-3">
-                            <label for="editStaffPhone" class="form-label-modern">Phone</label>
-                            <input type="tel" id="editStaffName" class="form-control-modern">
-                        </div>
-                        <div class="mb-3">
-                            <label for="editStaffParentName" class="form-label-modern">Parent Name</label>
-                            <input type="text" id="editStaffParentName" class="form-control-modern">
-                        </div>
-                        <div class="mb-3">
-                            <label for="editStaffParentEmail" class="form-label-modern">Parent Email</label>
-                            <input type="email" id="editStaffParentEmail" class="form-control-modern">
-                        </div>
-                        <div class="mb-3">
-                            <label for="editStaffParentPhone" class="form-label-modern">Parent Phone</label>
-                            <input type="tel" id="editStaffParentPhone" class="form-control-modern">
-                        </div>
-                        <div class="mb-3">
-                            <label for="editStaffRole" class="form-label-modern">Role</label>
-                            <select id="editStaffRole" class="form-control-modern">
-                                <option value="Staff">Staff</option>
-                                <option value="Coach">Coach</option>
-                                <option value="Umpire">Umpire</option>
-                                <option value="Manager">Manager</option>
-                            </select>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn-modern btn-secondary-modern" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn-modern btn-primary-modern" onclick="updateStaffMember()">Update Staff Member</button>
-                </div>
-            </div>
-        </div>
     </div>
 
     <!-- Loading Spinner -->
@@ -1429,7 +768,7 @@
         .loading-spinner {
             width: 2rem;
             height: 2rem;
-            border: 3px solid var(--gray-200);
+            border: 3px solid var(--border-light);
             border-top: 3px solid var(--secondary);
             border-radius: 50%;
             animation: spin 1s linear infinite;
@@ -1474,5 +813,4 @@
         }
     </script>
 </body>
-</html> 
 </html> 
