@@ -5,53 +5,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>⚾🥎 Admin Panel - Baseball/Softball Schedule Manager</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <!-- Navigation -->
     <nav class="navbar">
         <div class="container">
-            <div class="d-flex justify-content-between align-items-center">
-                <a href="#" class="navbar-brand">
-                    <i class="fas fa-baseball-ball"></i>
-                    <span>Admin Panel</span>
-                </a>
-                <div class="d-flex gap-3">
-                    <a href="#" class="nav-link active" onclick="showSection('schedule')">
-                        <i class="fas fa-calendar-alt me-2"></i>Schedule
-                    </a>
-                    <a href="#" class="nav-link" onclick="showSection('staff')">
-                        <i class="fas fa-users me-2"></i>Staff
-                    </a>
-                    <a href="#" class="nav-link" onclick="showSection('csv')">
-                        <i class="fas fa-upload me-2"></i>CSV Upload
-                    </a>
-                    <a href="/" class="nav-link">
-                        <i class="fas fa-external-link-alt me-2"></i>Public View
-                    </a>
-                </div>
+            <a href="#" class="navbar-brand">
+                <i class="fas fa-baseball-ball"></i>
+                Admin Panel
+            </a>
+            <div class="nav-links">
+                <a href="#" class="nav-link active" onclick="showSection('schedule')">Schedule</a>
+                <a href="#" class="nav-link" onclick="showSection('staff')">Staff</a>
+                <a href="#" class="nav-link" onclick="showSection('csv')">CSV Upload</a>
+                <a href="/" class="nav-link">Public View</a>
             </div>
         </div>
     </nav>
 
     <!-- Hero Header -->
     <header class="page-header">
-        <div class="container text-center">
-            <div class="baseball-diamond mb-4"></div>
-            <h1 class="text-gradient mb-3">Admin Dashboard</h1>
-            <p class="lead mb-4">Manage schedules, staff, and system operations with our comprehensive admin tools</p>
-            <div class="d-flex justify-content-center gap-3 flex-wrap">
-                <button class="btn btn-primary btn-lg" onclick="showSection('schedule')">
-                    <i class="fas fa-calendar-plus me-2"></i>Create Schedule
-                </button>
-                <button class="btn btn-secondary btn-lg" onclick="showSection('staff')">
-                    <i class="fas fa-user-plus me-2"></i>Add Staff
-                </button>
-                <button class="btn btn-success btn-lg" onclick="showSection('csv')">
-                    <i class="fas fa-upload me-2"></i>Bulk Upload
-                </button>
-            </div>
+        <div class="container">
+            <div class="baseball-diamond"></div>
+            <h1>Admin Dashboard</h1>
+            <p>Manage schedules, staff, and system operations with our comprehensive admin tools</p>
         </div>
     </header>
 
@@ -59,46 +37,43 @@
         <!-- Quick Stats -->
         <div class="card">
             <div class="card-header">
-                <h3 class="card-title">
-                    <i class="fas fa-chart-bar"></i>
-                    System Overview
-                </h3>
+                <h3 class="card-title">System Overview</h3>
             </div>
             <div class="row">
-                <div class="col-md-3 mb-3">
+                <div class="col-md-3">
                     <div class="text-center p-4 border-radius bg-light">
-                        <div class="sports-icon mb-2">
+                        <div class="sports-icon">
                             <i class="fas fa-calendar-check"></i>
                         </div>
-                        <h4 class="text-primary mb-1" id="totalSchedules">0</h4>
-                        <p class="text-muted mb-0">Total Schedules</p>
+                        <h4 id="totalSchedules">0</h4>
+                        <p>Total Schedules</p>
                     </div>
                 </div>
-                <div class="col-md-3 mb-3">
+                <div class="col-md-3">
                     <div class="text-center p-4 border-radius bg-light">
-                        <div class="sports-icon mb-2">
+                        <div class="sports-icon">
                             <i class="fas fa-users"></i>
                         </div>
-                        <h4 class="text-success mb-1" id="totalStaff">0</h4>
-                        <p class="text-muted mb-0">Staff Members</p>
+                        <h4 id="totalStaff">0</h4>
+                        <p>Staff Members</p>
                     </div>
                 </div>
-                <div class="col-md-3 mb-3">
+                <div class="col-md-3">
                     <div class="text-center p-4 border-radius bg-light">
-                        <div class="sports-icon mb-2">
+                        <div class="sports-icon">
                             <i class="fas fa-baseball-ball"></i>
                         </div>
-                        <h4 class="text-warning mb-1" id="totalTeams">0</h4>
-                        <p class="text-muted mb-0">Active Teams</p>
+                        <h4 id="totalTeams">0</h4>
+                        <p>Active Teams</p>
                     </div>
                 </div>
-                <div class="col-md-3 mb-3">
+                <div class="col-md-3">
                     <div class="text-center p-4 border-radius bg-light">
-                        <div class="sports-icon mb-2">
+                        <div class="sports-icon">
                             <i class="fas fa-utensils"></i>
                         </div>
-                        <h4 class="text-info mb-1" id="concessionStands">0</h4>
-                        <p class="text-muted mb-0">Concession Stands</p>
+                        <h4 id="concessionStands">0</h4>
+                        <p>Concession Stands</p>
                     </div>
                 </div>
             </div>
@@ -106,20 +81,14 @@
 
         <!-- Schedule Management Section -->
         <div class="card" id="scheduleSection">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <h3 class="card-title">
-                    <i class="fas fa-calendar-alt"></i>
-                    Schedule Management
-                </h3>
-                <button class="btn btn-primary" onclick="showCreateScheduleModal()">
-                    <i class="fas fa-plus me-2"></i>Create New Schedule
-                </button>
+            <div class="card-header">
+                <h3 class="card-title">Schedule Management</h3>
             </div>
             
             <!-- Create Schedule Form -->
             <form id="createScheduleForm" class="mb-4">
                 <div class="row">
-                    <div class="col-md-2 mb-3">
+                    <div class="col-md-2">
                         <div class="form-group">
                             <label class="form-label">Season</label>
                             <select class="form-control form-select" id="season" required>
@@ -130,7 +99,7 @@
                             </select>
                         </div>
                     </div>
-                    <div class="col-md-2 mb-3">
+                    <div class="col-md-2">
                         <div class="form-group">
                             <label class="form-label">Sport</label>
                             <select class="form-control form-select" id="eventType" required>
@@ -140,7 +109,7 @@
                             </select>
                         </div>
                     </div>
-                    <div class="col-md-2 mb-3">
+                    <div class="col-md-2">
                         <div class="form-group">
                             <label class="form-label">Day</label>
                             <select class="form-control form-select" id="day" required>
@@ -155,19 +124,19 @@
                             </select>
                         </div>
                     </div>
-                    <div class="col-md-2 mb-3">
+                    <div class="col-md-2">
                         <div class="form-group">
                             <label class="form-label">Date</label>
                             <input type="date" class="form-control" id="date" required>
                         </div>
                     </div>
-                    <div class="col-md-2 mb-3">
+                    <div class="col-md-2">
                         <div class="form-group">
                             <label class="form-label">Start Time</label>
                             <input type="time" class="form-control" id="startTime">
                         </div>
                     </div>
-                    <div class="col-md-2 mb-3">
+                    <div class="col-md-2">
                         <div class="form-group">
                             <label class="form-label">End Time</label>
                             <input type="time" class="form-control" id="endTime">
@@ -175,7 +144,7 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-md-2 mb-3">
+                    <div class="col-md-2">
                         <div class="form-group">
                             <label class="form-label">Division</label>
                             <select class="form-control form-select" id="division" required>
@@ -193,7 +162,7 @@
                             </select>
                         </div>
                     </div>
-                    <div class="col-md-2 mb-3">
+                    <div class="col-md-2">
                         <div class="form-group">
                             <label class="form-label">Home Team</label>
                             <select class="form-control form-select" id="homeTeam" required>
@@ -207,7 +176,7 @@
                             </select>
                         </div>
                     </div>
-                    <div class="col-md-2 mb-3">
+                    <div class="col-md-2">
                         <div class="form-group">
                             <label class="form-label">Visitor Team</label>
                             <select class="form-control form-select" id="visitorTeam" required>
@@ -221,7 +190,7 @@
                             </select>
                         </div>
                     </div>
-                    <div class="col-md-2 mb-3">
+                    <div class="col-md-2">
                         <div class="form-group">
                             <label class="form-label">Venue</label>
                             <select class="form-control form-select" id="venue" required>
@@ -238,7 +207,7 @@
                             </select>
                         </div>
                     </div>
-                    <div class="col-md-2 mb-3">
+                    <div class="col-md-2">
                         <div class="form-group">
                             <label class="form-label">Home Coach</label>
                             <select class="form-control form-select" id="homeCoach" required>
@@ -252,7 +221,7 @@
                             </select>
                         </div>
                     </div>
-                    <div class="col-md-2 mb-3">
+                    <div class="col-md-2">
                         <div class="form-group">
                             <label class="form-label">Visitor Coach</label>
                             <select class="form-control form-select" id="visitorCoach" required>
@@ -268,7 +237,7 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-md-2 mb-3">
+                    <div class="col-md-2">
                         <div class="form-group">
                             <label class="form-label">Plate Umpire</label>
                             <select class="form-control form-select" id="plateUmpire">
@@ -276,7 +245,7 @@
                             </select>
                         </div>
                     </div>
-                    <div class="col-md-2 mb-3">
+                    <div class="col-md-2">
                         <div class="form-group">
                             <label class="form-label">Base Umpire</label>
                             <select class="form-control form-select" id="baseUmpire">
@@ -284,7 +253,7 @@
                             </select>
                         </div>
                     </div>
-                    <div class="col-md-2 mb-3">
+                    <div class="col-md-2">
                         <div class="form-group">
                             <label class="form-label">Concession Stand</label>
                             <select class="form-control form-select" id="concessionStand">
@@ -302,7 +271,7 @@
                             </select>
                         </div>
                     </div>
-                    <div class="col-md-2 mb-3">
+                    <div class="col-md-2">
                         <div class="form-group">
                             <label class="form-label">Concession Staff</label>
                             <select class="form-control form-select" id="concessionStaff">
@@ -310,10 +279,11 @@
                             </select>
                         </div>
                     </div>
-                    <div class="col-md-4 mb-3 d-flex align-items-end">
-                        <button type="submit" class="btn btn-primary btn-lg w-100">
-                            <i class="fas fa-save me-2"></i>Create Schedule
-                        </button>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="form-label">&nbsp;</label>
+                            <button type="submit" class="btn btn-primary w-100">Create Schedule</button>
+                        </div>
                     </div>
                 </div>
             </form>
@@ -334,9 +304,9 @@
                     </thead>
                     <tbody id="scheduleTableBody">
                         <tr>
-                            <td colspan="7" class="text-center p-5">
+                            <td colspan="7" class="text-center p-4">
                                 <div class="loading"></div>
-                                <p class="mt-3 text-muted">Loading schedules...</p>
+                                <p class="mt-3">Loading schedules...</p>
                             </td>
                         </tr>
                     </tbody>
@@ -346,14 +316,8 @@
 
         <!-- Staff Directory Section -->
         <div class="card" id="staffSection" style="display: none;">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <h3 class="card-title">
-                    <i class="fas fa-users"></i>
-                    Staff Directory Management
-                </h3>
-                <button class="btn btn-primary" onclick="showAddStaffModal()">
-                    <i class="fas fa-user-plus me-2"></i>Add Staff Member
-                </button>
+            <div class="card-header">
+                <h3 class="card-title">Staff Directory Management</h3>
             </div>
             
             <!-- Staff Table -->
@@ -370,9 +334,9 @@
                     </thead>
                     <tbody id="staffTableBody">
                         <tr>
-                            <td colspan="5" class="text-center p-5">
+                            <td colspan="5" class="text-center p-4">
                                 <div class="loading"></div>
-                                <p class="mt-3 text-muted">Loading staff...</p>
+                                <p class="mt-3">Loading staff...</p>
                             </td>
                         </tr>
                     </tbody>
@@ -383,24 +347,19 @@
         <!-- CSV Upload Section -->
         <div class="card" id="csvSection" style="display: none;">
             <div class="card-header">
-                <h3 class="card-title">
-                    <i class="fas fa-upload"></i>
-                    Bulk Schedule Upload
-                </h3>
+                <h3 class="card-title">Bulk Schedule Upload</h3>
             </div>
             
             <div class="row">
-                <div class="col-md-6 mb-4">
+                <div class="col-md-6">
                     <div class="form-group">
                         <label class="form-label">Upload CSV File</label>
                         <input type="file" class="form-control" id="csvFile" accept=".csv" onchange="processCSVFile(this)">
-                        <small class="text-muted">Upload a CSV file with schedule data. Maximum size: 5MB</small>
+                        <small>Upload a CSV file with schedule data. Maximum size: 5MB</small>
                     </div>
-                    <button class="btn btn-primary mt-3" onclick="uploadCSV()" id="uploadBtn" disabled>
-                        <i class="fas fa-upload me-2"></i>Upload CSV
-                    </button>
+                    <button class="btn btn-primary mt-3" onclick="uploadCSV()" id="uploadBtn" disabled>Upload CSV</button>
                 </div>
-                <div class="col-md-6 mb-4">
+                <div class="col-md-6">
                     <div class="form-group">
                         <label class="form-label">CSV Format Guide</label>
                         <div class="p-3 bg-light border-radius">
@@ -447,13 +406,13 @@
             <div class="modal-body">
                 <form id="addStaffForm">
                     <div class="row">
-                        <div class="col-md-6 mb-3">
+                        <div class="col-md-6">
                             <div class="form-group">
                                 <label class="form-label">Name</label>
                                 <input type="text" class="form-control" id="staffName" required>
                             </div>
                         </div>
-                        <div class="col-md-6 mb-3">
+                        <div class="col-md-6">
                             <div class="form-group">
                                 <label class="form-label">Role</label>
                                 <select class="form-control form-select" id="staffRole" required>
@@ -467,13 +426,13 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-md-6 mb-3">
+                        <div class="col-md-6">
                             <div class="form-group">
                                 <label class="form-label">Phone</label>
                                 <input type="tel" class="form-control" id="staffPhone">
                             </div>
                         </div>
-                        <div class="col-md-6 mb-3">
+                        <div class="col-md-6">
                             <div class="form-group">
                                 <label class="form-label">Email</label>
                                 <input type="email" class="form-control" id="staffEmail">
@@ -481,13 +440,13 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-md-6 mb-3">
+                        <div class="col-md-6">
                             <div class="form-group">
                                 <label class="form-label">Parent Name</label>
                                 <input type="text" class="form-control" id="parentName">
                             </div>
                         </div>
-                        <div class="col-md-6 mb-3">
+                        <div class="col-md-6">
                             <div class="form-group">
                                 <label class="form-label">Parent Phone</label>
                                 <input type="tel" class="form-control" id="parentPhone">
@@ -501,12 +460,8 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" onclick="hideAddStaffModal()">
-                    <i class="fas fa-times me-2"></i>Cancel
-                </button>
-                <button type="button" class="btn btn-primary" onclick="addStaffMember()">
-                    <i class="fas fa-save me-2"></i>Add Staff Member
-                </button>
+                <button type="button" class="btn btn-secondary" onclick="hideAddStaffModal()">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="addStaffMember()">Add Staff Member</button>
             </div>
         </div>
     </div>
@@ -522,13 +477,13 @@
                 <form id="editStaffForm">
                     <input type="hidden" id="editStaffId">
                     <div class="row">
-                        <div class="col-md-6 mb-3">
+                        <div class="col-md-6">
                             <div class="form-group">
                                 <label class="form-label">Name</label>
                                 <input type="text" class="form-control" id="editStaffName" required>
                             </div>
                         </div>
-                        <div class="col-md-6 mb-3">
+                        <div class="col-md-6">
                             <div class="form-group">
                                 <label class="form-label">Role</label>
                                 <select class="form-control form-select" id="editStaffRole" required>
@@ -542,13 +497,13 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-md-6 mb-3">
+                        <div class="col-md-6">
                             <div class="form-group">
                                 <label class="form-label">Phone</label>
                                 <input type="tel" class="form-control" id="editStaffPhone">
                             </div>
                         </div>
-                        <div class="col-md-6 mb-3">
+                        <div class="col-md-6">
                             <div class="form-group">
                                 <label class="form-label">Email</label>
                                 <input type="email" class="form-control" id="editStaffEmail">
@@ -556,13 +511,13 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-md-6 mb-3">
+                        <div class="col-md-6">
                             <div class="form-group">
                                 <label class="form-label">Parent Name</label>
                                 <input type="text" class="form-control" id="editParentName">
                             </div>
                         </div>
-                        <div class="col-md-6 mb-3">
+                        <div class="col-md-6">
                             <div class="form-group">
                                 <label class="form-label">Parent Phone</label>
                                 <input type="tel" class="form-control" id="editParentPhone">
@@ -576,12 +531,8 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" onclick="hideEditStaffModal()">
-                    <i class="fas fa-times me-2"></i>Cancel
-                </button>
-                <button type="button" class="btn btn-primary" onclick="updateStaffMember()">
-                    <i class="fas fa-save me-2"></i>Update Staff Member
-                </button>
+                <button type="button" class="btn btn-secondary" onclick="hideEditStaffModal()">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="updateStaffMember()">Update Staff Member</button>
             </div>
         </div>
     </div>
@@ -597,7 +548,7 @@
                 <form id="editScheduleForm">
                     <input type="hidden" id="editScheduleId">
                     <div class="row">
-                        <div class="col-md-4 mb-3">
+                        <div class="col-md-4">
                             <div class="form-group">
                                 <label class="form-label">Season</label>
                                 <select class="form-control form-select" id="editSeason" required>
@@ -607,7 +558,7 @@
                                 </select>
                             </div>
                         </div>
-                        <div class="col-md-4 mb-3">
+                        <div class="col-md-4">
                             <div class="form-group">
                                 <label class="form-label">Sport</label>
                                 <select class="form-control form-select" id="editEventType" required>
@@ -616,7 +567,7 @@
                                 </select>
                             </div>
                         </div>
-                        <div class="col-md-4 mb-3">
+                        <div class="col-md-4">
                             <div class="form-group">
                                 <label class="form-label">Day</label>
                                 <select class="form-control form-select" id="editDay" required>
@@ -632,19 +583,19 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-md-4 mb-3">
+                        <div class="col-md-4">
                             <div class="form-group">
                                 <label class="form-label">Date</label>
                                 <input type="date" class="form-control" id="editDate" required>
                             </div>
                         </div>
-                        <div class="col-md-4 mb-3">
+                        <div class="col-md-4">
                             <div class="form-group">
                                 <label class="form-label">Start Time</label>
                                 <input type="time" class="form-control" id="editStartTime">
                             </div>
                         </div>
-                        <div class="col-md-4 mb-3">
+                        <div class="col-md-4">
                             <div class="form-group">
                                 <label class="form-label">End Time</label>
                                 <input type="time" class="form-control" id="editEndTime">
@@ -652,7 +603,7 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-md-4 mb-3">
+                        <div class="col-md-4">
                             <div class="form-group">
                                 <label class="form-label">Division</label>
                                 <select class="form-control form-select" id="editDivision" required>
@@ -669,7 +620,7 @@
                                 </select>
                             </div>
                         </div>
-                        <div class="col-md-4 mb-3">
+                        <div class="col-md-4">
                             <div class="form-group">
                                 <label class="form-label">Home Team</label>
                                 <select class="form-control form-select" id="editHomeTeam" required>
@@ -682,7 +633,7 @@
                                 </select>
                             </div>
                         </div>
-                        <div class="col-md-4 mb-3">
+                        <div class="col-md-4">
                             <div class="form-group">
                                 <label class="form-label">Visitor Team</label>
                                 <select class="form-control form-select" id="editVisitorTeam" required>
@@ -697,7 +648,7 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-md-4 mb-3">
+                        <div class="col-md-4">
                             <div class="form-group">
                                 <label class="form-label">Venue</label>
                                 <select class="form-control form-select" id="editVenue" required>
@@ -707,7 +658,7 @@
                                 </select>
                             </div>
                         </div>
-                        <div class="col-md-4 mb-3">
+                        <div class="col-md-4">
                             <div class="form-group">
                                 <label class="form-label">Home Coach</label>
                                 <select class="form-control form-select" id="editHomeCoach" required>
@@ -720,7 +671,7 @@
                                 </select>
                             </div>
                         </div>
-                        <div class="col-md-4 mb-3">
+                        <div class="col-md-4">
                             <div class="form-group">
                                 <label class="form-label">Visitor Coach</label>
                                 <select class="form-control form-select" id="editVisitorCoach" required>
@@ -735,7 +686,7 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-md-4 mb-3">
+                        <div class="col-md-4">
                             <div class="form-group">
                                 <label class="form-label">Plate Umpire</label>
                                 <select class="form-control form-select" id="editPlateUmpire">
@@ -743,7 +694,7 @@
                                 </select>
                             </div>
                         </div>
-                        <div class="col-md-4 mb-3">
+                        <div class="col-md-4">
                             <div class="form-group">
                                 <label class="form-label">Base Umpire</label>
                                 <select class="form-control form-select" id="editBaseUmpire">
@@ -751,7 +702,7 @@
                                 </select>
                             </div>
                         </div>
-                        <div class="col-md-4 mb-3">
+                        <div class="col-md-4">
                             <div class="form-group">
                                 <label class="form-label">Concession Stand</label>
                                 <select class="form-control form-select" id="editConcessionStand">
@@ -771,7 +722,7 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-md-4 mb-3">
+                        <div class="col-md-4">
                             <div class="form-group">
                                 <label class="form-label">Concession Staff</label>
                                 <select class="form-control form-select" id="editConcessionStaff">
@@ -783,18 +734,14 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" onclick="hideEditScheduleModal()">
-                    <i class="fas fa-times me-2"></i>Cancel
-                </button>
-                <button type="button" class="btn btn-primary" onclick="updateSchedule()">
-                    <i class="fas fa-save me-2"></i>Update Schedule
-                </button>
+                <button type="button" class="btn btn-secondary" onclick="hideEditScheduleModal()">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="updateSchedule()">Update Schedule</button>
             </div>
         </div>
     </div>
 
     <!-- Alert Container -->
-    <div id="alertContainer" class="position-fixed" style="top: 20px; right: 20px; z-index: 9999;"></div>
+    <div id="alertContainer"></div>
 
     <!-- Scripts -->
     <script src="admin.js"></script>
