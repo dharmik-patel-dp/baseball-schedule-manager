@@ -874,17 +874,23 @@ async function uploadCSV() {
         
         console.log('✅ CSV upload result:', result);
         
-        // Show detailed success message
-        const message = `CSV uploaded successfully! ${result.totalRows} rows processed, ${result.successCount} inserted, ${result.errorCount} errors.`;
-        showAlert(message, result.errorCount > 0 ? 'warning' : 'success');
+        // Render detailed CSV result report inside modal
+        renderCSVResultReport(result);
         
-        // Reset form and close modal
-        csvData = null;
-        const modal = bootstrap.Modal.getInstance(document.getElementById('uploadModal'));
-        if (modal) modal.hide();
-        
-        // Reload schedules to show new data
-        await loadSchedules();
+        // If committed, reload schedules and optionally close modal
+        if (result.committed) {
+            await loadSchedules();
+            showAlert(`CSV uploaded successfully! ${result.totalRows} rows processed, ${result.successCount} inserted.`, 'success');
+            // Auto-close after short delay
+            setTimeout(() => {
+                const modal = bootstrap.Modal.getInstance(document.getElementById('uploadModal'));
+                if (modal) modal.hide();
+                resetCSVModalState();
+            }, 1200);
+        } else {
+            // Keep modal open so the admin can see errors
+            showAlert(`CSV validation failed. Please review the row errors.`, 'warning');
+        }
         
     } catch (error) {
         console.error('❌ Error uploading CSV:', error);
@@ -894,6 +900,83 @@ async function uploadCSV() {
         uploadBtn.innerHTML = originalText;
         uploadBtn.disabled = false;
     }
+}
+
+function resetCSVModalState() {
+    csvData = null;
+    const uploadBtn = document.querySelector('#uploadModal .btn-primary');
+    if (uploadBtn) {
+        uploadBtn.innerHTML = '<i class="fas fa-upload me-2"></i>Upload';
+    }
+    const csvFileInput = document.getElementById('csvFile');
+    if (csvFileInput) {
+        csvFileInput.value = '';
+    }
+    const report = document.getElementById('csvResultReport');
+    if (report) report.style.display = 'none';
+    const summary = document.getElementById('csvResultSummary');
+    if (summary) {
+        summary.className = 'alert';
+        summary.innerHTML = '';
+    }
+    const rowErrors = document.getElementById('csvRowErrors');
+    if (rowErrors) rowErrors.innerHTML = '';
+}
+
+function renderCSVResultReport(result) {
+    const report = document.getElementById('csvResultReport');
+    const summary = document.getElementById('csvResultSummary');
+    const rowErrors = document.getElementById('csvRowErrors');
+    if (!report || !summary || !rowErrors) return;
+
+    report.style.display = 'block';
+
+    const total = result.totalRows ?? result.total ?? 0;
+    const success = result.successCount ?? result.inserted ?? 0;
+    const errors = result.errorCount ?? result.errors ?? 0;
+    const committed = result.committed === true;
+    const rows = Array.isArray(result.rowErrors) ? result.rowErrors : [];
+
+    summary.className = `alert ${committed ? 'alert-success' : errors > 0 ? 'alert-warning' : 'alert-info'}`;
+    summary.innerHTML = `
+        <div class="d-flex align-items-center">
+            <i class="fas ${committed ? 'fa-check-circle text-success' : errors > 0 ? 'fa-exclamation-triangle text-warning' : 'fa-info-circle text-info'} me-2"></i>
+            <div>
+                <strong>${committed ? 'Upload Successful' : errors > 0 ? 'Validation Report' : 'Upload Result'}</strong><br>
+                Processed: <strong>${total}</strong> &nbsp; Inserted: <strong>${success}</strong> &nbsp; Errors: <strong>${errors}</strong>
+            </div>
+        </div>
+    `;
+
+    if (rows.length > 0) {
+        rowErrors.innerHTML = `
+            <div class="card">
+                <div class="card-header py-2">
+                    <strong>Row Errors (${rows.length})</strong>
+                </div>
+                <div class="card-body p-2" style="max-height: 240px; overflow:auto;">
+                    ${rows.map(r => `
+                        <div class="mb-2 small">
+                            <span class="badge bg-danger me-2">Row ${r.row}</span>
+                            ${Array.isArray(r.errors) ? r.errors.map(e => `<span class="badge bg-light text-dark me-1">${escapeHtml(e)}</span>`).join('') : ''}
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        `;
+    } else {
+        rowErrors.innerHTML = '';
+    }
+}
+
+function escapeHtml(str) {
+    if (typeof str !== 'string') return '';
+    return str
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
 }
 
 // Utility functions

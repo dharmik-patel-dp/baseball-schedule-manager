@@ -670,6 +670,7 @@ app.post('/api/upload-csv', upload.single('csv'), (req, res) => {
     const csv = require('csv-parser');
     const fs = require('fs');
     const results = [];
+    const rowErrors = [];
 
     // Ensure uploads directory exists
     const uploadsDir = path.join(__dirname, 'uploads');
@@ -680,8 +681,15 @@ app.post('/api/upload-csv', upload.single('csv'), (req, res) => {
     fs.createReadStream(req.file.path)
         .pipe(csv())
         .on('data', (data) => {
-            console.log('📊 CSV row data:', data);
-            results.push(data);
+            // Normalize keys by trimming and lowering
+            const normalized = {};
+            Object.keys(data || {}).forEach(k => {
+                if (!k) return;
+                const key = String(k).trim();
+                normalized[key] = typeof data[k] === 'string' ? data[k].trim() : data[k];
+            });
+            console.log('📊 CSV row data:', normalized);
+            results.push(normalized);
         })
         .on('end', () => {
             console.log(`📊 Processing ${results.length} CSV rows...`);
@@ -692,6 +700,67 @@ app.post('/api/upload-csv', upload.single('csv'), (req, res) => {
                     if (err) console.error('Error deleting uploaded file:', err);
                 });
                 return res.status(400).json({ error: 'CSV file is empty or invalid' });
+            }
+
+            // Basic validation helpers
+            function isEmpty(value) {
+                return value === undefined || value === null || String(value).trim() === '';
+            }
+
+            function validateRow(row, index) {
+                const errors = [];
+                // Required fields
+                const required = ['season', 'event_type', 'day', 'date', 'division', 'home_team', 'visitor_team', 'venue'];
+                required.forEach(field => {
+                    if (isEmpty(row[field])) {
+                        errors.push(`${field} is required`);
+                    }
+                });
+
+                // event_type suggested values
+                if (!isEmpty(row.event_type)) {
+                    const ev = String(row.event_type).toLowerCase();
+                    if (ev !== 'baseball' && ev !== 'softball') {
+                        errors.push('event_type should be Baseball or Softball');
+                    }
+                }
+
+                // date should be parseable (YYYY-MM-DD preferred)
+                if (!isEmpty(row.date)) {
+                    const d = new Date(row.date);
+                    if (isNaN(d.getTime())) {
+                        errors.push('date is invalid (use YYYY-MM-DD)');
+                    }
+                }
+
+                // If start_time provided, am_pm should be provided too
+                if (!isEmpty(row.start_time) && isEmpty(row.am_pm)) {
+                    errors.push('am_pm is required when start_time is provided');
+                }
+
+                if (errors.length > 0) {
+                    rowErrors.push({ row: index + 1, errors });
+                    return false;
+                }
+                return true;
+            }
+
+            // Validate all rows first
+            results.forEach((row, idx) => validateRow(row, idx));
+
+            if (rowErrors.length > 0) {
+                // Clean up uploaded file
+                fs.unlink(req.file.path, (err) => {
+                    if (err) console.error('Error deleting uploaded file:', err);
+                });
+                return res.status(400).json({
+                    message: 'CSV failed validation',
+                    committed: false,
+                    totalRows: results.length,
+                    successCount: 0,
+                    errorCount: rowErrors.length,
+                    rowErrors
+                });
             }
 
             // Process CSV data and insert into database
@@ -713,16 +782,16 @@ app.post('/api/upload-csv', upload.single('csv'), (req, res) => {
                     `;
                     
                     const values = [
-                        row.season || 'Spring', 
-                        row.event_type || 'Baseball', 
-                        row.day || 'Saturday',
-                        row.date || '', 
+                        row.season, 
+                        row.event_type, 
+                        row.day,
+                        row.date, 
                         row.start_time || '', 
                         row.am_pm || '', 
-                        row.division || '',
-                        row.home_team || '', 
-                        row.visitor_team || '', 
-                        row.venue || '',
+                        row.division,
+                        row.home_team, 
+                        row.visitor_team, 
+                        row.venue,
                         row.home_coach || '', 
                         row.visitor_coach || '', 
                         row.plate_umpire || '',
@@ -737,6 +806,7 @@ app.post('/api/upload-csv', upload.single('csv'), (req, res) => {
                         if (err) {
                             console.error(`❌ Error inserting row ${index + 1}:`, err);
                             errorCount++;
+                            rowErrors.push({ row: index + 1, errors: [err.message] });
                         } else {
                             console.log(`✅ Row ${index + 1} inserted successfully, ID: ${this.lastID}`);
                             successCount++;
@@ -754,12 +824,13 @@ app.post('/api/upload-csv', upload.single('csv'), (req, res) => {
                                         if (err) console.error('Error deleting uploaded file:', err);
                                     });
 
-                                    res.status(500).json({
-                                        error: 'CSV processing failed',
+                                    res.status(400).json({
+                                        message: 'CSV processing failed',
+                                        committed: false,
                                         totalRows: results.length,
                                         successCount,
                                         errorCount,
-                                        message: 'Transaction rolled back due to errors'
+                                        rowErrors
                                     });
                                 });
                             } else {
@@ -775,9 +846,11 @@ app.post('/api/upload-csv', upload.single('csv'), (req, res) => {
                                     console.log(`✅ CSV processed successfully: ${successCount} rows inserted`);
                                     res.json({
                                         message: 'CSV processed successfully',
+                                        committed: true,
                                         totalRows: results.length,
                                         successCount,
-                                        errorCount
+                                        errorCount,
+                                        rowErrors: []
                                     });
                                 });
                             }
