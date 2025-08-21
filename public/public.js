@@ -297,8 +297,9 @@ function renderScheduleTable() {
                 </div>
             </td>
             <td>
-                <button class="btn btn-sm btn-outline-primary" onclick="showUmpireRequestForm(${schedule.id})">
-                    <i class="fas fa-edit me-1"></i>Request Change
+                <button class="btn-request-change" onclick="showUmpireRequestForm(${schedule.id})">
+                    <i class="fas fa-edit me-1"></i>
+                    Request Change
                 </button>
             </td>
         </tr>

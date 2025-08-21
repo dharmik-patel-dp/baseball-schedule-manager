@@ -1690,6 +1690,31 @@
             box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
         }
 
+        /* Request Change Button Styling */
+        .btn-request-change {
+            background: linear-gradient(135deg, var(--accent-blue), #3b82f6);
+            color: white;
+            border: none;
+            padding: var(--space-2) var(--space-3);
+            border-radius: var(--radius-md);
+            font-size: 0.75rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 4px rgba(59, 130, 246, 0.2);
+        }
+
+        .btn-request-change:hover {
+            background: linear-gradient(135deg, #2563eb, var(--accent-blue));
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(59, 130, 246, 0.3);
+            color: white;
+        }
+
+        .btn-request-change:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(59, 130, 246, 0.2);
+        }
+
         .btn-clear {
             background: transparent;
             color: var(--text-secondary);
@@ -2013,7 +2038,7 @@
                         </thead>
                         <tbody id="scheduleTableBody">
                             <tr>
-                                <td colspan="11" class="loading-container">
+                                <td colspan="12" class="loading-container">
                                     <div class="loading-spinner"></div>
                                     <p>Loading schedules...</p>
                                 </td>
