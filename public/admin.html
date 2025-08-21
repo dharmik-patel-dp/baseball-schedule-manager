@@ -191,6 +191,12 @@
             border-bottom: 1px solid var(--border-light);
         }
 
+        .admin-card-actions {
+            display: flex;
+            gap: var(--space-3);
+            align-items: center;
+        }
+
         .admin-card-title {
             font-size: 1.25rem;
             font-weight: 600;
@@ -284,6 +290,17 @@
             background: #dc2626;
             border-color: #dc2626;
             color: white;
+        }
+
+        .btn-info-modern {
+            background: var(--accent-blue);
+            color: white;
+            border-color: var(--accent-blue);
+        }
+
+        .btn-info-modern:hover {
+            background: #2563eb;
+            border-color: #2563eb;
         }
 
         /* Minimalist Form Controls */
@@ -704,6 +721,10 @@
                         <i class="fas fa-upload"></i>
                         CSV Import
                     </a>
+                    <a href="#umpire-requests" class="nav-link-modern" onclick="showSection('umpire-requests')">
+                        <i class="fas fa-user-edit"></i>
+                        Umpire Requests
+                    </a>
                     <a href="/" class="nav-link-modern">
                         <i class="fas fa-eye"></i>
                         View Public Site
@@ -855,6 +876,46 @@
                         </div>
                     </div>
                 </div>
+            </div>
+        </section>
+
+        <!-- Umpire Request Management Section -->
+        <section id="umpire-requests" class="admin-card" style="display: none;" data-aos="fade-up">
+            <div class="admin-card-header">
+                <h2 class="admin-card-title">
+                    <i class="fas fa-user-edit"></i>
+                    Umpire Change Requests
+                </h2>
+                <div class="admin-card-actions">
+                    <button class="btn-modern btn-info-modern" onclick="refreshUmpireRequests()">
+                        <i class="fas fa-sync-alt"></i>
+                        Refresh
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Umpire Requests Table -->
+            <div class="table-responsive">
+                <table class="table table-modern">
+                    <thead>
+                        <tr>
+                            <th>Game Details</th>
+                            <th>Current Umpires</th>
+                            <th>Requested Changes</th>
+                            <th>Reason</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="umpireRequestsTableBody">
+                        <tr>
+                            <td colspan="6" class="text-center py-4">
+                                <div class="loading-spinner"></div>
+                                <p class="mt-2">Loading umpire requests...</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </section>
     </div>
