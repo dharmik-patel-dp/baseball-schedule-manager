@@ -7,6 +7,7 @@ let filterOptions = {};
 document.addEventListener('DOMContentLoaded', function() {
     loadSchedules();
     loadFilterOptions();
+    loadUmpireOptions();
     setupEventListeners();
 });
 
@@ -28,6 +29,23 @@ function setupEventListeners() {
             element.addEventListener('change', applyFilters);
         }
     });
+}
+
+// Load umpire dropdown options from staff directory
+async function loadUmpireOptions() {
+    try {
+        const response = await fetch('/api/staff');
+        if (!response.ok) return;
+        const staff = await response.json();
+        const umpires = staff.filter(s => (s.role || '').toLowerCase().includes('umpire'));
+        const options = ['<option value="">No change</option>']
+            .concat(umpires.map(u => `<option value="${u.name}">${u.name}</option>`))
+            .join('');
+        const plate = document.getElementById('requestedPlateUmpire');
+        const baseU = document.getElementById('requestedBaseUmpire');
+        if (plate) plate.innerHTML = options;
+        if (baseU) baseU.innerHTML = options;
+    } catch {}
 }
 
 // Load all schedules
@@ -395,6 +413,8 @@ async function handleUmpireRequest(event) {
         
         // Reset form
         document.getElementById('umpireRequestFormElement').reset();
+        // Refresh schedules to reflect any immediate UI dependencies
+        loadSchedules();
         
     } catch (error) {
         console.error('Error submitting request:', error);

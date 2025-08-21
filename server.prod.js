@@ -11,12 +11,15 @@ const PORT = process.env.PORT || 3000;
 // Security middleware
 app.use(helmet({
     contentSecurityPolicy: {
+        useDefaults: true,
         directives: {
             defaultSrc: ["'self'"],
+            scriptSrc: ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net", "https://cdnjs.cloudflare.com"],
+            scriptSrcAttr: ["'unsafe-inline'"],
             styleSrc: ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net", "https://cdnjs.cloudflare.com"],
-            scriptSrc: ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net"],
-            fontSrc: ["'self'", "https://cdnjs.cloudflare.com"],
+            fontSrc: ["'self'", "https://cdnjs.cloudflare.com", "https://cdn.jsdelivr.net", "data:"],
             imgSrc: ["'self'", "data:", "https:"],
+            connectSrc: ["'self'"]
         },
     },
 }));
@@ -72,7 +75,7 @@ db.serialize(() => {
         day TEXT NOT NULL,
         date TEXT NOT NULL,
         start_time TEXT,
-        end_time TEXT,
+        am_pm TEXT,
         division TEXT,
         home_team TEXT,
         visitor_team TEXT,
@@ -126,6 +129,7 @@ db.serialize(() => {
             }
 
             const hasConcessionStaff = rows.some(row => row.name === 'concession_staff');
+            const hasAmPm = rows.some(row => row.name === 'am_pm');
 
             if (!hasConcessionStaff) {
                 console.log('📝 Adding missing concession_staff column...');
@@ -136,7 +140,20 @@ db.serialize(() => {
                         console.log('✅ Successfully added concession_staff column');
                     }
                 });
-            } else {
+            }
+
+            if (!hasAmPm) {
+                console.log('📝 Adding missing am_pm column...');
+                db.run("ALTER TABLE schedules ADD COLUMN am_pm TEXT", (err) => {
+                    if (err) {
+                        console.error('Error adding am_pm column:', err);
+                    } else {
+                        console.log('✅ Successfully added am_pm column');
+                    }
+                });
+            }
+
+            if (hasConcessionStaff && hasAmPm) {
                 console.log('✅ Database schema is up to date');
             }
         });
@@ -245,13 +262,14 @@ app.get('/api/staff', (req, res) => {
 
 // Get staff names only
 app.get('/api/staff-names', (req, res) => {
-    db.all("SELECT name FROM staff_directory ORDER BY name", [], (err, rows) => {
+    db.all("SELECT name, role FROM staff_directory ORDER BY name", [], (err, rows) => {
         if (err) {
             console.error('Error fetching staff names:', err);
             res.status(500).json({ error: err.message });
             return;
         }
-        res.json(rows.map(row => row.name));
+        // Return as objects to match frontend expectations
+        res.json(rows);
     });
 });
 
@@ -260,7 +278,7 @@ app.post('/api/schedules', (req, res) => {
     const schedule = req.body;
     const query = `
         INSERT INTO schedules (
-            season, event_type, day, date, start_time, end_time, division,
+            season, event_type, day, date, start_time, am_pm, division,
             home_team, visitor_team, venue, home_coach, visitor_coach,
             plate_umpire, base_umpire, concession_stand, concession_staff
         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
@@ -268,7 +286,7 @@ app.post('/api/schedules', (req, res) => {
     
     const values = [
         schedule.season, schedule.event_type, schedule.day, schedule.date,
-        schedule.start_time, schedule.end_time, schedule.division,
+        schedule.start_time, schedule.am_pm, schedule.division,
         schedule.home_team, schedule.visitor_team, schedule.venue,
         schedule.home_coach, schedule.visitor_coach, schedule.plate_umpire,
         schedule.base_umpire, schedule.concession_stand, schedule.concession_staff
@@ -291,7 +309,7 @@ app.put('/api/schedules/:id', (req, res) => {
     
     const query = `
         UPDATE schedules SET 
-            season = ?, event_type = ?, day = ?, date = ?, start_time = ?, end_time = ?, division = ?,
+            season = ?, event_type = ?, day = ?, date = ?, start_time = ?, am_pm = ?, division = ?,
             home_team = ?, visitor_team = ?, venue = ?, home_coach = ?, visitor_coach = ?,
             plate_umpire = ?, base_umpire = ?, concession_stand = ?, concession_staff = ?,
             updated_at = CURRENT_TIMESTAMP
@@ -300,7 +318,7 @@ app.put('/api/schedules/:id', (req, res) => {
     
     const values = [
         schedule.season, schedule.event_type, schedule.day, schedule.date,
-        schedule.start_time, schedule.end_time, schedule.division,
+        schedule.start_time, schedule.am_pm, schedule.division,
         schedule.home_team, schedule.visitor_team, schedule.venue,
         schedule.home_coach, schedule.visitor_coach, schedule.plate_umpire,
         schedule.base_umpire, schedule.concession_stand, schedule.concession_staff, id
@@ -434,6 +452,44 @@ app.post('/api/umpire-requests', (req, res) => {
     });
 });
 
+// Get umpire requests (for admin dashboard)
+app.get('/api/umpire-requests', (req, res) => {
+    const query = `
+        SELECT ur.*, s.date, s.start_time, s.am_pm, s.home_team, s.visitor_team, s.venue, s.division
+        FROM umpire_requests ur
+        JOIN schedules s ON ur.game_id = s.id
+        WHERE ur.status = 'pending'
+        ORDER BY ur.created_at DESC
+    `;
+    db.all(query, [], (err, rows) => {
+        if (err) {
+            console.error('Error fetching umpire requests:', err);
+            res.status(500).json({ error: err.message });
+            return;
+        }
+        res.json(rows);
+    });
+});
+
+// Update umpire request status (alias route to match frontend)
+app.put('/api/umpire-requests/:id/status', (req, res) => {
+    const { id } = req.params;
+    const { status } = req.body;
+    db.run("UPDATE umpire_requests SET status = ? WHERE id = ?", [status, id], function(err) {
+        if (err) {
+            console.error('Error updating umpire request:', err);
+            res.status(500).json({ error: err.message });
+            return;
+        }
+        if (this.changes === 0) {
+            res.status(404).json({ error: 'Umpire request not found' });
+            return;
+        }
+        res.json({ message: 'Umpire request updated successfully' });
+    });
+});
+
+// Keep original update route for compatibility
 app.put('/api/umpire-requests/:id', (req, res) => {
     const { id } = req.params;
     const { status } = req.body;
@@ -453,7 +509,7 @@ app.put('/api/umpire-requests/:id', (req, res) => {
 });
 
 // CSV upload endpoint
-app.post('/api/upload-csv', upload.single('csvFile'), (req, res) => {
+app.post('/api/upload-csv', upload.single('csv'), (req, res) => {
     if (!req.file) {
         return res.status(400).json({ error: 'No file uploaded' });
     }
@@ -473,7 +529,7 @@ app.post('/api/upload-csv', upload.single('csvFile'), (req, res) => {
             results.forEach((row, index) => {
                 const query = `
                     INSERT INTO schedules (
-                        season, event_type, day, date, start_time, end_time, division,
+                        season, event_type, day, date, start_time, am_pm, division,
                         home_team, visitor_team, venue, home_coach, visitor_coach,
                         plate_umpire, base_umpire, concession_stand, concession_staff
                     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
@@ -481,7 +537,7 @@ app.post('/api/upload-csv', upload.single('csvFile'), (req, res) => {
                 
                 const values = [
                     row.season || 'Spring', row.event_type || 'Baseball', row.day || 'Saturday',
-                    row.date || '', row.start_time || '', row.end_time || '', row.division || '',
+                    row.date || '', row.start_time || '', row.am_pm || '', row.division || '',
                     row.home_team || '', row.visitor_team || '', row.venue || '',
                     row.home_coach || '', row.visitor_coach || '', row.plate_umpire || '',
                     row.base_umpire || '', row.concession_stand || '', row.concession_staff || ''
@@ -513,6 +569,26 @@ app.post('/api/upload-csv', upload.single('csvFile'), (req, res) => {
             console.error('Error processing CSV:', error);
             res.status(500).json({ error: 'Error processing CSV file' });
         });
+});
+
+// Bulk delete schedules
+app.post('/api/schedules/bulk-delete', (req, res) => {
+    const { ids } = req.body;
+    if (!ids || !Array.isArray(ids) || ids.length === 0) {
+        return res.status(400).json({ error: 'No valid IDs provided' });
+    }
+
+    const placeholders = ids.map(() => '?').join(',');
+    const query = `DELETE FROM schedules WHERE id IN (${placeholders})`;
+
+    db.run(query, ids, function(err) {
+        if (err) {
+            console.error('Error deleting schedules:', err);
+            res.status(500).json({ error: err.message });
+            return;
+        }
+        res.json({ message: `${this.changes} schedules deleted successfully` });
+    });
 });
 
 // Serve admin panel
