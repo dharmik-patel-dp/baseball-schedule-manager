@@ -90,12 +90,13 @@ async function loadSchedules() {
 // Load staff directory
 async function loadStaff() {
     try {
-        const response = await fetch('/api/staff');
+        const response = await fetch('/api/staff-names');
         if (!response.ok) throw new Error('Failed to fetch staff');
         
         allStaff = await response.json();
+        console.log('✅ Staff loaded:', allStaff);
     } catch (error) {
-        console.error('Error loading staff:', error);
+        console.error('❌ Error loading staff:', error);
         allStaff = [];
     }
 }
@@ -378,23 +379,34 @@ function formatDate(dateString) {
 // Populate umpire dropdowns with available staff
 function populateUmpireDropdowns() {
     try {
+        console.log('🔄 Populating umpire dropdowns...');
+        console.log('📊 allStaff:', allStaff);
+        
         // Get available umpires from staff data
         const umpires = allStaff ? allStaff.filter(staff => staff.role === 'Umpire') : [];
+        console.log('👨‍⚖️ Umpires found:', umpires);
         
         const plateUmpireSelect = document.getElementById('requestedPlateUmpire');
         const baseUmpireSelect = document.getElementById('requestedBaseUmpire');
         
+        console.log('🔍 Plate umpire select element:', plateUmpireSelect);
+        console.log('🔍 Base umpire select element:', baseUmpireSelect);
+        
         if (plateUmpireSelect) {
-            plateUmpireSelect.innerHTML = '<option value="">No Change</option>' +
+            const options = '<option value="">No Change</option>' +
                 umpires.map(umpire => `<option value="${umpire.name}">${umpire.name}</option>`).join('');
+            plateUmpireSelect.innerHTML = options;
+            console.log('✅ Plate umpire options set:', options);
         }
         
         if (baseUmpireSelect) {
-            baseUmpireSelect.innerHTML = '<option value="">No Change</option>' +
+            const options = '<option value="">No Change</option>' +
                 umpires.map(umpire => `<option value="${umpire.name}">${umpire.name}</option>`).join('');
+            baseUmpireSelect.innerHTML = options;
+            console.log('✅ Base umpire options set:', options);
         }
     } catch (error) {
-        console.error('Error populating umpire dropdowns:', error);
+        console.error('❌ Error populating umpire dropdowns:', error);
     }
 }
 

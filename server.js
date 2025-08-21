@@ -138,6 +138,33 @@ db.serialize(() => {
       console.log('Sample staff data inserted');
     }
   });
+
+  // Insert sample umpire request data if table is empty
+  db.get("SELECT COUNT(*) as count FROM umpire_requests", [], (err, row) => {
+    if (err) {
+      console.error('Error checking umpire requests count:', err);
+      return;
+    }
+    
+    if (row.count === 0) {
+      const sampleRequest = [
+        1, // game_id
+        'John Smith', // current_plate_umpire
+        'Mike Johnson', // current_base_umpire
+        'PATCHED UMPIRE', // requested_plate_umpire
+        'PATCHED UMPIRE', // requested_base_umpire
+        'Need experienced umpire for championship game' // reason
+      ];
+
+      db.run("INSERT INTO umpire_requests (game_id, current_plate_umpire, current_base_umpire, requested_plate_umpire, requested_base_umpire, reason) VALUES (?, ?, ?, ?, ?, ?)", sampleRequest, function(err) {
+        if (err) {
+          console.error('Error inserting sample umpire request:', err);
+        } else {
+          console.log('Sample umpire request inserted with ID:', this.lastID);
+        }
+      });
+    }
+  });
   
   // Run database migration
   migrateDatabase();

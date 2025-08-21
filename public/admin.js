@@ -996,33 +996,39 @@ function renderUmpireRequestsTable(requests) {
 
 async function approveUmpireRequest(requestId) {
     try {
+        console.log('🔄 Approving request:', requestId);
         const response = await fetch(`/api/umpire-requests/${requestId}/approve`, {
             method: 'PUT'
         });
         
         if (!response.ok) throw new Error('Failed to approve request');
         
+        const result = await response.json();
+        console.log('✅ Approval successful:', result);
         showAlert('Umpire request approved successfully!', 'success');
         loadUmpireRequests();
     } catch (error) {
-        console.error('Error approving request:', error);
+        console.error('❌ Error approving request:', error);
         showAlert('Error approving request.', 'danger');
     }
 }
 
 async function denyUmpireRequest(requestId) {
     try {
+        console.log('🔄 Denying request:', requestId);
         const response = await fetch(`/api/umpire-requests/${requestId}/deny`, {
             method: 'PUT'
         });
         
         if (!response.ok) throw new Error('Failed to deny request');
         
+        const result = await response.json();
+        console.log('✅ Denial successful:', result);
         showAlert('Umpire request denied successfully!', 'success');
         loadUmpireRequests();
     } catch (error) {
-        console.error('Error denying request:', error);
-        showAlert('Error denying request.', 'danger');
+        console.error('❌ Error denying request:', error);
+        showAlert('Error denying request.', error);
     }
 }
 

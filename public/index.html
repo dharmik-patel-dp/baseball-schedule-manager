@@ -2271,14 +2271,23 @@
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="public.js?v=1.0.9"></script>
+    <script src="public.js?v=1.0.10"></script>
     <script>
         // Force immediate refresh if page is cached
         if (performance.navigation.type === 1) {
-            console.log('Page was refreshed');
+            console.log('✅ Page was refreshed');
         } else {
-            console.log('Page loaded from cache - forcing refresh');
+            console.log('🔄 Page loaded from cache - forcing refresh');
             window.location.reload(true);
+        }
+        
+        // Additional cache busting
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.getRegistrations().then(function(registrations) {
+                for(let registration of registrations) {
+                    registration.unregister();
+                }
+            });
         }
     </script>
 </body>
