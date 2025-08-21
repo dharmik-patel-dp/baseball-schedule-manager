@@ -15,17 +15,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Setup event listeners
 function setupEventListeners() {
-    // Schedule form submission
-    document.getElementById('scheduleForm').addEventListener('submit', handleScheduleSubmit);
-    
     // CSV file input
-    document.getElementById('csvFile').addEventListener('change', handleCSVFileSelect);
-    
-    // CSV drag and drop
-    const csvUploadArea = document.getElementById('csvUploadArea');
-    csvUploadArea.addEventListener('dragover', handleDragOver);
-    csvUploadArea.addEventListener('drop', handleDrop);
-    csvUploadArea.addEventListener('dragleave', handleDragLeave);
+    document.getElementById('csvFile').addEventListener('change', processCSVFile);
 }
 
 // Load all schedules
@@ -764,8 +755,9 @@ function processCSVFile(file) {
                 return;
             }
             
-            // Show preview
+            // Show preview and enable upload button
             showCSVPreview();
+            document.getElementById('uploadCSV').style.display = 'inline-block';
         } catch (error) {
             console.error('Error processing CSV:', error);
             showAlert('Error processing CSV file. Please check the file format.', 'danger');
@@ -912,6 +904,12 @@ function showAlert(message, type) {
     }
 }
 
+// Show create schedule modal
+function showCreateScheduleModal() {
+    const modal = new bootstrap.Modal(document.getElementById('createScheduleModal'));
+    modal.show();
+}
+
 // Export functions for global access
 window.editSchedule = editSchedule;
 window.updateSchedule = updateSchedule;
@@ -925,4 +923,5 @@ window.showAddStaffModal = showAddStaffModal;
 window.addStaffMember = addStaffMember;
 window.editStaff = editStaff;
 window.updateStaffMember = updateStaffMember;
-window.deleteStaff = deleteStaff; 
+window.deleteStaff = deleteStaff;
+window.showCreateScheduleModal = showCreateScheduleModal; 

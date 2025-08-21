@@ -250,6 +250,18 @@
             color: white;
         }
 
+        .btn-secondary-modern {
+            background: var(--bg-secondary);
+            color: var(--text-secondary);
+            border-color: var(--border-medium);
+        }
+
+        .btn-secondary-modern:hover {
+            background: var(--bg-tertiary);
+            border-color: var(--border-dark);
+            color: var(--text-primary);
+        }
+
         .btn-warning-modern {
             background: var(--accent-orange);
             color: white;
@@ -701,6 +713,9 @@
         </div>
     </header>
 
+    <!-- Alert Container -->
+    <div id="alertContainer" class="position-fixed top-0 end-0 p-3" style="z-index: 9999;"></div>
+
     <div class="container-modern">
         <!-- Schedules Section -->
         <section id="schedules" class="admin-card" data-aos="fade-up">
@@ -717,9 +732,18 @@
             
             <!-- Schedule Table -->
             <div class="table-responsive">
+                <div class="mb-3">
+                    <button id="bulkDeleteBtn" class="btn-modern btn-danger-modern" onclick="bulkDelete()" style="display: none;">
+                        <i class="fas fa-trash"></i>
+                        Delete Selected
+                    </button>
+                </div>
                 <table class="table table-modern">
                     <thead>
                         <tr>
+                            <th>
+                                <input type="checkbox" id="selectAll" onchange="toggleSelectAll()">
+                            </th>
                             <th>Season</th>
                             <th>Event</th>
                             <th>Day</th>
@@ -808,11 +832,535 @@
                 <div class="col-md-6">
                     <div id="csvPreview" style="display: none;">
                         <h5>CSV Preview</h5>
-                        <div id="previewContent" class="border rounded p-3 bg-light"></div>
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Season</th>
+                                        <th>Event</th>
+                                        <th>Day</th>
+                                        <th>Date</th>
+                                        <th>Time</th>
+                                        <th>Division</th>
+                                        <th>Home Team</th>
+                                        <th>Visitor Team</th>
+                                        <th>Venue</th>
+                                        <th>Umpires</th>
+                                        <th>Concession</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="csvPreviewBody">
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
         </section>
+    </div>
+
+    <!-- Schedule Creation Modal -->
+    <div class="modal fade" id="createScheduleModal" tabindex="-1" aria-labelledby="createScheduleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="createScheduleModalLabel">Create New Schedule</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="scheduleForm">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="season" class="form-label-modern">Season</label>
+                                    <select id="season" class="form-control-modern" required>
+                                        <option value="">Select Season</option>
+                                        <option value="Spring">Spring</option>
+                                        <option value="Summer">Summer</option>
+                                        <option value="Fall">Fall</option>
+                                        <option value="Winter">Winter</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="eventType" class="form-label-modern">Event Type</label>
+                                    <select id="eventType" class="form-control-modern" required>
+                                        <option value="">Select Event Type</option>
+                                        <option value="Baseball">Baseball</option>
+                                        <option value="Softball">Softball</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="day" class="form-label-modern">Day</label>
+                                    <select id="day" class="form-control-modern" required>
+                                        <option value="">Select Day</option>
+                                        <option value="Monday">Monday</option>
+                                        <option value="Tuesday">Tuesday</option>
+                                        <option value="Wednesday">Wednesday</option>
+                                        <option value="Thursday">Thursday</option>
+                                        <option value="Friday">Friday</option>
+                                        <option value="Saturday">Saturday</option>
+                                        <option value="Sunday">Sunday</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="date" class="form-label-modern">Date</label>
+                                    <input type="date" id="date" class="form-control-modern" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="startTime" class="form-label-modern">Start Time</label>
+                                    <input type="time" id="startTime" class="form-control-modern" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="amPm" class="form-label-modern">AM/PM</label>
+                                    <select id="amPm" class="form-control-modern" required>
+                                        <option value="">Select AM/PM</option>
+                                        <option value="AM">AM</option>
+                                        <option value="PM">PM</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="division" class="form-label-modern">Division</label>
+                                    <select id="division" class="form-control-modern" required>
+                                        <option value="">Select Division</option>
+                                        <option value="T-Ball">T-Ball</option>
+                                        <option value="Coach Pitch">Coach Pitch</option>
+                                        <option value="Machine Pitch">Machine Pitch</option>
+                                        <option value="Kid Pitch">Kid Pitch</option>
+                                        <option value="Junior">Junior</option>
+                                        <option value="Senior">Senior</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="homeTeam" class="form-label-modern">Home Team</label>
+                                    <select id="homeTeam" class="form-control-modern" required>
+                                        <option value="">Select Home Team</option>
+                                        <option value="Tigers">Tigers</option>
+                                        <option value="Lions">Lions</option>
+                                        <option value="Bears">Bears</option>
+                                        <option value="Eagles">Eagles</option>
+                                        <option value="Sharks">Sharks</option>
+                                        <option value="Dragons">Dragons</option>
+                                        <option value="Knights">Knights</option>
+                                        <option value="Warriors">Warriors</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="homeCoach" class="form-label-modern">Home Coach</label>
+                                    <select id="homeCoach" class="form-control-modern" required>
+                                        <option value="">Select Home Coach</option>
+                                        <option value="Coach Johnson">Coach Johnson</option>
+                                        <option value="Coach Smith">Coach Smith</option>
+                                        <option value="Coach Davis">Coach Davis</option>
+                                        <option value="Coach Wilson">Coach Wilson</option>
+                                        <option value="Coach Brown">Coach Brown</option>
+                                        <option value="Coach Taylor">Coach Taylor</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="visitorTeam" class="form-label-modern">Visitor Team</label>
+                                    <select id="visitorTeam" class="form-control-modern" required>
+                                        <option value="">Select Visitor Team</option>
+                                        <option value="Tigers">Tigers</option>
+                                        <option value="Lions">Lions</option>
+                                        <option value="Bears">Bears</option>
+                                        <option value="Eagles">Eagles</option>
+                                        <option value="Sharks">Sharks</option>
+                                        <option value="Dragons">Dragons</option>
+                                        <option value="Knights">Knights</option>
+                                        <option value="Warriors">Warriors</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="visitorCoach" class="form-label-modern">Visitor Coach</label>
+                                    <select id="visitorCoach" class="form-control-modern" required>
+                                        <option value="">Select Visitor Coach</option>
+                                        <option value="Coach Johnson">Coach Johnson</option>
+                                        <option value="Coach Smith">Coach Smith</option>
+                                        <option value="Coach Davis">Coach Davis</option>
+                                        <option value="Coach Wilson">Coach Wilson</option>
+                                        <option value="Coach Brown">Coach Brown</option>
+                                        <option value="Coach Taylor">Coach Taylor</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="venue" class="form-label-modern">Venue</label>
+                                    <select id="venue" class="form-control-modern" required>
+                                        <option value="">Select Venue</option>
+                                        <option value="Field 1">Field 1</option>
+                                        <option value="Field 2">Field 2</option>
+                                        <option value="Field 3">Field 3</option>
+                                        <option value="Field 4">Field 4</option>
+                                        <option value="Field 5">Field 5</option>
+                                        <option value="Field 6">Field 6</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="plateUmpire" class="form-label-modern">Plate Umpire</label>
+                                    <select id="plateUmpire" class="form-control-modern">
+                                        <option value="">Select Plate Umpire</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="baseUmpire" class="form-label-modern">Base Umpire</label>
+                                    <select id="baseUmpire" class="form-control-modern">
+                                        <option value="">Select Base Umpire</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="concessionStand" class="form-label-modern">Concession Stand</label>
+                                    <select id="concessionStand" class="form-control-modern">
+                                        <option value="">Select Concession Stand</option>
+                                        <option value="No Concession">No Concession</option>
+                                        <optgroup label="Main Concession Stands">
+                                            <option value="Main Stand 1">Main Stand 1</option>
+                                            <option value="Main Stand 2">Main Stand 2</option>
+                                            <option value="Main Stand 3">Main Stand 3</option>
+                                        </optgroup>
+                                        <optgroup label="Field Concession Stands">
+                                            <option value="Field 1 Stand">Field 1 Stand</option>
+                                            <option value="Field 2 Stand">Field 2 Stand</option>
+                                            <option value="Field 3 Stand">Field 3 Stand</option>
+                                            <option value="Field 4 Stand">Field 4 Stand</option>
+                                            <option value="Field 5 Stand">Field 5 Stand</option>
+                                            <option value="Field 6 Stand">Field 6 Stand</option>
+                                        </optgroup>
+                                        <optgroup label="Specialty Stands">
+                                            <option value="Ice Cream Stand">Ice Cream Stand</option>
+                                            <option value="Snack Stand">Snack Stand</option>
+                                            <option value="Drink Stand">Drink Stand</option>
+                                        </optgroup>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="concessionStaff" class="form-label-modern">Concession Staff</label>
+                                    <select id="concessionStaff" class="form-control-modern">
+                                        <option value="">Select Concession Staff</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-modern btn-secondary-modern" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn-modern btn-primary-modern" onclick="handleScheduleSubmit()">Create Schedule</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Schedule Edit Modal -->
+    <div class="modal fade" id="editScheduleModal" tabindex="-1" aria-labelledby="editScheduleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editScheduleModalLabel">Edit Schedule</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editScheduleForm">
+                        <input type="hidden" id="editScheduleId">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="editSeason" class="form-label-modern">Season</label>
+                                    <select id="editSeason" class="form-control-modern" required>
+                                        <option value="">Select Season</option>
+                                        <option value="Spring">Spring</option>
+                                        <option value="Summer">Summer</option>
+                                        <option value="Fall">Fall</option>
+                                        <option value="Winter">Winter</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="editEventType" class="form-label-modern">Event Type</label>
+                                    <select id="editEventType" class="form-control-modern" required>
+                                        <option value="">Select Event Type</option>
+                                        <option value="Baseball">Baseball</option>
+                                        <option value="Softball">Softball</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="editDay" class="form-label-modern">Day</label>
+                                    <select id="editDay" class="form-control-modern" required>
+                                        <option value="">Select Day</option>
+                                        <option value="Monday">Monday</option>
+                                        <option value="Tuesday">Tuesday</option>
+                                        <option value="Wednesday">Wednesday</option>
+                                        <option value="Thursday">Thursday</option>
+                                        <option value="Friday">Friday</option>
+                                        <option value="Saturday">Saturday</option>
+                                        <option value="Sunday">Sunday</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="editDate" class="form-label-modern">Date</label>
+                                    <input type="date" id="editDate" class="form-control-modern" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="editStartTime" class="form-label-modern">Start Time</label>
+                                    <input type="time" id="editStartTime" class="form-control-modern" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="editAmPm" class="form-label-modern">AM/PM</label>
+                                    <select id="editAmPm" class="form-control-modern" required>
+                                        <option value="">Select AM/PM</option>
+                                        <option value="AM">AM</option>
+                                        <option value="PM">PM</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="editDivision" class="form-label-modern">Division</label>
+                                    <select id="editDivision" class="form-control-modern" required>
+                                        <option value="">Select Division</option>
+                                        <option value="T-Ball">T-Ball</option>
+                                        <option value="Coach Pitch">Coach Pitch</option>
+                                        <option value="Machine Pitch">Machine Pitch</option>
+                                        <option value="Kid Pitch">Kid Pitch</option>
+                                        <option value="Junior">Junior</option>
+                                        <option value="Senior">Senior</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="editHomeTeam" class="form-label-modern">Home Team</label>
+                                    <select id="editHomeTeam" class="form-control-modern" required>
+                                        <option value="">Select Home Team</option>
+                                        <option value="Tigers">Tigers</option>
+                                        <option value="Lions">Lions</option>
+                                        <option value="Bears">Bears</option>
+                                        <option value="Eagles">Eagles</option>
+                                        <option value="Sharks">Sharks</option>
+                                        <option value="Dragons">Dragons</option>
+                                        <option value="Knights">Knights</option>
+                                        <option value="Warriors">Warriors</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="editHomeCoach" class="form-label-modern">Home Coach</label>
+                                    <select id="editHomeCoach" class="form-control-modern" required>
+                                        <option value="">Select Home Coach</option>
+                                        <option value="Coach Johnson">Coach Johnson</option>
+                                        <option value="Coach Smith">Coach Smith</option>
+                                        <option value="Coach Davis">Coach Davis</option>
+                                        <option value="Coach Wilson">Coach Wilson</option>
+                                        <option value="Coach Brown">Coach Brown</option>
+                                        <option value="Coach Taylor">Coach Taylor</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="editVisitorTeam" class="form-label-modern">Visitor Team</label>
+                                    <select id="editVisitorTeam" class="form-control-modern" required>
+                                        <option value="">Select Visitor Team</option>
+                                        <option value="Tigers">Tigers</option>
+                                        <option value="Lions">Lions</option>
+                                        <option value="Bears">Bears</option>
+                                        <option value="Eagles">Eagles</option>
+                                        <option value="Sharks">Sharks</option>
+                                        <option value="Dragons">Dragons</option>
+                                        <option value="Knights">Knights</option>
+                                        <option value="Warriors">Warriors</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="editVisitorCoach" class="form-label-modern">Visitor Coach</label>
+                                    <select id="editVisitorCoach" class="form-control-modern" required>
+                                        <option value="">Select Visitor Coach</option>
+                                        <option value="Coach Johnson">Coach Johnson</option>
+                                        <option value="Coach Smith">Coach Smith</option>
+                                        <option value="Coach Davis">Coach Davis</option>
+                                        <option value="Coach Wilson">Coach Wilson</option>
+                                        <option value="Coach Brown">Coach Brown</option>
+                                        <option value="Coach Taylor">Coach Taylor</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="editVenue" class="form-label-modern">Venue</label>
+                                    <select id="editVenue" class="form-control-modern" required>
+                                        <option value="">Select Venue</option>
+                                        <option value="Field 1">Field 1</option>
+                                        <option value="Field 2">Field 2</option>
+                                        <option value="Field 3">Field 3</option>
+                                        <option value="Field 4">Field 4</option>
+                                        <option value="Field 5">Field 5</option>
+                                        <option value="Field 6">Field 6</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="editPlateUmpire" class="form-label-modern">Plate Umpire</label>
+                                    <select id="editPlateUmpire" class="form-control-modern">
+                                        <option value="">Select Plate Umpire</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="editBaseUmpire" class="form-label-modern">Base Umpire</label>
+                                    <select id="editBaseUmpire" class="form-control-modern">
+                                        <option value="">Select Base Umpire</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="editConcessionStand" class="form-label-modern">Concession Stand</label>
+                                    <select id="editConcessionStand" class="form-control-modern">
+                                        <option value="">Select Concession Stand</option>
+                                        <option value="No Concession">No Concession</option>
+                                        <optgroup label="Main Concession Stands">
+                                            <option value="Main Stand 1">Main Stand 1</option>
+                                            <option value="Main Stand 2">Main Stand 2</option>
+                                            <option value="Main Stand 3">Main Stand 3</option>
+                                        </optgroup>
+                                        <optgroup label="Field Concession Stands">
+                                            <option value="Field 1 Stand">Field 1 Stand</option>
+                                            <option value="modern">Field 2 Stand</option>
+                                            <option value="Field 3 Stand">Field 3 Stand</option>
+                                            <option value="Field 4 Stand">Field 4 Stand</option>
+                                            <option value="Field 5 Stand">Field 5 Stand</option>
+                                            <option value="Field 6 Stand">Field 6 Stand</option>
+                                        </optgroup>
+                                        <optgroup label="Specialty Stands">
+                                            <option value="Ice Cream Stand">Ice Cream Stand</option>
+                                            <option value="Snack Stand">Snack Stand</option>
+                                            <option value="Drink Stand">Drink Stand</option>
+                                        </optgroup>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="editConcessionStaff" class="form-label-modern">Concession Staff</label>
+                                    <select id="editConcessionStaff" class="form-control-modern">
+                                        <option value="">Select Concession Staff</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-modern btn-secondary-modern" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn-modern btn-primary-modern" onclick="updateSchedule()">Update Schedule</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Staff Add Modal -->
+    <div class="modal fade" id="addStaffModal" tabindex="-1" aria-labelledby="addStaffModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addStaffModalLabel">Add Staff Member</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addStaffForm">
+                        <div class="mb-3">
+                            <label for="staffName" class="form-label-modern">Name</label>
+                            <input type="text" id="staffName" class="form-control-modern" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="staffEmail" class="form-label-modern">Email</label>
+                            <input type="email" id="staffEmail" class="form-control-modern">
+                        </div>
+                        <div class="mb-3">
+                            <label for="staffPhone" class="form-label-modern">Phone</label>
+                            <input type="tel" id="staffPhone" class="form-control-modern">
+                        </div>
+                        <div class="mb-3">
+                            <label for="staffParentName" class="form-label-modern">Parent Name</label>
+                            <input type="text" id="staffParentName" class="form-control-modern">
+                        </div>
+                        <div class="mb-3">
+                            <label for="staffParentEmail" class="form-label-modern">Parent Email</label>
+                            <input type="email" id="staffParentEmail" class="form-control-modern">
+                        </div>
+                        <div class="mb-3">
+                            <label for="staffParentPhone" class="form-label-modern">Parent Phone</label>
+                            <input type="tel" id="staffParentPhone" class="form-control-modern">
+                        </div>
+                        <div class="mb-3">
+                            <label for="staffRole" class="form-label-modern">Role</label>
+                            <select id="staffRole" class="form-control-modern">
+                                <option value="Staff">Staff</option>
+                                <option value="Coach">Coach</option>
+                                <option value="Umpire">Umpire</option>
+                                <option value="Manager">Manager</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-modern btn-secondary-modern" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn-modern btn-primary-modern" onclick="addStaffMember()">Add Staff Member</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Staff Edit Modal -->
+    <div class="modal fade" id="editStaffModal" tabindex="-1" aria-labelledby="editStaffModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <label for="editStaffName" class="form-label-modern">Name</label>
+                    <input type="text" id="editStaffName" class="form-control-modern" required>
+                </div>
+                <div class="modal-body">
+                    <form id="editStaffForm">
+                        <input type="hidden" id="editStaffId">
+                        <div class="mb-3">
+                            <label for="editStaffName" class="form-label-modern">Name</label>
+                            <input type="text" id="editStaffName" class="form-label-modern" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editStaffEmail" class="form-label-modern">Email</label>
+                            <input type="email" id="editStaffEmail" class="form-control-modern">
+                        </div>
+                        <div class="mb-3">
+                            <label for="editStaffPhone" class="form-label-modern">Phone</label>
+                            <input type="tel" id="editStaffName" class="form-control-modern">
+                        </div>
+                        <div class="mb-3">
+                            <label for="editStaffParentName" class="form-label-modern">Parent Name</label>
+                            <input type="text" id="editStaffParentName" class="form-control-modern">
+                        </div>
+                        <div class="mb-3">
+                            <label for="editStaffParentEmail" class="form-label-modern">Parent Email</label>
+                            <input type="email" id="editStaffParentEmail" class="form-control-modern">
+                        </div>
+                        <div class="mb-3">
+                            <label for="editStaffParentPhone" class="form-label-modern">Parent Phone</label>
+                            <input type="tel" id="editStaffParentPhone" class="form-control-modern">
+                        </div>
+                        <div class="mb-3">
+                            <label for="editStaffRole" class="form-label-modern">Role</label>
+                            <select id="editStaffRole" class="form-control-modern">
+                                <option value="Staff">Staff</option>
+                                <option value="Coach">Coach</option>
+                                <option value="Umpire">Umpire</option>
+                                <option value="Manager">Manager</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-modern btn-secondary-modern" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn-modern btn-primary-modern" onclick="updateStaffMember()">Update Staff Member</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Loading Spinner -->
