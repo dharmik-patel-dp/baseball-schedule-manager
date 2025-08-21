@@ -266,7 +266,14 @@ function renderScheduleTable() {
         return;
     }
 
-    tbody.innerHTML = filteredSchedules.map(schedule => `
+    tbody.innerHTML = filteredSchedules.map(schedule => {
+        console.log('🎯 Rendering schedule ID:', schedule.id, 'with data:', {
+            home_team: schedule.home_team,
+            visitor_team: schedule.visitor_team,
+            venue: schedule.venue
+        });
+        
+        return `
         <tr>
             <td><span class="badge bg-primary">${schedule.season || 'N/A'}</span></td>
             <td>
@@ -319,7 +326,8 @@ function renderScheduleTable() {
                 </button>
             </td>
         </tr>
-    `).join('');
+    `;
+    }).join('');
 }
 
 // Format date for display
