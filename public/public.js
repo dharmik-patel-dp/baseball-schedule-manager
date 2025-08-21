@@ -24,6 +24,10 @@ function testJavaScript() {
     }
     
     alert('JavaScript is working! Check console and debug info below for details.');
+    
+    // Force render the table again
+    console.log('🔄 Forcing table re-render...');
+    renderScheduleTable();
 }
 
 // Initialize the application
@@ -286,6 +290,7 @@ function renderScheduleTable() {
             visitor_team: schedule.visitor_team,
             venue: schedule.venue
         });
+        console.log('🔍 Schedule object:', schedule);
         
         return `
         <tr>
