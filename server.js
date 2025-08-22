@@ -460,6 +460,16 @@ app.post('/api/upload-csv', upload.single('csv'), (req, res) => {
   fs.createReadStream(req.file.path)
     .pipe(csv())
     .on('data', (data) => {
+      // Debug: Log the raw data first
+      console.log('📊 Raw CSV row data:', data);
+      
+      // Check if data has any non-empty values
+      const hasData = Object.values(data).some(val => val && String(val).trim() !== '');
+      if (!hasData) {
+        console.log('⚠️ Skipping empty row');
+        return;
+      }
+      
       // Normalize keys by trimming and lowering
       const normalized = {};
       Object.keys(data || {}).forEach(k => {
@@ -467,8 +477,22 @@ app.post('/api/upload-csv', upload.single('csv'), (req, res) => {
         const key = String(k).trim();
         normalized[key] = typeof data[k] === 'string' ? data[k].trim() : data[k];
       });
-      console.log('📊 CSV row data:', normalized);
+      console.log('📊 Normalized CSV row data:', normalized);
       results.push(normalized);
+    })
+    .on('error', (error) => {
+      console.error('❌ CSV parsing error:', error);
+      fs.unlink(req.file.path, (err) => {
+        if (err) console.error('Error deleting uploaded file:', err);
+      });
+      return res.status(400).json({
+        message: 'CSV parsing failed',
+        committed: false,
+        totalRows: 0,
+        successCount: 0,
+        errorCount: 1,
+        rowErrors: [{ row: 0, errors: [error.message] }]
+      });
     })
     .on('end', () => {
       console.log(`📊 Processing ${results.length} CSV rows...`);
@@ -478,7 +502,7 @@ app.post('/api/upload-csv', upload.single('csv'), (req, res) => {
           if (err) console.error('Error deleting uploaded file:', err);
         });
         return res.status(400).json({
-          message: 'CSV file is empty',
+          message: 'CSV file is empty or contains no valid data',
           committed: false,
           totalRows: 0,
           successCount: 0,
@@ -486,6 +510,10 @@ app.post('/api/upload-csv', upload.single('csv'), (req, res) => {
           rowErrors: []
         });
       }
+
+      // Log the first row to debug column structure
+      console.log('🔍 First row columns:', Object.keys(results[0]));
+      console.log('🔍 First row values:', Object.values(results[0]));
 
       // Check CSV format - required columns
       const requiredColumns = ['season', 'event_type', 'day', 'date', 'division', 'home_team', 'visitor_team', 'venue'];
@@ -525,6 +553,23 @@ app.post('/api/upload-csv', upload.single('csv'), (req, res) => {
             errors.push(`${field} is required`);
           }
         });
+
+        // Optional fields validation (only validate if provided)
+        if (!isEmpty(row.plate_umpire)) {
+          // plate_umpire is optional, but if provided, it should be valid
+        }
+        
+        if (!isEmpty(row.base_umpire)) {
+          // base_umpire is optional, but if provided, it should be valid
+        }
+        
+        if (!isEmpty(row.concession_stand)) {
+          // concession_stand is optional, but if provided, it should be valid
+        }
+        
+        if (!isEmpty(row.concession_staff)) {
+          // concession_staff is optional, but if provided, it should be valid
+        }
 
         // event_type suggested values
         if (!isEmpty(row.event_type)) {
@@ -586,22 +631,49 @@ app.post('/api/upload-csv', upload.single('csv'), (req, res) => {
 
         db.run(query, [
           row.season, row.event_type, row.day, row.date, row.start_time, row.am_pm, row.division,
-          row.home_team, row.home_coach, row.visitor_team, row.visitor_coach,
-          row.venue, row.plate_umpire, row.base_umpire, row.concession_stand, row.concession_staff || ''
+          row.home_coach, row.visitor_team, row.venue, row.home_team,
+          row.visitor_coach, row.plate_umpire, row.base_umpire, row.concession_stand, row.concession_staff || ''
         ], function(err) {
+          processedCount++;
+          
           if (err) {
-            errors++;
+            console.error(`❌ Error inserting row ${index + 1}:`, err);
+            errorCount++;
+            rowErrors.push({ row: index + 1, errors: [err.message] });
           } else {
-            inserted++;
+            console.log(`✅ Row ${index + 1} inserted successfully, ID: ${this.lastID}`);
+            successCount++;
           }
 
-          if (index === results.length - 1) {
-            res.json({
-              message: 'CSV upload completed',
-              inserted,
-              errors,
-              total: results.length
-            });
+          if (processedCount === results.length) {
+            if (errorCount > 0) {
+              // Clean up uploaded file
+              fs.unlink(req.file.path, (err) => {
+                if (err) console.error('Error deleting uploaded file:', err);
+              });
+              res.status(400).json({
+                message: 'CSV processing failed',
+                committed: false,
+                totalRows: results.length,
+                successCount,
+                errorCount,
+                rowErrors
+              });
+            } else {
+              // Clean up uploaded file
+              fs.unlink(req.file.path, (err) => {
+                if (err) console.error('Error deleting uploaded file:', err);
+              });
+              console.log(`✅ CSV processed successfully: ${successCount} rows inserted`);
+              res.json({
+                message: 'CSV processed successfully',
+                committed: true,
+                totalRows: results.length,
+                successCount,
+                errorCount,
+                rowErrors: []
+              });
+            }
           }
         });
       });
