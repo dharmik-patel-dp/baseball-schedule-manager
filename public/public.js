@@ -326,10 +326,10 @@ function populateFilterDropdowns() {
             // Add new options
             filterOptions[filterKey].forEach(option => {
                 if (option && option.trim() !== '') {
-                    const optionElement = document.createElement('option');
-                    optionElement.value = option;
-                    optionElement.textContent = option;
-                    element.appendChild(optionElement);
+                const optionElement = document.createElement('option');
+                optionElement.value = option;
+                optionElement.textContent = option;
+                element.appendChild(optionElement);
                 }
             });
         }
@@ -760,37 +760,37 @@ function getActiveFilters() {
 // Check if schedule matches filters
 function matchesFilters(schedule, filters) {
     return Object.entries(filters).every(([key, value]) => {
-        switch (key) {
-            case 'season':
-                return schedule.season === value;
+            switch (key) {
+                case 'season':
+                    return schedule.season === value;
             case 'event_type':
-                return schedule.event_type === value;
-            case 'day':
-                return schedule.day === value;
-            case 'division':
-                return schedule.division === value;
-            case 'team':
-                return schedule.home_team === value || schedule.visitor_team === value;
-            case 'venue':
-                return schedule.venue === value;
-            case 'coach':
-                return schedule.home_coach === value || schedule.visitor_coach === value;
+                    return schedule.event_type === value;
+                case 'day':
+                    return schedule.day === value;
+                case 'division':
+                    return schedule.division === value;
+                case 'team':
+                    return schedule.home_team === value || schedule.visitor_team === value;
+                case 'venue':
+                    return schedule.venue === value;
+                case 'coach':
+                    return schedule.home_coach === value || schedule.visitor_coach === value;
             case 'plate_umpire':
                 return schedule.plate_umpire === value;
             case 'base_umpire':
                 return schedule.base_umpire === value;
             case 'concession_stand':
-                return schedule.concession_stand === value;
+                    return schedule.concession_stand === value;
             case 'concession_staff':
                 return schedule.concession_staff === value;
-            case 'date':
-                return schedule.date === value;
+                case 'date':
+                    return schedule.date === value;
             case 'start_time':
-                return schedule.start_time === value;
-            default:
-                return true;
-        }
-    });
+                    return schedule.start_time === value;
+                default:
+                    return true;
+            }
+        });
 }
 
 // Apply filters (improved version)
@@ -835,7 +835,7 @@ function applyFilters() {
     
     // Show/hide "No Results" banner
     showNoResultsBanner();
-    
+
     renderScheduleTable();
     
     console.log(`✅ Filtered ${filteredSchedules.length} schedules from ${allSchedules.length} total`);
@@ -1070,8 +1070,8 @@ function renderScheduleTable() {
             });
             if (searchTerm) filterDetails.push(`Search: "${searchTerm}"`);
             
-            tbody.innerHTML = `
-                <tr>
+        tbody.innerHTML = `
+            <tr>
                     <td colspan="12" class="no-data text-center">
                         <div class="py-5">
                             <i class="fas fa-search fa-3x text-warning mb-4"></i>
@@ -1090,9 +1090,9 @@ function renderScheduleTable() {
                                 </button>
                             </div>
                         </div>
-                    </td>
-                </tr>
-            `;
+                </td>
+            </tr>
+        `;
         } else {
             // Show simple message when no schedules exist in database
             tbody.innerHTML = `
@@ -1108,7 +1108,7 @@ function renderScheduleTable() {
         }
         return;
     }
-    
+
     tbody.innerHTML = schedulesToShow.map(schedule => `
         <tr>
             <td><span class="badge bg-primary">${schedule.season || 'N/A'}</span></td>
@@ -1349,7 +1349,7 @@ async function loadConcessionStaff() {
 async function showUmpireRequestForm(gameId) {
     const schedule = allSchedules.find(s => s.id === gameId);
     if (!schedule) return;
-    
+
     // Populate form fields
     document.getElementById('requestGameId').value = gameId;
     document.getElementById('gameDetails').textContent = `${schedule.home_team} vs ${schedule.visitor_team} on ${formatDate(schedule.date)} at ${schedule.start_time}`;
@@ -1383,7 +1383,7 @@ function hideUmpireRequestForm() {
 // Handle umpire request
 async function handleUmpireRequest(e) {
     e.preventDefault();
-    
+
     const formData = {
         game_id: document.getElementById('requestGameId').value,
         current_plate_umpire: document.getElementById('currentUmpires').textContent.split('Plate: ')[1]?.split(',')[0] || '',
@@ -1392,16 +1392,16 @@ async function handleUmpireRequest(e) {
         requested_base_umpire: document.getElementById('requestedBaseUmpire').value,
         reason: document.getElementById('changeReason').value
     };
-    
+
     try {
         const response = await fetch('/api/umpire-requests', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(formData)
         });
-        
+
         if (!response.ok) throw new Error('Failed to submit umpire request');
-        
+
         showAlert('Umpire change request submitted successfully!', 'success');
         hideUmpireRequestForm();
         
@@ -1504,7 +1504,7 @@ function showAlert(message, type) {
     const alertDiv = document.createElement('div');
     alertDiv.className = `alert alert-${type} alert-dismissible fade show`;
     alertDiv.innerHTML = `
-        ${message}
+            ${message}
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     `;
     

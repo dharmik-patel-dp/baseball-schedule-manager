@@ -84,8 +84,8 @@ document.addEventListener('DOMContentLoaded', function() {
         setupEventListeners();
         
         // Load data
-        loadSchedules();
-        loadUmpireRequests();
+    loadSchedules();
+    loadUmpireRequests();
         loadConcessionStaffRequests();
         loadStaff();
         loadPlateUmpires();
@@ -2098,7 +2098,7 @@ function clearAllFilters() {
         if (element) {
             if (element.tagName === 'SELECT') {
                 element.selectedIndex = 0;
-            } else {
+    } else {
                 element.value = '';
             }
         }
@@ -2516,9 +2516,9 @@ function handleBaseUmpiresDragLeave(e) {
 async function uploadBaseUmpiresCSV() {
     if (!baseUmpiresCsvData) {
         showAlert('Please select a CSV file first', 'warning');
-        return;
-    }
-
+            return;
+        }
+        
     const formData = new FormData();
     formData.append('csv', baseUmpiresCsvData);
 
