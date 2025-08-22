@@ -940,19 +940,70 @@ function renderCSVResultReport(result) {
     const errors = result.errorCount ?? result.errors ?? 0;
     const committed = result.committed === true;
     const rows = Array.isArray(result.rowErrors) ? result.rowErrors : [];
+    const isFormatError = result.formatError === true;
 
-    summary.className = `alert ${committed ? 'alert-success' : errors > 0 ? 'alert-warning' : 'alert-info'}`;
-    summary.innerHTML = `
-        <div class="d-flex align-items-center">
-            <i class="fas ${committed ? 'fa-check-circle text-success' : errors > 0 ? 'fa-exclamation-triangle text-warning' : 'fa-info-circle text-info'} me-2"></i>
-            <div>
-                <strong>${committed ? 'Upload Successful' : errors > 0 ? 'Validation Report' : 'Upload Result'}</strong><br>
-                Processed: <strong>${total}</strong> &nbsp; Inserted: <strong>${success}</strong> &nbsp; Errors: <strong>${errors}</strong>
+    summary.className = `alert ${committed ? 'alert-success' : isFormatError ? 'alert-danger' : errors > 0 ? 'alert-warning' : 'alert-info'}`;
+    
+    if (isFormatError) {
+        summary.innerHTML = `
+            <div class="d-flex align-items-center">
+                <i class="fas fa-exclamation-triangle text-danger me-2"></i>
+                <div>
+                    <strong>CSV Format Error!</strong><br>
+                    <span class="text-danger">${result.message}</span>
+                </div>
             </div>
-        </div>
-    `;
+        `;
+    } else {
+        summary.innerHTML = `
+            <div class="d-flex align-items-center">
+                <i class="fas ${committed ? 'fa-check-circle text-success' : errors > 0 ? 'fa-exclamation-triangle text-warning' : 'fa-info-circle text-info'} me-2"></i>
+                <div>
+                    <strong>${committed ? 'Upload Successful' : errors > 0 ? 'Validation Report' : 'Upload Result'}</strong><br>
+                    Processed: <strong>${total}</strong> &nbsp; Inserted: <strong>${success}</strong> &nbsp; Errors: <strong>${errors}</strong>
+                </div>
+            </div>
+        `;
+    }
 
-    if (rows.length > 0) {
+    if (isFormatError) {
+        // Show format error details
+        rowErrors.innerHTML = `
+            <div class="card border-danger">
+                <div class="card-header py-2 bg-danger text-white">
+                    <strong><i class="fas fa-times-circle me-2"></i>Format Mismatch</strong>
+                </div>
+                <div class="card-body p-3">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6 class="text-danger">Expected Columns:</h6>
+                            <div class="d-flex flex-wrap gap-1">
+                                ${(result.expectedColumns || []).map(col => 
+                                    `<span class="badge bg-success">${col}</span>`
+                                ).join('')}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="text-danger">Received Columns:</h6>
+                            <div class="d-flex flex-wrap gap-1">
+                                ${(result.receivedColumns || []).map(col => 
+                                    `<span class="badge bg-secondary">${col}</span>`
+                                ).join('')}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <h6 class="text-danger">Missing Required Columns:</h6>
+                        <div class="d-flex flex-wrap gap-1">
+                            ${(result.rowErrors?.[0]?.errors || []).map(error => 
+                                `<span class="badge bg-danger">${escapeHtml(error)}</span>`
+                            ).join('')}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    } else if (rows.length > 0) {
         rowErrors.innerHTML = `
             <div class="card">
                 <div class="card-header py-2">
@@ -1160,19 +1211,70 @@ function renderStaffCSVResultReport(result) {
     const errors = result.errorCount ?? result.errors ?? 0;
     const committed = result.committed === true;
     const rows = Array.isArray(result.rowErrors) ? result.rowErrors : [];
+    const isFormatError = result.formatError === true;
 
-    summary.className = `alert ${committed ? 'alert-success' : errors > 0 ? 'alert-warning' : 'alert-info'}`;
-    summary.innerHTML = `
-        <div class="d-flex align-items-center">
-            <i class="fas ${committed ? 'fa-check-circle text-success' : errors > 0 ? 'fa-exclamation-triangle text-warning' : 'fa-info-circle text-info'} me-2"></i>
-            <div>
-                <strong>${committed ? 'Staff Upload Successful' : errors > 0 ? 'Staff Validation Report' : 'Staff Upload Result'}</strong><br>
-                Processed: <strong>${total}</strong> &nbsp; Inserted: <strong>${success}</strong> &nbsp; Errors: <strong>${errors}</strong>
+    summary.className = `alert ${committed ? 'alert-success' : isFormatError ? 'alert-danger' : errors > 0 ? 'alert-warning' : 'alert-info'}`;
+    
+    if (isFormatError) {
+        summary.innerHTML = `
+            <div class="d-flex align-items-center">
+                <i class="fas fa-exclamation-triangle text-danger me-2"></i>
+                <div>
+                    <strong>Staff CSV Format Error!</strong><br>
+                    <span class="text-danger">${result.message}</span>
+                </div>
             </div>
-        </div>
-    `;
+        `;
+    } else {
+        summary.innerHTML = `
+            <div class="d-flex align-items-center">
+                <i class="fas ${committed ? 'fa-check-circle text-success' : errors > 0 ? 'fa-exclamation-triangle text-warning' : 'fa-info-circle text-info'} me-2"></i>
+                <div>
+                    <strong>${committed ? 'Staff Upload Successful' : errors > 0 ? 'Staff Validation Report' : 'Staff Upload Result'}</strong><br>
+                    Processed: <strong>${total}</strong> &nbsp; Inserted: <strong>${success}</strong> &nbsp; Errors: <strong>${errors}</strong>
+                </div>
+            </div>
+        `;
+    }
 
-    if (rows.length > 0) {
+    if (isFormatError) {
+        // Show format error details
+        rowErrors.innerHTML = `
+            <div class="card border-danger">
+                <div class="card-header py-2 bg-danger text-white">
+                    <strong><i class="fas fa-times-circle me-2"></i>Staff CSV Format Mismatch</strong>
+                </div>
+                <div class="card-body p-3">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6 class="text-danger">Expected Columns:</h6>
+                            <div class="d-flex flex-wrap gap-1">
+                                ${(result.expectedColumns || []).map(col => 
+                                    `<span class="badge bg-success">${col}</span>`
+                                ).join('')}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="text-danger">Received Columns:</h6>
+                            <div class="d-flex flex-wrap gap-1">
+                                ${(result.receivedColumns || []).map(col => 
+                                    `<span class="badge bg-secondary">${col}</span>`
+                                ).join('')}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <h6 class="text-danger">Missing Required Columns:</h6>
+                        <div class="d-flex flex-wrap gap-1">
+                            ${(result.rowErrors?.[0]?.errors || []).map(error => 
+                                `<span class="badge bg-danger">${escapeHtml(error)}</span>`
+                            ).join('')}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    } else if (rows.length > 0) {
         rowErrors.innerHTML = `
             <div class="card">
                 <div class="card-header py-2">
@@ -1509,7 +1611,7 @@ async function deleteSchedule(id) {
         return;
     }
 
-    console.log('🗑️ Deleting schedule:', id);
+    console.log('��️ Deleting schedule:', id);
 
     try {
         const response = await fetch(`/api/schedules/${id}`, {

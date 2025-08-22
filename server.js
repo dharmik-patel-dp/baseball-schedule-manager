@@ -455,24 +455,135 @@ app.post('/api/upload-csv', upload.single('csv'), (req, res) => {
   }
 
   const results = [];
+  const rowErrors = [];
+  
   fs.createReadStream(req.file.path)
     .pipe(csv())
-    .on('data', (data) => results.push(data))
+    .on('data', (data) => {
+      // Normalize keys by trimming and lowering
+      const normalized = {};
+      Object.keys(data || {}).forEach(k => {
+        if (!k) return;
+        const key = String(k).trim();
+        normalized[key] = typeof data[k] === 'string' ? data[k].trim() : data[k];
+      });
+      console.log('📊 CSV row data:', normalized);
+      results.push(normalized);
+    })
     .on('end', () => {
-      // Clean up uploaded file
-      fs.unlinkSync(req.file.path);
+      console.log(`📊 Processing ${results.length} CSV rows...`);
+      
+      if (results.length === 0) {
+        fs.unlink(req.file.path, (err) => {
+          if (err) console.error('Error deleting uploaded file:', err);
+        });
+        return res.status(400).json({
+          message: 'CSV file is empty',
+          committed: false,
+          totalRows: 0,
+          successCount: 0,
+          errorCount: 0,
+          rowErrors: []
+        });
+      }
 
-      // Insert data into database
-      const query = `INSERT INTO schedules (
-        season, event_type, day, date, start_time, am_pm, division,
-        home_team, home_coach, visitor_team, visitor_coach,
-        venue, plate_umpire, base_umpire, concession_stand, concession_staff
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+      // Check CSV format - required columns
+      const requiredColumns = ['season', 'event_type', 'day', 'date', 'division', 'home_team', 'visitor_team', 'venue'];
+      const firstRow = results[0];
+      const missingColumns = requiredColumns.filter(col => !firstRow.hasOwnProperty(col));
+      
+      if (missingColumns.length > 0) {
+        fs.unlink(req.file.path, (err) => {
+          if (err) console.error('Error deleting uploaded file:', err);
+        });
+        return res.status(400).json({
+          message: 'CSV format does not match expected structure',
+          committed: false,
+          totalRows: results.length,
+          successCount: 0,
+          errorCount: results.length,
+          rowErrors: [{
+            row: 0,
+            errors: [`Missing required columns: ${missingColumns.join(', ')}`]
+          }],
+          formatError: true,
+          expectedColumns: requiredColumns,
+          receivedColumns: Object.keys(firstRow)
+        });
+      }
 
-      let inserted = 0;
-      let errors = 0;
+      // Basic validation helpers
+      function isEmpty(value) {
+        return value === undefined || value === null || String(value).trim() === '';
+      }
+
+      function validateRow(row, index) {
+        const errors = [];
+        // Required fields
+        requiredColumns.forEach(field => {
+          if (isEmpty(row[field])) {
+            errors.push(`${field} is required`);
+          }
+        });
+
+        // event_type suggested values
+        if (!isEmpty(row.event_type)) {
+          const ev = String(row.event_type).toLowerCase();
+          if (ev !== 'baseball' && ev !== 'softball') {
+            errors.push('event_type should be Baseball or Softball');
+          }
+        }
+
+        // date should be parseable (YYYY-MM-DD preferred)
+        if (!isEmpty(row.date)) {
+          const d = new Date(row.date);
+          if (isNaN(d.getTime())) {
+            errors.push('date is invalid (use YYYY-MM-DD)');
+          }
+        }
+
+        // If start_time provided, am_pm should be provided too
+        if (!isEmpty(row.start_time) && isEmpty(row.am_pm)) {
+          errors.push('am_pm is required when start_time is provided');
+        }
+
+        if (errors.length > 0) {
+          rowErrors.push({ row: index + 1, errors });
+          return false;
+        }
+        return true;
+      }
+
+      // Validate all rows first
+      results.forEach((row, idx) => validateRow(row, idx));
+
+      if (rowErrors.length > 0) {
+        // Clean up uploaded file
+        fs.unlink(req.file.path, (err) => {
+          if (err) console.error('Error deleting uploaded file:', err);
+        });
+        return res.status(400).json({
+          message: 'CSV failed validation',
+          committed: false,
+          totalRows: results.length,
+          successCount: 0,
+          errorCount: rowErrors.length,
+          rowErrors
+        });
+      }
+
+      // Process CSV data and insert into database
+      let successCount = 0;
+      let errorCount = 0;
+      let processedCount = 0;
 
       results.forEach((row, index) => {
+        const query = `INSERT INTO schedules (
+          season, event_type, day, date, start_time, am_pm, division,
+          home_team, home_coach, visitor_team, visitor_coach,
+          venue, plate_umpire, base_umpire, concession_stand, concession_staff
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+
         db.run(query, [
           row.season, row.event_type, row.day, row.date, row.start_time, row.am_pm, row.division,
           row.home_team, row.home_coach, row.visitor_team, row.visitor_coach,
@@ -533,6 +644,31 @@ app.post('/api/upload-staff-csv', upload.single('csv'), (req, res) => {
           successCount: 0,
           errorCount: 0,
           rowErrors: []
+        });
+      }
+
+      // Check CSV format - required columns
+      const requiredColumns = ['name'];
+      const firstRow = results[0];
+      const missingColumns = requiredColumns.filter(col => !firstRow.hasOwnProperty(col));
+      
+      if (missingColumns.length > 0) {
+        fs.unlink(req.file.path, (err) => {
+          if (err) console.error('Error deleting uploaded file:', err);
+        });
+        return res.status(400).json({
+          message: 'Staff CSV format does not match expected structure',
+          committed: false,
+          totalRows: results.length,
+          successCount: 0,
+          errorCount: rowErrors.length,
+          rowErrors: [{
+            row: 0,
+            errors: [`Missing required columns: ${missingColumns.join(', ')}`]
+          }],
+          formatError: true,
+          expectedColumns: requiredColumns,
+          receivedColumns: Object.keys(firstRow)
         });
       }
 
