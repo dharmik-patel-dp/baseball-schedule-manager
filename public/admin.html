@@ -218,7 +218,7 @@
         .main-content {
             margin-left: var(--sidebar-width);
             margin-top: var(--header-height);
-            padding: 2rem;
+            padding: 3rem 2.5rem;
             min-height: calc(100vh - var(--header-height));
         }
 
@@ -227,13 +227,14 @@
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(20px);
             border-radius: 1.5rem;
-            padding: 2rem;
+            padding: 2.5rem;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
             border: 1px solid rgba(255, 255, 255, 0.2);
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             height: 100%;
             position: relative;
             overflow: hidden;
+            margin-bottom: 2rem;
         }
         
         .dashboard-card::before {
@@ -258,14 +259,14 @@
         }
 
         .card-icon {
-            width: 4.5rem;
-            height: 4.5rem;
-            border-radius: 1.25rem;
+            width: 5rem;
+            height: 5rem;
+            border-radius: 1.5rem;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.75rem;
-            margin-bottom: 1.5rem;
+            font-size: 2rem;
+            margin-bottom: 2rem;
             position: relative;
             overflow: hidden;
         }
@@ -292,9 +293,9 @@
         .card-icon.info { background: var(--softball-gradient); color: white; }
 
         .card-value {
-            font-size: 2.75rem;
+            font-size: 3rem;
             font-weight: 800;
-            margin-bottom: 0.75rem;
+            margin-bottom: 1rem;
             background: var(--baseball-gradient);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -304,7 +305,7 @@
 
         .card-label {
             color: var(--baseball-blue);
-            font-size: 0.95rem;
+            font-size: 1rem;
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.75px;
@@ -315,8 +316,8 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 2.5rem;
-            padding-bottom: 1.5rem;
+            margin-bottom: 3rem;
+            padding-bottom: 2rem;
             border-bottom: 3px solid var(--baseball-red);
             position: relative;
         }
@@ -333,13 +334,13 @@
         }
 
         .section-title {
-            font-size: 2.25rem;
+            font-size: 2.5rem;
             font-weight: 800;
             color: var(--dark-color);
             margin: 0;
             display: flex;
             align-items: center;
-            gap: 1rem;
+            gap: 1.5rem;
             text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
@@ -383,18 +384,18 @@
             color: white;
             border-bottom: 2px solid rgba(255, 255, 255, 0.2);
             font-weight: 700;
-            padding: 1.5rem 1rem;
-            font-size: 0.9rem;
+            padding: 2rem 1.5rem;
+            font-size: 1rem;
             text-transform: uppercase;
             letter-spacing: 0.75px;
             text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
         }
 
         .table tbody td {
-            padding: 1.25rem 1rem;
+            padding: 1.75rem 1.5rem;
             vertical-align: middle;
             border-bottom: 1px solid #f8f9fc;
-            font-size: 0.9rem;
+            font-size: 1rem;
         }
 
         .table tbody tr:hover {
