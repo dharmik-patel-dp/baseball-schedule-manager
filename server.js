@@ -882,6 +882,20 @@ app.post('/api/upload-staff-csv', upload.single('csv'), (req, res) => {
       console.log('📊 Staff CSV row data:', normalized);
       results.push(normalized);
     })
+    .on('error', (error) => {
+      console.error('❌ CSV parsing error:', error);
+      fs.unlink(req.file.path, (err) => {
+        if (err) console.error('Error deleting uploaded file:', err);
+      });
+      return res.status(400).json({
+        message: 'Staff CSV parsing failed',
+        committed: false,
+        totalRows: 0,
+        successCount: 0,
+        errorCount: 1,
+        rowErrors: [{ row: 0, errors: [error.message] }]
+      });
+    })
     .on('end', () => {
       console.log(`📊 Processing ${results.length} staff CSV rows...`);
       
@@ -890,7 +904,7 @@ app.post('/api/upload-staff-csv', upload.single('csv'), (req, res) => {
           if (err) console.error('Error deleting uploaded file:', err);
         });
         return res.status(400).json({
-          message: 'CSV file is empty',
+          message: 'Staff CSV file is empty or contains no valid data',
           committed: false,
           totalRows: 0,
           successCount: 0,
@@ -1053,6 +1067,444 @@ app.post('/api/upload-staff-csv', upload.single('csv'), (req, res) => {
                   console.log(`✅ Staff CSV processed successfully: ${successCount} rows inserted`);
                   res.json({
                     message: 'Staff CSV processed successfully',
+                    committed: true,
+                    totalRows: results.length,
+                    successCount,
+                    errorCount,
+                    rowErrors: []
+                  });
+                });
+              }
+            }
+          });
+        });
+      });
+    });
+});
+
+// Plate Umpires CSV upload endpoint
+app.post('/api/upload-plate-umpires-csv', upload.single('csv'), (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ error: 'No file uploaded' });
+  }
+
+  const results = [];
+  const rowErrors = [];
+  
+  fs.createReadStream(req.file.path)
+    .pipe(csv())
+    .on('data', (data) => {
+      // Normalize keys by trimming and lowering
+      const normalized = {};
+      Object.keys(data || {}).forEach(k => {
+        if (!k) return;
+        const key = String(k).trim();
+        normalized[key] = typeof data[k] === 'string' ? data[k].trim() : data[k];
+      });
+      console.log('📊 Plate Umpires CSV row data:', normalized);
+      results.push(normalized);
+    })
+    .on('error', (error) => {
+      console.error('❌ CSV parsing error:', error);
+      fs.unlink(req.file.path, (err) => {
+        if (err) console.error('Error deleting uploaded file:', err);
+      });
+      return res.status(400).json({
+        message: 'Plate Umpires CSV parsing failed',
+        committed: false,
+        totalRows: 0,
+        successCount: 0,
+        errorCount: 1,
+        rowErrors: [{ row: 0, errors: [error.message] }]
+      });
+    })
+    .on('end', () => {
+      console.log(`📊 Processing ${results.length} plate umpires CSV rows...`);
+      
+      if (results.length === 0) {
+        fs.unlink(req.file.path, (err) => {
+          if (err) console.error('Error deleting uploaded file:', err);
+        });
+        return res.status(400).json({
+          message: 'Plate Umpires CSV file is empty or contains no valid data',
+          committed: false,
+          totalRows: 0,
+          successCount: 0,
+          errorCount: 0,
+          rowErrors: []
+        });
+      }
+
+      // Check CSV format - required columns
+      const requiredColumns = ['name'];
+      const firstRow = results[0];
+      const missingColumns = requiredColumns.filter(col => !firstRow.hasOwnProperty(col));
+      
+      if (missingColumns.length > 0) {
+        fs.unlink(req.file.path, (err) => {
+          if (err) console.error('Error deleting uploaded file:', err);
+        });
+        return res.status(400).json({
+          message: 'Plate Umpires CSV format does not match expected structure',
+          committed: false,
+          totalRows: results.length,
+          successCount: 0,
+          errorCount: rowErrors.length,
+          rowErrors: [{
+            row: 0,
+            errors: [`Missing required columns: ${missingColumns.join(', ')}`]
+          }],
+          formatError: true,
+          expectedColumns: requiredColumns,
+          receivedColumns: Object.keys(firstRow)
+        });
+      }
+
+      // Basic validation helpers
+      function isEmpty(value) {
+        return value === undefined || value === null || String(value).trim() === '';
+      }
+
+      function validatePlateUmpireRow(row, index) {
+        const errors = [];
+        // Required fields
+        if (isEmpty(row.name)) {
+          errors.push('name is required');
+        }
+        
+        // Optional fields validation
+        if (!isEmpty(row.email) && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(row.email)) {
+          errors.push('email format is invalid');
+        }
+        
+        if (!isEmpty(row.phone) && !/^[\d\-\+\(\)\s]+$/.test(row.phone)) {
+          errors.push('phone format is invalid');
+        }
+
+        if (errors.length > 0) {
+          rowErrors.push({ row: index + 1, errors });
+          return false;
+        }
+        return true;
+      }
+
+      // Validate all rows first
+      results.forEach((row, idx) => validatePlateUmpireRow(row, idx));
+
+      if (rowErrors.length > 0) {
+        // Clean up uploaded file
+        fs.unlink(req.file.path, (err) => {
+          if (err) console.error('Error deleting uploaded file:', err);
+        });
+        return res.status(400).json({
+          message: 'Plate Umpires CSV failed validation',
+          committed: false,
+          totalRows: results.length,
+          successCount: 0,
+          errorCount: rowErrors.length,
+          rowErrors
+        });
+      }
+
+      // Start transaction
+      db.run('BEGIN TRANSACTION', (err) => {
+        if (err) {
+          console.error('Error starting transaction:', err);
+          fs.unlink(req.file.path, (err) => {
+            if (err) console.error('Error deleting uploaded file:', err);
+          });
+          return res.status(500).json({
+            message: 'Database transaction failed',
+            committed: false,
+            totalRows: results.length,
+            successCount: 0,
+            errorCount: results.length,
+            rowErrors: [{ row: 0, errors: [err.message] }]
+          });
+        }
+
+        let successCount = 0;
+        let errorCount = 0;
+        let processedCount = 0;
+
+        results.forEach((row, index) => {
+          const query = `
+            INSERT INTO plate_umpires (
+              name, email, phone, availability
+            ) VALUES (?, ?, ?, ?)
+          `;
+          
+          const values = [
+            row.name,
+            row.email || '',
+            row.phone || '',
+            'Available' // Default availability
+          ];
+
+          db.run(query, values, function(err) {
+            processedCount++;
+            
+            if (err) {
+              console.error(`❌ Error inserting plate umpire row ${index + 1}:`, err);
+              errorCount++;
+              rowErrors.push({ row: index + 1, errors: [err.message] });
+            } else {
+              console.log(`✅ Plate umpire row ${index + 1} inserted successfully, ID: ${this.lastID}`);
+              successCount++;
+            }
+
+            if (processedCount === results.length) {
+              if (errorCount > 0) {
+                // Rollback transaction if there were errors
+                db.run('ROLLBACK', (rollbackErr) => {
+                  if (rollbackErr) console.error('Error rolling back transaction:', rollbackErr);
+                  
+                  // Clean up uploaded file
+                  fs.unlink(req.file.path, (err) => {
+                    if (err) console.error('Error deleting uploaded file:', err);
+                  });
+
+                  res.status(400).json({
+                    message: 'Plate Umpires CSV processing failed',
+                    committed: false,
+                    totalRows: results.length,
+                    successCount,
+                    errorCount,
+                    rowErrors
+                  });
+                });
+              } else {
+                // Commit transaction if all successful
+                db.run('COMMIT', (commitErr) => {
+                  if (commitErr) console.error('Error committing transaction:', commitErr);
+                  
+                  // Clean up uploaded file
+                  fs.unlink(req.file.path, (err) => {
+                    if (err) console.error('Error deleting uploaded file:', err);
+                  });
+
+                  console.log(`✅ Plate Umpires CSV processed successfully: ${successCount} rows inserted`);
+                  res.json({
+                    message: 'Plate Umpires CSV processed successfully',
+                    committed: true,
+                    totalRows: results.length,
+                    successCount,
+                    errorCount,
+                    rowErrors: []
+                  });
+                });
+              }
+            }
+          });
+        });
+      });
+    });
+});
+
+// Base Umpires CSV upload endpoint
+app.post('/api/upload-base-umpires-csv', upload.single('csv'), (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ error: 'No file uploaded' });
+  }
+
+  const results = [];
+  const rowErrors = [];
+  
+  fs.createReadStream(req.file.path)
+    .pipe(csv())
+    .on('data', (data) => {
+      // Normalize keys by trimming and lowering
+      const normalized = {};
+      Object.keys(data || {}).forEach(k => {
+        if (!k) return;
+        const key = String(k).trim();
+        normalized[key] = typeof data[k] === 'string' ? data[k].trim() : data[k];
+      });
+      console.log('📊 Base Umpires CSV row data:', normalized);
+      results.push(normalized);
+    })
+    .on('error', (error) => {
+      console.error('❌ CSV parsing error:', error);
+      fs.unlink(req.file.path, (err) => {
+        if (err) console.error('Error deleting uploaded file:', err);
+      });
+      return res.status(400).json({
+        message: 'Base Umpires CSV parsing failed',
+        committed: false,
+        totalRows: 0,
+        successCount: 0,
+        errorCount: 1,
+        rowErrors: [{ row: 0, errors: [error.message] }]
+      });
+    })
+    .on('end', () => {
+      console.log(`📊 Processing ${results.length} base umpires CSV rows...`);
+      
+      if (results.length === 0) {
+        fs.unlink(req.file.path, (err) => {
+          if (err) console.error('Error deleting uploaded file:', err);
+        });
+        return res.status(400).json({
+          message: 'Base Umpires CSV file is empty or contains no valid data',
+          committed: false,
+          totalRows: 0,
+          successCount: 0,
+          errorCount: 0,
+          rowErrors: []
+        });
+      }
+
+      // Check CSV format - required columns
+      const requiredColumns = ['name'];
+      const firstRow = results[0];
+      const missingColumns = requiredColumns.filter(col => !firstRow.hasOwnProperty(col));
+      
+      if (missingColumns.length > 0) {
+        fs.unlink(req.file.path, (err) => {
+          if (err) console.error('Error deleting uploaded file:', err);
+        });
+        return res.status(400).json({
+          message: 'Base Umpires CSV format does not match expected structure',
+          committed: false,
+          totalRows: results.length,
+          successCount: 0,
+          errorCount: rowErrors.length,
+          rowErrors: [{
+            row: 0,
+            errors: [`Missing required columns: ${missingColumns.join(', ')}`]
+          }],
+          formatError: true,
+          expectedColumns: requiredColumns,
+          receivedColumns: Object.keys(firstRow)
+        });
+      }
+
+      // Basic validation helpers
+      function isEmpty(value) {
+        return value === undefined || value === null || String(value).trim() === '';
+      }
+
+      function validateBaseUmpireRow(row, index) {
+        const errors = [];
+        // Required fields
+        if (isEmpty(row.name)) {
+          errors.push('name is required');
+        }
+        
+        // Optional fields validation
+        if (!isEmpty(row.email) && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(row.email)) {
+          errors.push('email format is invalid');
+        }
+        
+        if (!isEmpty(row.phone) && !/^[\d\-\+\(\)\s]+$/.test(row.phone)) {
+          errors.push('phone format is invalid');
+        }
+
+        if (errors.length > 0) {
+          rowErrors.push({ row: index + 1, errors });
+          return false;
+        }
+        return true;
+      }
+
+      // Validate all rows first
+      results.forEach((row, idx) => validateBaseUmpireRow(row, idx));
+
+      if (rowErrors.length > 0) {
+        // Clean up uploaded file
+        fs.unlink(req.file.path, (err) => {
+          if (err) console.error('Error deleting uploaded file:', err);
+        });
+        return res.status(400).json({
+          message: 'Base Umpires CSV failed validation',
+          committed: false,
+          totalRows: results.length,
+          successCount: 0,
+          errorCount: rowErrors.length,
+          rowErrors
+        });
+      }
+
+      // Start transaction
+      db.run('BEGIN TRANSACTION', (err) => {
+        if (err) {
+          console.error('Error starting transaction:', err);
+          fs.unlink(req.file.path, (err) => {
+            if (err) console.error('Error deleting uploaded file:', err);
+          });
+          return res.status(500).json({
+            message: 'Database transaction failed',
+            committed: false,
+            totalRows: results.length,
+            successCount: 0,
+            errorCount: results.length,
+            rowErrors: [{ row: 0, errors: [err.message] }]
+          });
+        }
+
+        let successCount = 0;
+        let errorCount = 0;
+        let processedCount = 0;
+
+        results.forEach((row, index) => {
+          const query = `
+            INSERT INTO base_umpires (
+              name, email, phone, availability
+            ) VALUES (?, ?, ?, ?)
+          `;
+          
+          const values = [
+            row.name,
+            row.email || '',
+            row.phone || '',
+            'Available' // Default availability
+          ];
+
+          db.run(query, values, function(err) {
+            processedCount++;
+            
+            if (err) {
+              console.error(`❌ Error inserting base umpire row ${index + 1}:`, err);
+              errorCount++;
+              rowErrors.push({ row: index + 1, errors: [err.message] });
+            } else {
+              console.log(`✅ Base umpire row ${index + 1} inserted successfully, ID: ${this.lastID}`);
+              successCount++;
+            }
+
+            if (processedCount === results.length) {
+              if (errorCount > 0) {
+                // Rollback transaction if there were errors
+                db.run('ROLLBACK', (rollbackErr) => {
+                  if (rollbackErr) console.error('Error rolling back transaction:', rollbackErr);
+                  
+                  // Clean up uploaded file
+                  fs.unlink(req.file.path, (err) => {
+                    if (err) console.error('Error deleting uploaded file:', err);
+                  });
+
+                  res.status(400).json({
+                    message: 'Base Umpires CSV processing failed',
+                    committed: false,
+                    totalRows: results.length,
+                    successCount,
+                    errorCount,
+                    rowErrors
+                  });
+                });
+              } else {
+                // Commit transaction if all successful
+                db.run('COMMIT', (commitErr) => {
+                  if (commitErr) console.error('Error committing transaction:', commitErr);
+                  
+                  // Clean up uploaded file
+                  fs.unlink(req.file.path, (err) => {
+                    if (err) console.error('Error deleting uploaded file:', err);
+                  });
+
+                  console.log(`✅ Base Umpires CSV processed successfully: ${successCount} rows inserted`);
+                  res.json({
+                    message: 'Base Umpires CSV processed successfully',
                     committed: true,
                     totalRows: results.length,
                     successCount,

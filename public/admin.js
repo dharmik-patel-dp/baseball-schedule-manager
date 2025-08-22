@@ -163,9 +163,9 @@ function setupEventListeners() {
     }
     
     // CSV file input
-    const csvFile = document.getElementById('csvFile');
-    if (csvFile) {
-        csvFile.addEventListener('change', handleCSVFileSelect);
+    const csvFileInput = document.getElementById('csvFileInput');
+    if (csvFileInput) {
+        csvFileInput.addEventListener('change', handleCSVFileSelect);
     }
     
     // CSV modal close event to reset data
@@ -203,6 +203,17 @@ function setupEventListeners() {
     const baseUmpireForm = document.getElementById('baseUmpireForm');
     if (baseUmpireForm) {
         baseUmpireForm.addEventListener('submit', handleBaseUmpireSubmit);
+    }
+
+    // Modal close events for CSV uploads
+    const plateUmpiresUploadModal = document.getElementById('plateUmpiresUploadModal');
+    if (plateUmpiresUploadModal) {
+        plateUmpiresUploadModal.addEventListener('hidden.bs.modal', resetPlateUmpiresCSVModalState);
+    }
+
+    const baseUmpiresUploadModal = document.getElementById('baseUmpiresUploadModal');
+    if (baseUmpiresUploadModal) {
+        baseUmpiresUploadModal.addEventListener('hidden.bs.modal', resetBaseUmpiresCSVModalState);
     }
 }
 
@@ -1012,7 +1023,7 @@ function resetCSVModalState() {
     if (uploadBtn) {
         uploadBtn.innerHTML = '<i class="fas fa-upload me-2"></i>Upload';
     }
-    const csvFileInput = document.getElementById('csvFile');
+    const csvFileInput = document.getElementById('csvFileInput');
     if (csvFileInput) {
         csvFileInput.value = '';
     }
@@ -2208,6 +2219,10 @@ function showNoResultsBanner() {
 let allPlateUmpires = [];
 let allBaseUmpires = [];
 
+// CSV upload data for umpires
+let plateUmpiresCsvData = null;
+let baseUmpiresCsvData = null;
+
 function showAddPlateUmpireModal() {
     const modal = new bootstrap.Modal(document.getElementById('addPlateUmpireModal'));
     modal.show();
@@ -2215,6 +2230,16 @@ function showAddPlateUmpireModal() {
 
 function showAddBaseUmpireModal() {
     const modal = new bootstrap.Modal(document.getElementById('addBaseUmpireModal'));
+    modal.show();
+}
+
+function showPlateUmpiresUploadModal() {
+    const modal = new bootstrap.Modal(document.getElementById('plateUmpiresUploadModal'));
+    modal.show();
+}
+
+function showBaseUmpiresUploadModal() {
+    const modal = new bootstrap.Modal(document.getElementById('baseUmpiresUploadModal'));
     modal.show();
 }
 
@@ -2244,6 +2269,402 @@ function showEditBaseUmpireModal(id) {
     
     const modal = new bootstrap.Modal(document.getElementById('editBaseUmpireModal'));
     modal.show();
+}
+
+// Plate Umpires CSV Functions
+function handlePlateUmpiresCSVFileSelect(e) {
+    const file = e.target.files[0];
+    if (file) {
+        plateUmpiresCsvData = file;
+        document.getElementById('plateUmpiresCsvUploadArea').classList.add('file-selected');
+        document.getElementById('plateUmpiresCsvUploadArea').innerHTML = `
+            <i class="fas fa-file-csv text-success"></i>
+            <h5>File Selected: ${file.name}</h5>
+            <p>Ready to upload</p>
+        `;
+    }
+}
+
+function handlePlateUmpiresDragOver(e) {
+    e.preventDefault();
+    e.currentTarget.classList.add('drag-over');
+}
+
+function handlePlateUmpiresDrop(e) {
+    e.preventDefault();
+    e.currentTarget.classList.remove('drag-over');
+    
+    const files = e.dataTransfer.files;
+    if (files.length > 0) {
+        const file = files[0];
+        if (file.type === 'text/csv' || file.name.endsWith('.csv')) {
+            plateUmpiresCsvData = file;
+            document.getElementById('plateUmpiresCsvUploadArea').classList.add('file-selected');
+            document.getElementById('plateUmpiresCsvUploadArea').innerHTML = `
+                <i class="fas fa-file-csv text-success"></i>
+                <h5>File Selected: ${file.name}</h5>
+                <p>Ready to upload</p>
+            `;
+        } else {
+            showAlert('Please select a valid CSV file', 'warning');
+        }
+    }
+}
+
+function handlePlateUmpiresDragLeave(e) {
+    e.currentTarget.classList.remove('drag-over');
+}
+
+async function uploadPlateUmpiresCSV() {
+    if (!plateUmpiresCsvData) {
+        showAlert('Please select a CSV file first', 'warning');
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append('csv', plateUmpiresCsvData);
+
+    try {
+        const response = await fetch('/api/upload-plate-umpires-csv', {
+            method: 'POST',
+            body: formData
+        });
+
+        const result = await response.json();
+        
+        if (response.ok) {
+            renderPlateUmpiresCSVResultReport(result);
+            // Auto-close after 15 seconds on success
+            setTimeout(() => {
+                bootstrap.Modal.getInstance(document.getElementById('plateUmpiresUploadModal')).hide();
+                resetPlateUmpiresCSVModalState();
+                loadPlateUmpires(); // Reload the table
+            }, 15000);
+        } else {
+            renderPlateUmpiresCSVResultReport(result);
+        }
+    } catch (error) {
+        console.error('❌ Error uploading plate umpires CSV:', error);
+        showAlert('Error uploading CSV file', 'danger');
+    }
+}
+
+function renderPlateUmpiresCSVResultReport(result) {
+    const summary = document.getElementById('plateUmpiresCsvResultSummary');
+    const rowErrors = document.getElementById('plateUmpiresCsvRowErrors');
+    const reportDiv = document.getElementById('plateUmpiresCsvResultReport');
+
+    if (!summary || !rowErrors || !reportDiv) return;
+
+    reportDiv.style.display = 'block';
+
+    const isFormatError = result.formatError;
+    const alertClass = result.committed ? 'alert-success' : 'alert-danger';
+
+    summary.className = `alert ${alertClass}`;
+    
+    if (isFormatError) {
+        summary.innerHTML = `
+            <div class="d-flex align-items-center">
+                <i class="fas fa-exclamation-triangle text-danger me-2"></i>
+                <div>
+                    <strong>CSV Format Error!</strong><br>
+                    <span class="text-danger">${result.message}</span>
+                </div>
+            </div>
+        `;
+        rowErrors.innerHTML = `
+            <div class="card border-danger">
+                <div class="card-header py-2 bg-danger text-white">
+                    <strong><i class="fas fa-times-circle me-2"></i>Format Mismatch</strong>
+                </div>
+                <div class="card-body p-3">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6 class="text-danger">Expected Columns:</h6>
+                            <div class="d-flex flex-wrap gap-1">
+                                ${(result.expectedColumns || []).map(col => 
+                                    `<span class="badge bg-success">${col}</span>`
+                                ).join('')}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="text-danger">Received Columns:</h6>
+                            <div class="d-flex flex-wrap gap-1">
+                                ${(result.receivedColumns || []).map(col => 
+                                    `<span class="badge bg-secondary">${col}</span>`
+                                ).join('')}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <h6 class="text-danger">Missing Required Columns:</h6>
+                        <div class="d-flex flex-wrap gap-1">
+                            ${(result.rowErrors?.[0]?.errors || []).map(error => 
+                                `<span class="badge bg-danger">${escapeHtml(error)}</span>`
+                            ).join('')}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    } else {
+        summary.innerHTML = `
+            <div class="d-flex align-items-center">
+                <i class="fas fa-${result.committed ? 'check-circle text-success' : 'exclamation-triangle text-warning'} me-2"></i>
+                <div>
+                    <strong>${result.message}</strong><br>
+                    <span class="text-${result.committed ? 'success' : 'warning'}">
+                        ${result.committed ? `${result.successCount} of ${result.totalRows} plate umpires added successfully` : `${result.errorCount} errors found`}
+                    </span>
+                </div>
+            </div>
+        `;
+
+        if (result.rowErrors && result.rowErrors.length > 0) {
+            rowErrors.innerHTML = `
+                <div class="card border-warning">
+                    <div class="card-header py-2 bg-warning text-dark">
+                        <strong><i class="fas fa-exclamation-triangle me-2"></i>Row Errors (${result.rowErrors.length})</strong>
+                    </div>
+                    <div class="card-body p-3">
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Row</th>
+                                        <th>Errors</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${result.rowErrors.map(error => `
+                                        <tr>
+                                            <td><strong>${error.row}</strong></td>
+                                            <td>
+                                                ${error.errors.map(err => `<span class="badge bg-danger">${escapeHtml(err)}</span>`).join(' ')}
+                                            </td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            `;
+        } else {
+            rowErrors.innerHTML = '';
+        }
+    }
+}
+
+function resetPlateUmpiresCSVModalState() {
+    plateUmpiresCsvData = null;
+    document.getElementById('plateUmpiresCsvUploadArea').classList.remove('file-selected');
+    document.getElementById('plateUmpiresCsvUploadArea').innerHTML = `
+        <i class="fas fa-user-tie"></i>
+        <h5>Drag & Drop Plate Umpires CSV File</h5>
+        <p>or click to browse</p>
+        <input type="file" id="plateUmpiresCsvFile" accept=".csv" style="display: none;" onchange="handlePlateUmpiresCSVFileSelect(event)">
+    `;
+    document.getElementById('plateUmpiresCsvResultReport').style.display = 'none';
+}
+
+// Base Umpires CSV Functions
+function handleBaseUmpiresCSVFileSelect(e) {
+    const file = e.target.files[0];
+    if (file) {
+        baseUmpiresCsvData = file;
+        document.getElementById('baseUmpiresCsvUploadArea').classList.add('file-selected');
+        document.getElementById('baseUmpiresCsvUploadArea').innerHTML = `
+            <i class="fas fa-file-csv text-success"></i>
+            <h5>File Selected: ${file.name}</h5>
+            <p>Ready to upload</p>
+        `;
+    }
+}
+
+function handleBaseUmpiresDragOver(e) {
+    e.preventDefault();
+    e.currentTarget.classList.add('drag-over');
+}
+
+function handleBaseUmpiresDrop(e) {
+    e.preventDefault();
+    e.currentTarget.classList.remove('drag-over');
+    
+    const files = e.dataTransfer.files;
+    if (files.length > 0) {
+        const file = files[0];
+        if (file.type === 'text/csv' || file.name.endsWith('.csv')) {
+            baseUmpiresCsvData = file;
+            document.getElementById('baseUmpiresCsvUploadArea').classList.add('file-selected');
+            document.getElementById('baseUmpiresCsvUploadArea').innerHTML = `
+                <i class="fas fa-file-csv text-success"></i>
+                <h5>File Selected: ${file.name}</h5>
+                <p>Ready to upload</p>
+            `;
+        } else {
+            showAlert('Please select a valid CSV file', 'warning');
+        }
+    }
+}
+
+function handleBaseUmpiresDragLeave(e) {
+    e.currentTarget.classList.remove('drag-over');
+}
+
+async function uploadBaseUmpiresCSV() {
+    if (!baseUmpiresCsvData) {
+        showAlert('Please select a CSV file first', 'warning');
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append('csv', baseUmpiresCsvData);
+
+    try {
+        const response = await fetch('/api/upload-base-umpires-csv', {
+            method: 'POST',
+            body: formData
+        });
+
+        const result = await response.json();
+        
+        if (response.ok) {
+            renderBaseUmpiresCSVResultReport(result);
+            // Auto-close after 15 seconds on success
+            setTimeout(() => {
+                bootstrap.Modal.getInstance(document.getElementById('baseUmpiresUploadModal')).hide();
+                resetBaseUmpiresCSVModalState();
+                loadBaseUmpires(); // Reload the table
+            }, 15000);
+        } else {
+            renderBaseUmpiresCSVResultReport(result);
+        }
+    } catch (error) {
+        console.error('❌ Error uploading base umpires CSV:', error);
+        showAlert('Error uploading CSV file', 'danger');
+    }
+}
+
+function renderBaseUmpiresCSVResultReport(result) {
+    const summary = document.getElementById('baseUmpiresCsvResultSummary');
+    const rowErrors = document.getElementById('baseUmpiresCsvRowErrors');
+    const reportDiv = document.getElementById('baseUmpiresCsvResultReport');
+
+    if (!summary || !rowErrors || !reportDiv) return;
+
+    reportDiv.style.display = 'block';
+
+    const isFormatError = result.formatError;
+    const alertClass = result.committed ? 'alert-success' : 'alert-danger';
+
+    summary.className = `alert ${alertClass}`;
+    
+    if (isFormatError) {
+        summary.innerHTML = `
+            <div class="d-flex align-items-center">
+                <i class="fas fa-exclamation-triangle text-danger me-2"></i>
+                <div>
+                    <strong>CSV Format Error!</strong><br>
+                    <span class="text-danger">${result.message}</span>
+                </div>
+            </div>
+        `;
+        rowErrors.innerHTML = `
+            <div class="card border-danger">
+                <div class="card-header py-2 bg-danger text-white">
+                    <strong><i class="fas fa-times-circle me-2"></i>Format Mismatch</strong>
+                </div>
+                <div class="card-body p-3">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6 class="text-danger">Expected Columns:</h6>
+                            <div class="d-flex flex-wrap gap-1">
+                                ${(result.expectedColumns || []).map(col => 
+                                    `<span class="badge bg-success">${col}</span>`
+                                ).join('')}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="text-danger">Received Columns:</h6>
+                            <div class="d-flex flex-wrap gap-1">
+                                ${(result.receivedColumns || []).map(col => 
+                                    `<span class="badge bg-secondary">${col}</span>`
+                                ).join('')}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <h6 class="text-danger">Missing Required Columns:</h6>
+                        <div class="d-flex flex-wrap gap-1">
+                            ${(result.rowErrors?.[0]?.errors || []).map(error => 
+                                `<span class="badge bg-danger">${escapeHtml(error)}</span>`
+                            ).join('')}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    } else {
+        summary.innerHTML = `
+            <div class="d-flex align-items-center">
+                <i class="fas fa-${result.committed ? 'check-circle text-success' : 'exclamation-triangle text-warning'} me-2"></i>
+                <div>
+                    <strong>${result.message}</strong><br>
+                    <span class="text-${result.committed ? 'success' : 'warning'}">
+                        ${result.committed ? `${result.successCount} of ${result.totalRows} base umpires added successfully` : `${result.errorCount} errors found`}
+                    </span>
+                </div>
+            </div>
+        `;
+
+        if (result.rowErrors && result.rowErrors.length > 0) {
+            rowErrors.innerHTML = `
+                <div class="card border-warning">
+                    <div class="card-header py-2 bg-warning text-dark">
+                        <strong><i class="fas fa-exclamation-triangle me-2"></i>Row Errors (${result.rowErrors.length})</strong>
+                    </div>
+                    <div class="card-body p-3">
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Row</th>
+                                        <th>Errors</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${result.rowErrors.map(error => `
+                                        <tr>
+                                            <td><strong>${error.row}</strong></td>
+                                            <td>
+                                                ${error.errors.map(err => `<span class="badge bg-danger">${escapeHtml(err)}</span>`).join(' ')}
+                                            </td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            `;
+        } else {
+            rowErrors.innerHTML = '';
+        }
+    }
+}
+
+function resetBaseUmpiresCSVModalState() {
+    baseUmpiresCsvData = null;
+    document.getElementById('baseUmpiresCsvUploadArea').classList.remove('file-selected');
+    document.getElementById('baseUmpiresCsvUploadArea').innerHTML = `
+        <i class="fas fa-user-tie"></i>
+        <h5>Drag & Drop Base Umpires CSV File</h5>
+        <p>or click to browse</p>
+        <input type="file" id="baseUmpiresCsvFile" accept=".csv" style="display: none;" onchange="handleBaseUmpiresCSVFileSelect(event)">
+    `;
+    document.getElementById('baseUmpiresCsvResultReport').style.display = 'none';
 }
 
 async function loadPlateUmpires() {
