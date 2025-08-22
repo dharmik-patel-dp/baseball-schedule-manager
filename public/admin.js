@@ -268,16 +268,34 @@ async function loadUmpireRequests() {
         
         // Enrich requests with game details
         allUmpireRequests = allUmpireRequests.map(request => {
+            console.log('🔍 Enriching umpire request:', request);
+            
             const game = allSchedules.find(s => s.id == request.game_id);
             if (game) {
                 request.game_details = `${game.home_team} vs ${game.visitor_team} on ${formatDate(game.date)} at ${game.start_time}`;
                 // Also enrich current umpire data if not already present
-                if (!request.current_plate_umpire) {
+                if (!request.current_plate_umpire || request.current_plate_umpire === '') {
                     request.current_plate_umpire = game.plate_umpire || 'N/A';
                 }
-                if (!request.current_base_umpire) {
+                if (!request.current_base_umpire || request.current_base_umpire === '') {
                     request.current_base_umpire = game.base_umpire || 'N/A';
                 }
+                
+                // Handle empty requested umpire fields
+                if (!request.requested_plate_umpire || request.requested_plate_umpire === '') {
+                    request.requested_plate_umpire = 'No change';
+                }
+                if (!request.requested_base_umpire || request.requested_base_umpire === '') {
+                    request.requested_base_umpire = 'No change';
+                }
+                
+                console.log('🔍 Enriched request:', {
+                    game_details: request.game_details,
+                    current_plate: request.current_plate_umpire,
+                    current_base: request.current_base_umpire,
+                    requested_plate: request.requested_plate_umpire,
+                    requested_base: request.requested_base_umpire
+                });
             } else {
                 request.game_details = 'Game not found';
             }
@@ -575,13 +593,21 @@ function renderUmpireRequestsTable() {
     if (!tbody) return;
     
     const pendingRequests = (allUmpireRequests || []).filter(req => req.status === 'pending');
+    
+    console.log('🔍 Rendering umpire requests table with data:', pendingRequests);
+    console.log('🔍 Sample request object:', pendingRequests[0]);
 
     if (pendingRequests.length === 0) {
         tbody.innerHTML = '<tr><td colspan="6" class="no-data">No pending umpire requests</td></tr>';
         return;
     }
     
-    tbody.innerHTML = pendingRequests.map(request => `
+    tbody.innerHTML = pendingRequests.map(request => {
+        console.log('🔍 Processing request:', request);
+        console.log('🔍 Requested plate umpire:', request.requested_plate_umpire);
+        console.log('🔍 Requested base umpire:', request.requested_base_umpire);
+        
+        return `
         <tr>
             <td>${request.game_details || 'N/A'}</td>
             <td>${request.current_plate_umpire || 'N/A'} / ${request.current_base_umpire || 'N/A'}</td>
@@ -599,7 +625,8 @@ function renderUmpireRequestsTable() {
                 ` : 'No actions needed'}
                 </td>
             </tr>
-    `).join('');
+        `;
+    }).join('');
 }
 
 // Render concession staff requests table
@@ -2895,3 +2922,41 @@ async function handleEditBaseUmpireSubmit(e) {
         showAlert('Error updating base umpire. Please try again.', 'danger');
     }
 }
+
+// Test function to create a sample umpire request (for debugging)
+async function createTestUmpireRequest() {
+    try {
+        const testData = {
+            game_id: 249, // Use an existing game ID
+            current_plate_umpire: 'Dylan LeLacheur',
+            current_base_umpire: 'Scott Patenaude',
+            requested_plate_umpire: 'Arthur DeSouza',
+            requested_base_umpire: 'Brady Foote',
+            reason: 'Test request for debugging'
+        };
+        
+        console.log('🧪 Creating test umpire request:', testData);
+        
+        const response = await fetch('/api/umpire-requests', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(testData)
+        });
+        
+        if (!response.ok) throw new Error('Failed to create test request');
+        
+        const result = await response.json();
+        console.log('✅ Test umpire request created:', result);
+        
+        // Reload requests to show the new one
+        await loadUmpireRequests();
+        
+        showAlert('Test umpire request created successfully!', 'success');
+    } catch (error) {
+        console.error('❌ Error creating test request:', error);
+        showAlert('Error creating test request. Please try again.', 'danger');
+    }
+}
+
+// Make the test function available globally for debugging
+window.createTestUmpireRequest = createTestUmpireRequest;
