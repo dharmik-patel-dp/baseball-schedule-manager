@@ -54,44 +54,41 @@ function addCustomStyles() {
 
 // Manual refresh function for users
 async function refreshAllData() {
-    console.log('🔄 Manual refresh requested by user');
+    const refreshBtn = document.getElementById('refreshDataBtn');
+    const originalText = refreshBtn.innerHTML;
     
-    // Show loading state
-    const refreshBtn = document.querySelector('.header-actions .btn-outline-light');
-    if (refreshBtn) {
-        const originalContent = refreshBtn.innerHTML;
-        refreshBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Refreshing...';
+    try {
+        // Show loading state
+        refreshBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Refreshing...';
         refreshBtn.disabled = true;
         
-        try {
-            // Refresh all data
-            await Promise.all([
-                loadSchedules(),
-                loadUmpireRequests(),
-                loadConcessionStaffRequests(),
-                loadFilterOptions()
-            ]);
-            
-            // Update last updated time
-            updateLastUpdatedTime();
-            
-            // Show success message
-            showAlert('Data refreshed successfully!', 'success');
-            
-            // Reset button after 2 seconds
-            setTimeout(() => {
-                refreshBtn.innerHTML = originalContent;
-                refreshBtn.disabled = false;
-            }, 2000);
-            
-        } catch (error) {
-            console.error('❌ Error during manual refresh:', error);
-            showAlert('Error refreshing data. Please try again.', 'danger');
-            
-            // Reset button immediately on error
-            refreshBtn.innerHTML = originalContent;
-            refreshBtn.disabled = false;
-        }
+        console.log('🔄 Manual refresh initiated by user...');
+        
+        // Refresh all data
+        await Promise.all([
+            loadSchedules(),
+            loadUmpireRequests(),
+            loadConcessionStaffRequests(),
+            loadFilterOptions(),
+            loadPlateUmpires(),
+            loadBaseUmpires()
+        ]);
+        
+        // Update last updated time
+        updateLastUpdatedTime();
+        
+        // Show success message
+        showAlert('Data refreshed successfully!', 'success');
+        
+        console.log('✅ Manual refresh completed successfully');
+        
+    } catch (error) {
+        console.error('❌ Error during manual refresh:', error);
+        showAlert('Error refreshing data. Please try again.', 'danger');
+    } finally {
+        // Restore button state
+        refreshBtn.innerHTML = originalText;
+        refreshBtn.disabled = false;
     }
 }
 
@@ -142,6 +139,8 @@ document.addEventListener('DOMContentLoaded', function() {
     loadUmpireRequests();
     loadConcessionStaffRequests();
     loadFilterOptions();
+    loadPlateUmpires();
+    loadBaseUmpires();
     setupEventListeners();
     
     // Set initial last updated time
@@ -344,18 +343,31 @@ function populateFilterDropdowns() {
 }
 
 // Populate request form dropdowns
-function populateRequestDropdowns() {
+async function populateRequestDropdowns() {
     console.log('🔄 Starting to populate request dropdowns...');
     console.log('Current filterOptions:', filterOptions);
     console.log('Current allSchedules length:', allSchedules ? allSchedules.length : 'undefined');
     
     try {
+        // Wait for umpire data to be loaded if not already available
+        if (!window.allPlateUmpires || window.allPlateUmpires.length === 0) {
+            console.log('⏳ Plate umpires not loaded yet, loading now...');
+            await loadPlateUmpires();
+        }
+        
+        if (!window.allBaseUmpires || window.allBaseUmpires.length === 0) {
+            console.log('⏳ Base umpires not loaded yet, loading now...');
+            await loadBaseUmpires();
+        }
+        
         // Get current game data if available (for editing existing requests)
         const currentGameId = getCurrentGameId();
         const currentGame = currentGameId ? allSchedules.find(s => s.id == currentGameId) : null;
         
         console.log('Current game ID:', currentGameId);
         console.log('Current game data:', currentGame);
+        console.log('Available plate umpires:', window.allPlateUmpires?.length || 0);
+        console.log('Available base umpires:', window.allBaseUmpires?.length || 0);
         
         // Get staff names for umpire requests - use dedicated umpire lists if available
         let plateUmpireNames = [];
@@ -384,15 +396,18 @@ function populateRequestDropdowns() {
         // Fallback for umpire names if dedicated lists aren't available
         if (plateUmpireNames.length === 0) {
             plateUmpireNames = ['Dylan LeLacheur', 'Arthur DeSouza', 'Connor Stevens', 'James Kane', 'Nathan Nelson', 'Scott Patenaude'];
+            console.log('Using fallback plate umpire names');
         }
         
         if (baseUmpireNames.length === 0) {
             baseUmpireNames = ['Scott Patenaude', 'Brady Foote', 'Jack Duffy', 'Logan Kelly', 'Ryan Abrams', 'Zach Chachus'];
+            console.log('Using fallback base umpire names');
         }
         
         // Fallback for staff names
         if (staffNames.length === 0) {
             staffNames = ['Dylan LeLacheur', 'Scott Patenaude', 'Arthur DeSouza', 'Brady Foote', 'James Kane', 'Logan Kelly', 'Connor Stevens', 'Jack Duffy', 'Nathan Nelson', 'Ryan Abrams', 'Matthew Rurak', 'Zach Chachus', 'Andrey LeMay', 'Ben Durkin', 'Emily Lelacheur', 'Kate LeLacheur', 'Danny Gallo', 'Brayden Shea'];
+            console.log('Using fallback staff names');
         }
         
         console.log('Final names to use - Plate:', plateUmpireNames.length, 'Base:', baseUmpireNames.length, 'Staff:', staffNames.length);
@@ -1135,8 +1150,38 @@ async function loadConcessionStaffRequests() {
     }
 }
 
+// Load plate umpires data
+async function loadPlateUmpires() {
+    try {
+        const response = await fetch('/api/plate-umpires');
+        if (!response.ok) throw new Error('Failed to load plate umpires');
+        const data = await response.json();
+        window.allPlateUmpires = data;
+        console.log('✅ Plate umpires loaded:', data.length);
+    } catch (error) {
+        console.error('❌ Error loading plate umpires:', error);
+        window.allPlateUmpires = [];
+    }
+}
+
+// Load base umpires data
+async function loadBaseUmpires() {
+    try {
+        const response = await fetch('/api/base-umpires');
+        if (!response.ok) throw new Error('Failed to load base umpires');
+        const data = await response.json();
+        window.allBaseUmpires = data;
+        console.log('✅ Base umpires loaded:', data.length);
+    } catch (error) {
+        console.error('❌ Error loading base umpires:', error);
+        window.allBaseUmpires = [];
+    }
+}
+
+// Load staff data from schedules
+
 // Show umpire request form
-function showUmpireRequestForm(gameId) {
+async function showUmpireRequestForm(gameId) {
     const schedule = allSchedules.find(s => s.id === gameId);
     if (!schedule) return;
     
@@ -1158,9 +1203,7 @@ function showUmpireRequestForm(gameId) {
     document.getElementById('umpireRequestForm').style.display = 'block';
     
     // Populate dropdowns with current game context
-    setTimeout(() => {
-        populateRequestDropdowns();
-    }, 100);
+    await populateRequestDropdowns();
     
     // Scroll to form
     document.getElementById('umpireRequestForm').scrollIntoView({ behavior: 'smooth' });
@@ -1209,7 +1252,7 @@ async function handleUmpireRequest(e) {
 }
 
 // Show concession staff request form
-function showConcessionStaffRequestForm(gameId) {
+async function showConcessionStaffRequestForm(gameId) {
     const schedule = allSchedules.find(s => s.id === gameId);
     if (!schedule) return;
     
@@ -1229,9 +1272,7 @@ function showConcessionStaffRequestForm(gameId) {
     document.getElementById('concessionStaffRequestForm').style.display = 'block';
     
     // Populate dropdowns with current game context
-    setTimeout(() => {
-        populateRequestDropdowns();
-    }, 100);
+    await populateRequestDropdowns();
     
     // Scroll to form
     document.getElementById('concessionStaffRequestForm').scrollIntoView({ behavior: 'smooth' });
