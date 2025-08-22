@@ -62,8 +62,6 @@ async function refreshAllData() {
         refreshBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Refreshing...';
         refreshBtn.disabled = true;
         
-        console.log('🔄 Manual refresh initiated by user...');
-        
         // Refresh all data
         await Promise.all([
             loadSchedules(),
@@ -80,8 +78,6 @@ async function refreshAllData() {
         
         // Show success message
         showAlert('Data refreshed successfully!', 'success');
-        
-        console.log('✅ Manual refresh completed successfully');
         
     } catch (error) {
         console.error('❌ Error during manual refresh:', error);
@@ -123,15 +119,10 @@ function updateAutoRefreshCountdown() {
 // Check for request status changes and notify users
 function checkForStatusChanges() {
     // This function will be called after each data refresh to check if user's requests have status changes
-    console.log('🔍 Checking for request status changes...');
-    
-    // You can implement logic here to compare previous and current request statuses
-    // and show notifications to users about their request updates
 }
 
 // Initialize the application
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('🚀 DOM Content Loaded - Starting application initialization');
     
     // Add custom CSS for current assignments
     addCustomStyles();
@@ -162,24 +153,20 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Ensure request dropdowns are populated after everything loads
     setTimeout(() => {
-        console.log('🔍 First check - populating request dropdowns...');
         populateRequestDropdowns();
     }, 2000);
     
     // Additional checks to ensure dropdowns are populated
     setTimeout(() => {
-        console.log('🔍 Second check - populating request dropdowns...');
         populateRequestDropdowns();
     }, 5000);
     
     setTimeout(() => {
-        console.log('🔍 Final check - populating request dropdowns...');
         populateRequestDropdowns();
     }, 10000);
     
     // Set up periodic refresh to show real-time updates
     setInterval(() => {
-        console.log('🔄 Auto-refreshing data...');
         loadSchedules();
         loadUmpireRequests();
         loadConcessionStaffRequests();
@@ -221,7 +208,6 @@ function setupEventListeners() {
     if (liveSearchInput) {
         liveSearchInput.addEventListener('input', handleLiveSearch);
         liveSearchInput.addEventListener('keyup', handleLiveSearch);
-        console.log('✅ Live search listener added');
     }
     
     // Filter change events for immediate filtering
@@ -235,7 +221,6 @@ function setupEventListeners() {
         const element = document.getElementById(id);
         if (element) {
             element.addEventListener('change', () => {
-                console.log(`🔍 Filter changed: ${id} = ${element.value}`);
                 applyFilters();
             });
         }
@@ -255,7 +240,6 @@ async function loadSchedules() {
         // Ensure request dropdowns are populated even if filter options fail
         setTimeout(() => {
             if (!filterOptions || !filterOptions.concession_staff || filterOptions.concession_staff.length === 0) {
-                console.log('Filter options not loaded, populating request dropdowns from schedules');
                 populateRequestDropdowns();
             }
         }, 1000);
@@ -281,7 +265,6 @@ async function loadFilterOptions() {
         
         // Extract staff names from the staff data (it has name and role fields)
         const staffNames = staffData.map(staff => staff.name).filter(Boolean);
-        console.log('📋 Staff names loaded:', staffNames);
         
         // Add staff names to filter options
         filterOptions.concession_staff = staffNames;
@@ -298,7 +281,6 @@ async function loadFilterOptions() {
 // Populate filter dropdowns
 function populateFilterDropdowns() {
     if (!filterOptions) {
-        console.log('No filter options available yet');
         return;
     }
 
@@ -350,30 +332,20 @@ function populateFilterDropdowns() {
 
 // Populate request form dropdowns
 async function populateRequestDropdowns() {
-    console.log('🔄 Starting to populate request dropdowns...');
-    console.log('Current filterOptions:', filterOptions);
-    console.log('Current allSchedules length:', allSchedules ? allSchedules.length : 'undefined');
     
     try {
         // Wait for umpire data to be loaded if not already available
         if (!window.allPlateUmpires || window.allPlateUmpires.length === 0) {
-            console.log('⏳ Plate umpires not loaded yet, loading now...');
             await loadPlateUmpires();
         }
         
         if (!window.allBaseUmpires || window.allBaseUmpires.length === 0) {
-            console.log('⏳ Base umpires not loaded yet, loading now...');
             await loadBaseUmpires();
         }
         
         // Get current game data if available (for editing existing requests)
         const currentGameId = getCurrentGameId();
         const currentGame = currentGameId ? allSchedules.find(s => s.id == currentGameId) : null;
-        
-        console.log('Current game ID:', currentGameId);
-        console.log('Current game data:', currentGame);
-        console.log('Available plate umpires:', window.allPlateUmpires?.length || 0);
-        console.log('Available base umpires:', window.allBaseUmpires?.length || 0);
         
         // Get staff names for umpire requests - use dedicated umpire lists if available
         let plateUmpireNames = [];
@@ -383,37 +355,30 @@ async function populateRequestDropdowns() {
         // Try to get umpire names from dedicated umpire tables first
         if (window.allPlateUmpires && window.allPlateUmpires.length > 0) {
             plateUmpireNames = window.allPlateUmpires.map(u => u.name);
-            console.log('Using dedicated plate umpire names:', plateUmpireNames);
         }
         
         if (window.allBaseUmpires && window.allBaseUmpires.length > 0) {
             baseUmpireNames = window.allBaseUmpires.map(u => u.name);
-            console.log('Using dedicated base umpire names:', baseUmpireNames);
         }
         
         // Get concession staff names
         staffNames = filterOptions?.concession_staff || [];
-        console.log('📋 Concession staff from filterOptions:', staffNames);
         
         // Try to get from dedicated concession staff data first
         if (window.allConcessionStaff && window.allConcessionStaff.length > 0) {
             staffNames = window.allConcessionStaff;
-            console.log('📋 Using dedicated concession staff data:', staffNames);
         } else if (staffNames.length === 0 && allSchedules && allSchedules.length > 0) {
             const uniqueStaff = [...new Set(allSchedules.map(s => s.concession_staff).filter(Boolean))];
             staffNames = uniqueStaff;
-            console.log('📋 Using staff names from schedules:', uniqueStaff);
         }
         
         // If still no staff data, try to load it directly
         if (staffNames.length === 0) {
-            console.log('📋 No staff data available, trying to load directly...');
             try {
                 const staffResponse = await fetch('/api/staff-names');
                 if (staffResponse.ok) {
                     const staffData = await staffResponse.json();
                     staffNames = staffData.map(staff => staff.name).filter(Boolean);
-                    console.log('📋 Staff names loaded directly:', staffNames);
                 }
             } catch (error) {
                 console.error('❌ Error loading staff names directly:', error);
@@ -423,21 +388,16 @@ async function populateRequestDropdowns() {
         // Fallback for umpire names if dedicated lists aren't available
         if (plateUmpireNames.length === 0) {
             plateUmpireNames = ['Dylan LeLacheur', 'Arthur DeSouza', 'Connor Stevens', 'James Kane', 'Nathan Nelson', 'Scott Patenaude'];
-            console.log('Using fallback plate umpire names');
         }
         
         if (baseUmpireNames.length === 0) {
             baseUmpireNames = ['Scott Patenaude', 'Brady Foote', 'Jack Duffy', 'Logan Kelly', 'Ryan Abrams', 'Zach Chachus'];
-            console.log('Using fallback base umpire names');
         }
         
         // Fallback for staff names
         if (staffNames.length === 0) {
             staffNames = ['Dylan LeLacheur', 'Scott Patenaude', 'Arthur DeSouza', 'Brady Foote', 'James Kane', 'Logan Kelly', 'Connor Stevens', 'Jack Duffy', 'Nathan Nelson', 'Ryan Abrams', 'Matthew Rurak', 'Zach Chachus', 'Andrey LeMay', 'Ben Durkin', 'Emily Lelacheur', 'Kate LeLacheur', 'Danny Gallo', 'Brayden Shea'];
-            console.log('Using fallback staff names');
         }
-        
-        console.log('Final names to use - Plate:', plateUmpireNames.length, 'Base:', baseUmpireNames.length, 'Staff:', staffNames.length);
         
         // Populate plate umpire dropdown
         const plateUmpireSelect = document.getElementById('requestedPlateUmpire');
@@ -464,9 +424,6 @@ async function populateRequestDropdowns() {
                     plateUmpireSelect.appendChild(option);
                 }
             });
-            console.log('✅ Plate umpire dropdown populated with', plateUmpireSelect.options.length, 'options');
-        } else {
-            console.error('❌ Plate umpire dropdown element not found!');
         }
         
         // Populate base umpire dropdown
@@ -494,9 +451,6 @@ async function populateRequestDropdowns() {
                     baseUmpireSelect.appendChild(option);
                 }
             });
-            console.log('✅ Base umpire dropdown populated with', baseUmpireSelect.options.length, 'options');
-        } else {
-            console.error('❌ Base umpire dropdown element not found!');
         }
         
         // Populate concession staff dropdown
@@ -540,9 +494,6 @@ async function populateRequestDropdowns() {
                 noteElement.innerHTML = '<small class="text-muted"><i class="fas fa-info-circle me-1"></i>All available concession staff members are shown. Current assignment is marked with "(Current)".</small>';
             }
             
-            console.log('✅ Concession staff dropdown populated with', concessionStaffSelect.options.length, 'options');
-        } else {
-            console.error('❌ Concession staff dropdown element not found!');
         }
         
         // Verify the dropdowns are populated
@@ -595,28 +546,23 @@ function getCurrentGameId() {
 
 // Verify that dropdowns are properly populated
 function verifyDropdownPopulation() {
-    console.log('🔍 Verifying dropdown population...');
     
     const plateUmpireSelect = document.getElementById('requestedPlateUmpire');
     const baseUmpireSelect = document.getElementById('requestedBaseUmpire');
     const concessionStaffSelect = document.getElementById('requestedConcessionStaff');
     
     if (plateUmpireSelect && plateUmpireSelect.options.length <= 1) {
-        console.warn('⚠️ Plate umpire dropdown has insufficient options, repopulating...');
         populateRequestDropdownsFallback();
     }
     
     if (baseUmpireSelect && baseUmpireSelect.options.length <= 1) {
-        console.warn('⚠️ Base umpire dropdown has insufficient options, repopulating...');
         populateRequestDropdownsFallback();
     }
     
     if (concessionStaffSelect && concessionStaffSelect.options.length <= 1) {
-        console.warn('⚠️ Concession staff dropdown has insufficient options, repopulating...');
         populateRequestDropdownsFallback();
     }
     
-    console.log('✅ Dropdown verification complete');
 }
 
 // Make functions available globally for debugging
@@ -624,13 +570,6 @@ window.populateRequestDropdowns = populateRequestDropdowns;
 window.populateRequestDropdownsFallback = populateRequestDropdownsFallback;
 window.verifyDropdownPopulation = verifyDropdownPopulation;
 window.debugDropdowns = function() {
-    console.log('🔍 Debugging dropdowns...');
-    console.log('filterOptions:', filterOptions);
-    console.log('allSchedules length:', allSchedules ? allSchedules.length : 'undefined');
-    console.log('requestedPlateUmpire element:', document.getElementById('requestedPlateUmpire'));
-    console.log('requestedBaseUmpire element:', document.getElementById('requestedBaseUmpire'));
-    console.log('requestedConcessionStaff element:', document.getElementById('requestedConcessionStaff'));
-    
     // Try to populate dropdowns
     populateRequestDropdowns();
 };
@@ -687,8 +626,6 @@ function handleLiveSearch() {
         updateSearchResults('');
         return;
     }
-    
-    console.log(`🔍 Live search for: "${searchTerm}"`);
     
     // Search across all schedule fields
     filteredSchedules = allSchedules.filter(schedule => {
@@ -799,9 +736,6 @@ function applyFilters() {
     const searchInput = document.getElementById('liveSearchInput');
     const searchTerm = searchInput ? searchInput.value.toLowerCase().trim() : '';
     
-    console.log('🔍 Applying filters:', activeFilters);
-    console.log('🔍 Search term:', searchTerm);
-    
     // Start with all schedules
     filteredSchedules = [...allSchedules];
     
@@ -838,7 +772,6 @@ function applyFilters() {
 
     renderScheduleTable();
     
-    console.log(`✅ Filtered ${filteredSchedules.length} schedules from ${allSchedules.length} total`);
 }
 
 // Show or hide the "No Results" banner
@@ -936,7 +869,6 @@ function clearAllFilters() {
     
     renderScheduleTable();
     
-    console.log('🗑️ All filters and search cleared');
 }
 
 // Clear filters (legacy function for compatibility)
@@ -1222,7 +1154,6 @@ function renderUmpireRequestsTable() {
         `;
     }).join('');
     
-    console.log('✅ Umpire requests table rendered with', allUmpireRequests.length, 'requests');
 }
 
 // Load concession staff requests
@@ -1294,7 +1225,6 @@ function renderConcessionStaffRequestsTable() {
         `;
     }).join('');
     
-    console.log('✅ Concession staff requests table rendered with', allConcessionStaffRequests.length, 'requests');
 }
 
 // Load plate umpires data
@@ -1304,7 +1234,6 @@ async function loadPlateUmpires() {
         if (!response.ok) throw new Error('Failed to load plate umpires');
         const data = await response.json();
         window.allPlateUmpires = data;
-        console.log('✅ Plate umpires loaded:', data.length);
     } catch (error) {
         console.error('❌ Error loading plate umpires:', error);
         window.allPlateUmpires = [];
@@ -1318,7 +1247,6 @@ async function loadBaseUmpires() {
         if (!response.ok) throw new Error('Failed to load base umpires');
         const data = await response.json();
         window.allBaseUmpires = data;
-        console.log('✅ Base umpires loaded:', data.length);
     } catch (error) {
         console.error('❌ Error loading base umpires:', error);
         window.allBaseUmpires = [];
@@ -1333,7 +1261,6 @@ async function loadConcessionStaff() {
         const data = await response.json();
         const staffNames = data.map(staff => staff.name).filter(Boolean);
         window.allConcessionStaff = staffNames;
-        console.log('✅ Concession staff loaded:', staffNames.length);
         
         // Also update filterOptions if available
         if (filterOptions) {
