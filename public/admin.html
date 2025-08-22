@@ -9,16 +9,33 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary-color: #4e73df;
-            --secondary-color: #858796;
-            --success-color: #1cc88a;
-            --info-color: #36b9cc;
-            --warning-color: #f6c23e;
-            --danger-color: #e74a3b;
-            --light-color: #f8f9fc;
-            --dark-color: #5a5c69;
+            /* Baseball/Softball Theme Colors */
+            --baseball-red: #d32f2f;
+            --baseball-blue: #1976d2;
+            --softball-purple: #7b1fa2;
+            --field-green: #388e3c;
+            --dirt-brown: #8d6e63;
+            --fence-white: #fafafa;
+            --night-dark: #1a1a1a;
+            --day-light: #ffffff;
+            
+            /* Modern UI Colors */
+            --primary-color: var(--baseball-red);
+            --secondary-color: var(--baseball-blue);
+            --success-color: var(--field-green);
+            --info-color: var(--softball-purple);
+            --warning-color: #ff9800;
+            --danger-color: #f44336;
+            --light-color: var(--fence-white);
+            --dark-color: var(--night-dark);
             --sidebar-width: 280px;
             --header-height: 70px;
+            
+            /* Gradients */
+            --baseball-gradient: linear-gradient(135deg, var(--baseball-red) 0%, #b71c1c 100%);
+            --softball-gradient: linear-gradient(135deg, var(--softball-purple) 0%, #4a148c 100%);
+            --field-gradient: linear-gradient(135deg, var(--field-green) 0%, #2e7d32 100%);
+            --night-gradient: linear-gradient(135deg, var(--night-dark) 0%, #424242 100%);
         }
 
         * {
@@ -29,9 +46,24 @@
 
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f8f9fc;
-            color: #5a5c69;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: var(--dark-color);
             overflow-x: hidden;
+            position: relative;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
         }
 
         /* Top Header */
@@ -41,20 +73,37 @@
             left: var(--sidebar-width);
             right: 0;
             height: var(--header-height);
-            background: white;
-            border-bottom: 1px solid #e3e6f0;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 2px solid rgba(212, 32, 47, 0.2);
             z-index: 999;
             display: flex;
             align-items: center;
             justify-content: space-between;
             padding: 0 2rem;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
         }
 
         .header-title {
             font-size: 1.5rem;
-            font-weight: 600;
-            color: var(--dark-color);
+            font-weight: 700;
+            color: var(--baseball-red);
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .header-title::before {
+            content: '⚾';
+            font-size: 1.8rem;
+            animation: bounce 2s infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
         }
 
         .header-actions {
@@ -70,11 +119,25 @@
             left: 0;
             height: 100vh;
             width: var(--sidebar-width);
-            background: linear-gradient(180deg, #4e73df 0%, #224abe 100%);
+            background: var(--baseball-gradient);
             z-index: 1000;
             transition: all 0.3s ease;
             box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
             overflow-y: auto;
+            position: relative;
+        }
+        
+        .sidebar::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.05) 0%, transparent 50%);
+            pointer-events: none;
         }
 
         .sidebar-header {
@@ -92,6 +155,15 @@
             align-items: center;
             justify-content: center;
             gap: 0.75rem;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            position: relative;
+            z-index: 2;
+        }
+        
+        .sidebar-brand::before {
+            content: '🏟️';
+            font-size: 2rem;
+            margin-right: 0.5rem;
         }
 
         .sidebar-brand:hover {
@@ -120,14 +192,16 @@
 
         .nav-link:hover {
             color: white;
-            background-color: rgba(255, 255, 255, 0.15);
-            transform: translateX(5px);
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateX(8px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
         }
 
         .nav-link.active {
             color: white;
-            background-color: rgba(255, 255, 255, 0.2);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            background: rgba(255, 255, 255, 0.25);
+            box-shadow: 0 6px 25px rgba(0, 0, 0, 0.25);
+            border-left: 4px solid white;
         }
 
         .nav-link i {
@@ -150,49 +224,90 @@
 
         /* Dashboard Cards */
         .dashboard-card {
-            background: white;
-            border-radius: 1rem;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 1.5rem;
             padding: 2rem;
-            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.11);
-            border: 1px solid #e3e6f0;
-            transition: all 0.3s ease;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             height: 100%;
+            position: relative;
+            overflow: hidden;
         }
-
+        
+        .dashboard-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--baseball-gradient);
+            transform: scaleX(0);
+            transition: transform 0.4s ease;
+        }
+        
         .dashboard-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 0.5rem 2rem 0 rgba(58, 59, 69, 0.15);
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+        
+        .dashboard-card:hover::before {
+            transform: scaleX(1);
         }
 
         .card-icon {
-            width: 4rem;
-            height: 4rem;
-            border-radius: 1rem;
+            width: 4.5rem;
+            height: 4.5rem;
+            border-radius: 1.25rem;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.5rem;
+            font-size: 1.75rem;
             margin-bottom: 1.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .card-icon::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.3) 50%, transparent 70%);
+            transform: translateX(-100%);
+            transition: transform 0.6s ease;
+        }
+        
+        .card-icon:hover::before {
+            transform: translateX(100%);
         }
 
-        .card-icon.primary { background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%); color: #1976d2; }
-        .card-icon.success { background: linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%); color: #388e3c; }
-        .card-icon.warning { background: linear-gradient(135deg, #fff8e1 0%, #ffecb3 100%); color: #f57c00; }
-        .card-icon.info { background: linear-gradient(135deg, #e0f2f1 0%, #b2dfdb 100%); color: #00796b; }
+        .card-icon.primary { background: var(--baseball-gradient); color: white; }
+        .card-icon.success { background: var(--field-gradient); color: white; }
+        .card-icon.warning { background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%); color: white; }
+        .card-icon.info { background: var(--softball-gradient); color: white; }
 
         .card-value {
-            font-size: 2.5rem;
-            font-weight: 700;
+            font-size: 2.75rem;
+            font-weight: 800;
             margin-bottom: 0.75rem;
-            color: var(--dark-color);
+            background: var(--baseball-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         .card-label {
-            color: var(--secondary-color);
+            color: var(--baseball-blue);
             font-size: 0.95rem;
-            font-weight: 500;
+            font-weight: 600;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.75px;
         }
 
         /* Section Headers */
@@ -200,23 +315,37 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 2rem;
+            margin-bottom: 2.5rem;
             padding-bottom: 1.5rem;
-            border-bottom: 3px solid #e3e6f0;
+            border-bottom: 3px solid var(--baseball-red);
+            position: relative;
+        }
+        
+        .section-header::after {
+            content: '';
+            position: absolute;
+            bottom: -3px;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background: var(--baseball-gradient);
+            border-radius: 2px;
         }
 
         .section-title {
-            font-size: 2rem;
-            font-weight: 700;
+            font-size: 2.25rem;
+            font-weight: 800;
             color: var(--dark-color);
             margin: 0;
             display: flex;
             align-items: center;
             gap: 1rem;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         .section-title i {
-            color: var(--primary-color);
+            color: var(--baseball-red);
+            font-size: 2rem;
         }
 
         .section-actions {
@@ -226,11 +355,23 @@
 
         /* Tables */
         .table-container {
-            background: white;
-            border-radius: 1rem;
-            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.11);
-            border: 1px solid #e3e6f0;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 1.5rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
             overflow: hidden;
+            position: relative;
+        }
+        
+        .table-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--baseball-gradient);
         }
 
         .table {
@@ -238,14 +379,15 @@
         }
 
         .table thead th {
-            background: linear-gradient(135deg, #f8f9fc 0%, #e9ecef 100%);
-            border-bottom: 2px solid #e3e6f0;
-            font-weight: 600;
-            color: var(--dark-color);
-            padding: 1.25rem 1rem;
+            background: var(--baseball-gradient);
+            color: white;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+            font-weight: 700;
+            padding: 1.5rem 1rem;
             font-size: 0.9rem;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.75px;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
         }
 
         .table tbody td {
@@ -256,48 +398,89 @@
         }
 
         .table tbody tr:hover {
-            background-color: #f8f9fc;
-            transform: scale(1.01);
-            transition: all 0.2s ease;
+            background: linear-gradient(135deg, rgba(212, 32, 47, 0.05) 0%, rgba(25, 118, 210, 0.05) 100%);
+            transform: scale(1.005);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
 
         /* Buttons */
         .btn {
-            border-radius: 0.75rem;
-            font-weight: 600;
-            padding: 0.75rem 1.5rem;
-            transition: all 0.3s ease;
+            border-radius: 1rem;
+            font-weight: 700;
+            padding: 0.875rem 1.75rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             border: none;
             font-size: 0.9rem;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.75px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+        
+        .btn:hover::before {
+            left: 100%;
         }
 
         .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, var(--primary-color) 0%, #224abe 100%);
+            background: var(--baseball-gradient);
         }
 
         .btn-success {
-            background: linear-gradient(135deg, var(--success-color) 0%, #17a673 100%);
+            background: var(--field-gradient);
         }
 
         .btn-warning {
-            background: linear-gradient(135deg, var(--warning-color) 0%, #e0a800 100%);
+            background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
         }
 
         .btn-danger {
-            background: linear-gradient(135deg, var(--danger-color) 0%, #be2617 100%);
+            background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
         }
 
         .btn-outline-primary {
-            border: 2px solid var(--primary-color);
-            color: var(--primary-color);
+            border: 2px solid var(--baseball-red);
+            color: var(--baseball-red);
             background: transparent;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn-outline-primary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 100%;
+            background: var(--baseball-gradient);
+            transition: width 0.3s ease;
+            z-index: -1;
+        }
+        
+        .btn-outline-primary:hover::before {
+            width: 100%;
+        }
+        
+        .btn-outline-primary:hover {
+            color: white;
+            border-color: var(--baseball-red);
         }
 
         .btn-outline-primary:hover {
@@ -387,25 +570,52 @@
 
         /* CSV Upload Area */
         .csv-upload-area {
-            border: 3px dashed #e3e6f0;
-            border-radius: 1rem;
+            border: 3px dashed var(--baseball-red);
+            border-radius: 1.5rem;
             padding: 4rem 2rem;
             text-align: center;
             cursor: pointer;
-            transition: all 0.3s ease;
-            background: #f8f9fc;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            background: linear-gradient(135deg, rgba(212, 32, 47, 0.05) 0%, rgba(25, 118, 210, 0.05) 100%);
+            position: relative;
+            overflow: hidden;
         }
-
+        
+        .csv-upload-area::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(212, 32, 47, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(25, 118, 210, 0.1) 0%, transparent 50%);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+        
         .csv-upload-area:hover {
-            border-color: var(--primary-color);
-            background: linear-gradient(135deg, #f8f9fc 0%, #e3f2fd 100%);
-            transform: scale(1.02);
+            border-color: var(--baseball-blue);
+            background: linear-gradient(135deg, rgba(212, 32, 47, 0.1) 0%, rgba(25, 118, 210, 0.1) 100%);
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 12px 30px rgba(212, 32, 47, 0.2);
         }
-
+        
+        .csv-upload-area:hover::before {
+            opacity: 1;
+        }
+        
         .csv-upload-area i {
-            color: var(--primary-color);
+            color: var(--baseball-red);
             margin-bottom: 1.5rem;
             font-size: 3rem;
+            transition: all 0.3s ease;
+        }
+        
+        .csv-upload-area:hover i {
+            color: var(--baseball-blue);
+            transform: scale(1.1);
         }
 
         .csv-upload-area h5 {
@@ -485,6 +695,100 @@
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Baseball Theme Enhancements */
+        .baseball-diamond {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .baseball-diamond::before {
+            content: '⚾';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 2rem;
+            opacity: 0.1;
+            animation: rotate 10s linear infinite;
+        }
+        
+        @keyframes rotate {
+            from { transform: translate(-50%, -50%) rotate(0deg); }
+            to { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+        
+        /* Enhanced Filter Section */
+        .filter-section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 1.5rem;
+            padding: 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .filter-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--baseball-gradient);
+        }
+        
+        .filter-section h5 {
+            color: var(--baseball-red);
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            font-size: 1.25rem;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .filter-section .form-label {
+            color: var(--dark-color);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .filter-section .form-select,
+        .filter-section .form-control {
+            border: 2px solid rgba(212, 32, 47, 0.2);
+            border-radius: 0.75rem;
+            transition: all 0.3s ease;
+        }
+        
+        .filter-section .form-select:focus,
+        .filter-section .form-control:focus {
+            border-color: var(--baseball-red);
+            box-shadow: 0 0 0 0.2rem rgba(212, 32, 47, 0.25);
+        }
+        
+        .filter-section .btn-outline-secondary {
+            border: 2px solid var(--baseball-blue);
+            color: var(--baseball-blue);
+            border-radius: 0.75rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .filter-section .btn-outline-secondary:hover {
+            background: var(--baseball-blue);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(25, 118, 210, 0.3);
+        }
+        
+        .filter-counts {
+            color: var(--baseball-blue);
+            font-weight: 600;
+            font-size: 0.9rem;
         }
 
         .slide-in {
@@ -582,6 +886,105 @@
             background: linear-gradient(135deg, #2d2d2d 0%, #3a3a3a 100%);
             border-color: #404040;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* Enhanced Modal Styling */
+        .modal-content {
+            border-radius: 1.5rem;
+            border: none;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+        
+        .modal-header {
+            background: var(--baseball-gradient);
+            color: white;
+            border-bottom: none;
+            padding: 1.5rem 2rem;
+        }
+        
+        .modal-title {
+            font-weight: 700;
+            font-size: 1.25rem;
+        }
+        
+        .modal-body {
+            padding: 2rem;
+        }
+        
+        .modal-footer {
+            border-top: 1px solid rgba(212, 32, 47, 0.1);
+            padding: 1.5rem 2rem;
+        }
+        
+        /* Enhanced Alert Styling */
+        .alert {
+            border-radius: 1rem;
+            border: none;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            font-weight: 500;
+        }
+        
+        .alert-success {
+            background: linear-gradient(135deg, rgba(56, 142, 60, 0.1) 0%, rgba(76, 175, 80, 0.1) 100%);
+            color: var(--field-green);
+            border-left: 4px solid var(--field-green);
+        }
+        
+        .alert-warning {
+            background: linear-gradient(135deg, rgba(255, 152, 0, 0.1) 0%, rgba(255, 193, 7, 0.1) 100%);
+            color: #f57c00;
+            border-left: 4px solid #f57c00;
+        }
+        
+        .alert-danger {
+            background: linear-gradient(135deg, rgba(244, 67, 54, 0.1) 0%, rgba(229, 57, 53, 0.1) 100%);
+            color: var(--danger-color);
+            border-left: 4px solid var(--danger-color);
+        }
+        
+        .alert-info {
+            background: linear-gradient(135deg, rgba(123, 31, 162, 0.1) 0%, rgba(156, 39, 176, 0.1) 100%);
+            color: var(--softball-purple);
+            border-left: 4px solid var(--softball-purple);
+        }
+        
+        /* Enhanced Form Controls */
+        .form-control, .form-select {
+            border-radius: 0.75rem;
+            border: 2px solid rgba(212, 32, 47, 0.2);
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: var(--baseball-red);
+            box-shadow: 0 0 0 0.2rem rgba(212, 32, 47, 0.25);
+            transform: translateY(-1px);
+        }
+        
+        /* Enhanced Badge Styling */
+        .badge {
+            border-radius: 0.5rem;
+            font-weight: 600;
+            padding: 0.5rem 0.75rem;
+            font-size: 0.8rem;
+        }
+        
+        .badge.bg-success {
+            background: var(--field-gradient) !important;
+        }
+        
+        .badge.bg-warning {
+            background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%) !important;
+        }
+        
+        .badge.bg-danger {
+            background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%) !important;
+        }
+        
+        .badge.bg-info {
+            background: var(--softball-gradient) !important;
         }
         
         .filter-section h5 {
