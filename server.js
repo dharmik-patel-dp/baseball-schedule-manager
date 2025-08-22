@@ -390,6 +390,25 @@ app.delete('/api/plate-umpires/:id', (req, res) => {
   });
 });
 
+// Bulk delete plate umpires
+app.post('/api/plate-umpires/bulk-delete', (req, res) => {
+  const { ids } = req.body;
+  if (!ids || !Array.isArray(ids) || ids.length === 0) {
+    return res.status(400).json({ error: 'No valid IDs provided' });
+  }
+
+  const placeholders = ids.map(() => '?').join(',');
+  const query = `DELETE FROM plate_umpires WHERE id IN (${placeholders})`;
+
+  db.run(query, ids, function(err) {
+    if (err) {
+      res.status(500).json({ error: err.message });
+      return;
+    }
+    res.json({ message: `${this.changes} plate umpires deleted successfully` });
+  });
+});
+
 // Base Umpires Routes
 app.get('/api/base-umpires', (req, res) => {
   const query = 'SELECT * FROM base_umpires ORDER BY name';
@@ -439,6 +458,25 @@ app.delete('/api/base-umpires/:id', (req, res) => {
       return;
     }
     res.json({ message: 'Base umpire deleted successfully' });
+  });
+});
+
+// Bulk delete base umpires
+app.post('/api/base-umpires/bulk-delete', (req, res) => {
+  const { ids } = req.body;
+  if (!ids || !Array.isArray(ids) || ids.length === 0) {
+    return res.status(400).json({ error: 'No valid IDs provided' });
+  }
+
+  const placeholders = ids.map(() => '?').join(',');
+  const query = `DELETE FROM base_umpires WHERE id IN (${placeholders})`;
+
+  db.run(query, ids, function(err) {
+    if (err) {
+      res.status(500).json({ error: err.message });
+      return;
+    }
+    res.json({ message: `${this.changes} base umpires deleted successfully` });
   });
 });
 

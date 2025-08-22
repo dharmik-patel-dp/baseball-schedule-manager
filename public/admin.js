@@ -2753,12 +2753,17 @@ function renderPlateUmpiresTable() {
     if (!tbody) return;
     
     if (allPlateUmpires.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="5" class="no-data">No plate umpires found</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="6" class="no-data">No plate umpires found</td></tr>';
         return;
     }
     
     tbody.innerHTML = allPlateUmpires.map(umpire => `
         <tr>
+            <td>
+                <input type="checkbox" name="plateUmpireCheckbox" value="${umpire.id}" 
+                       onchange="togglePlateUmpireSelection(this)" 
+                       ${selectedPlateUmpireIds.has(umpire.id) ? 'checked' : ''}>
+            </td>
             <td><strong>${umpire.name || 'N/A'}</strong></td>
             <td>${umpire.email || '<em class="text-muted">Not provided</em>'}</td>
             <td>${umpire.phone || '<em class="text-muted">Not provided</em>'}</td>
@@ -2780,12 +2785,17 @@ function renderBaseUmpiresTable() {
     if (!tbody) return;
     
     if (allBaseUmpires.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="5" class="no-data">No base umpires found</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="6" class="no-data">No base umpires found</td></tr>';
         return;
     }
     
     tbody.innerHTML = allBaseUmpires.map(umpire => `
         <tr>
+            <td>
+                <input type="checkbox" name="baseUmpireCheckbox" value="${umpire.id}" 
+                       onchange="toggleBaseUmpireSelection(this)" 
+                       ${selectedBaseUmpireIds.has(umpire.id) ? 'checked' : ''}>
+            </td>
             <td><strong>${umpire.name || 'N/A'}</strong></td>
             <td>${umpire.email || '<em class="text-muted">Not provided</em>'}</td>
             <td>${umpire.phone || '<em class="text-muted">Not provided</em>'}</td>
@@ -2960,3 +2970,238 @@ async function createTestUmpireRequest() {
 
 // Make the test function available globally for debugging
 window.createTestUmpireRequest = createTestUmpireRequest;
+
+// Bulk Delete Plate Umpires Functions
+let selectedPlateUmpireIds = new Set();
+
+function toggleSelectAllPlateUmpires() {
+    const selectAllCheckbox = document.getElementById('selectAllPlateUmpires');
+    const plateUmpireCheckboxes = document.querySelectorAll('input[name="plateUmpireCheckbox"]');
+    
+    plateUmpireCheckboxes.forEach(checkbox => {
+        checkbox.checked = selectAllCheckbox.checked;
+        if (selectAllCheckbox.checked) {
+            selectedPlateUmpireIds.add(parseInt(checkbox.value));
+        } else {
+            selectedPlateUmpireIds.delete(parseInt(checkbox.value));
+        }
+    });
+    
+    updateBulkDeletePlateUmpiresUI();
+}
+
+function togglePlateUmpireSelection(checkbox) {
+    if (checkbox.checked) {
+        selectedPlateUmpireIds.add(parseInt(checkbox.value));
+    } else {
+        selectedPlateUmpireIds.delete(parseInt(checkbox.value));
+    }
+    
+    updateBulkDeletePlateUmpiresUI();
+}
+
+function updateBulkDeletePlateUmpiresUI() {
+    const bulkDeleteBtn = document.getElementById('bulkDeletePlateUmpiresBtn');
+    const selectAllCheckbox = document.getElementById('selectAllPlateUmpires');
+    
+    if (selectedPlateUmpireIds.size > 0) {
+        bulkDeleteBtn.style.display = 'inline-block';
+    } else {
+        bulkDeleteBtn.style.display = 'none';
+    }
+    
+    // Update select all checkbox state
+    const plateUmpireCheckboxes = document.querySelectorAll('input[name="plateUmpireCheckbox"]');
+    const checkedCount = Array.from(plateUmpireCheckboxes).filter(cb => cb.checked).length;
+    
+    if (checkedCount === 0) {
+        selectAllCheckbox.checked = false;
+        selectAllCheckbox.indeterminate = false;
+    } else if (checkedCount === plateUmpireCheckboxes.length) {
+        selectAllCheckbox.checked = true;
+        selectAllCheckbox.indeterminate = false;
+    } else {
+        selectAllCheckbox.checked = false;
+        selectAllCheckbox.indeterminate = true;
+    }
+}
+
+function bulkDeletePlateUmpires() {
+    if (selectedPlateUmpireIds.size === 0) {
+        showAlert('Please select plate umpires to delete', 'warning');
+        return;
+    }
+    
+    // Show confirmation modal
+    const modal = new bootstrap.Modal(document.getElementById('bulkDeletePlateUmpiresModal'));
+    const deleteCount = document.getElementById('deletePlateUmpiresCount');
+    const plateUmpiresToDelete = document.getElementById('plateUmpiresToDelete');
+    
+    deleteCount.textContent = selectedPlateUmpireIds.size;
+    
+    // Get plate umpire names for display
+    const selectedPlateUmpires = Array.from(selectedPlateUmpireIds).map(id => {
+        const umpire = allPlateUmpires.find(u => u.id === id);
+        return umpire ? umpire.name : `Plate Umpire ID ${id}`;
+    });
+    
+    plateUmpiresToDelete.innerHTML = selectedPlateUmpires.map(name => 
+        `<div class="mb-1"><i class="fas fa-user-tie me-2"></i>${escapeHtml(name)}</div>`
+    ).join('');
+    
+    modal.show();
+}
+
+async function confirmBulkDeletePlateUmpires() {
+    try {
+        const response = await fetch('/api/plate-umpires/bulk-delete', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                ids: Array.from(selectedPlateUmpireIds)
+            })
+        });
+        
+        if (!response.ok) {
+            throw new Error('Failed to delete plate umpires');
+        }
+        
+        const result = await response.json();
+        console.log('✅ Bulk delete plate umpires result:', result);
+        
+        // Close modal
+        const modal = bootstrap.Modal.getInstance(document.getElementById('bulkDeletePlateUmpiresModal'));
+        if (modal) modal.hide();
+        
+        // Show success message
+        showAlert(result.message, 'success');
+        
+        // Clear selection and reload plate umpires
+        selectedPlateUmpireIds.clear();
+        await loadPlateUmpires();
+        
+    } catch (error) {
+        console.error('❌ Error bulk deleting plate umpires:', error);
+        showAlert(`Error deleting plate umpires: ${error.message}`, 'danger');
+    }
+}
+
+// Bulk Delete Base Umpires Functions
+let selectedBaseUmpireIds = new Set();
+
+function toggleSelectAllBaseUmpires() {
+    const selectAllCheckbox = document.getElementById('selectAllBaseUmpires');
+    const baseUmpireCheckboxes = document.querySelectorAll('input[name="baseUmpireCheckbox"]');
+    
+    baseUmpireCheckboxes.forEach(checkbox => {
+        checkbox.checked = selectAllCheckbox.checked;
+        if (selectAllCheckbox.checked) {
+            selectedBaseUmpireIds.add(parseInt(checkbox.value));
+        } else {
+            selectedBaseUmpireIds.delete(parseInt(checkbox.value));
+        }
+    });
+    
+    updateBulkDeleteBaseUmpiresUI();
+}
+
+function toggleBaseUmpireSelection(checkbox) {
+    if (checkbox.checked) {
+        selectedBaseUmpireIds.add(parseInt(checkbox.value));
+    } else {
+        selectedBaseUmpireIds.delete(parseInt(checkbox.value));
+    }
+    
+    updateBulkDeleteBaseUmpiresUI();
+}
+
+function updateBulkDeleteBaseUmpiresUI() {
+    const bulkDeleteBtn = document.getElementById('bulkDeleteBaseUmpiresBtn');
+    const selectAllCheckbox = document.getElementById('selectAllBaseUmpires');
+    
+    if (selectedBaseUmpireIds.size > 0) {
+        bulkDeleteBtn.style.display = 'inline-block';
+        bulkDeleteBtn.innerHTML = `<i class="fas fa-trash-alt me-2"></i>Delete Selected (${selectedBaseUmpireIds.size})`;
+    } else {
+        bulkDeleteBtn.style.display = 'none';
+    }
+    
+    // Update select all checkbox state
+    const baseUmpireCheckboxes = document.querySelectorAll('input[name="baseUmpireCheckbox"]');
+    const checkedCount = Array.from(baseUmpireCheckboxes).filter(cb => cb.checked).length;
+    
+    if (checkedCount === 0) {
+        selectAllCheckbox.checked = false;
+        selectAllCheckbox.indeterminate = false;
+    } else if (checkedCount === baseUmpireCheckboxes.length) {
+        selectAllCheckbox.checked = true;
+        selectAllCheckbox.indeterminate = false;
+    } else {
+        selectAllCheckbox.checked = false;
+        selectAllCheckbox.indeterminate = true;
+    }
+}
+
+function bulkDeleteBaseUmpires() {
+    if (selectedBaseUmpireIds.size === 0) {
+        showAlert('Please select base umpires to delete', 'warning');
+        return;
+    }
+    
+    // Show confirmation modal
+    const modal = new bootstrap.Modal(document.getElementById('bulkDeleteBaseUmpiresModal'));
+    const deleteCount = document.getElementById('deleteBaseUmpiresCount');
+    const baseUmpiresToDelete = document.getElementById('baseUmpiresToDelete');
+    
+    deleteCount.textContent = selectedBaseUmpireIds.size;
+    
+    // Get base umpire names for display
+    const selectedBaseUmpires = Array.from(selectedBaseUmpireIds).map(id => {
+        const umpire = allBaseUmpires.find(u => u.id === id);
+        return umpire ? umpire.name : `Base Umpire ID ${id}`;
+    });
+    
+    baseUmpiresToDelete.innerHTML = selectedBaseUmpires.map(name => 
+        `<div class="mb-1"><i class="fas fa-user-tie me-2"></i>${escapeHtml(name)}</div>`
+    ).join('');
+    
+    modal.show();
+}
+
+async function confirmBulkDeleteBaseUmpires() {
+    try {
+        const response = await fetch('/api/base-umpires/bulk-delete', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                ids: Array.from(selectedBaseUmpireIds)
+            })
+        });
+        
+        if (!response.ok) {
+            throw new Error('Failed to delete base umpires');
+        }
+        
+        const result = await response.json();
+        console.log('✅ Bulk delete base umpires result:', result);
+        
+        // Close modal
+        const modal = bootstrap.Modal.getInstance(document.getElementById('bulkDeleteBaseUmpiresModal'));
+        if (modal) modal.hide();
+        
+        // Show success message
+        showAlert(result.message, 'success');
+        
+        // Clear selection and reload base umpires
+        selectedBaseUmpireIds.clear();
+        await loadBaseUmpires();
+        
+    } catch (error) {
+        console.error('❌ Error bulk deleting base umpires:', error);
+        showAlert(`Error deleting base umpires: ${error.message}`, 'danger');
+    }
+}
