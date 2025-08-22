@@ -52,53 +52,29 @@
   --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
 }
 
-/* Theme toggle removed - keeping clean, simple styling */
-
-    color: var(--text-primary);
-    font-weight: 600;
-    text-shadow: 0 1px 2px var(--shadow-color);
-}
-
-/* Enhanced CSV upload styling */
-    background: rgba(45, 45, 45, 0.8);
-    border: 2px dashed var(--border-color);
-    color: var(--text-secondary);
-}
-
-    background: rgba(45, 45, 45, 0.9);
-    border-color: var(--text-primary);
-    color: var(--text-primary);
-}
-
-/* Enhanced concession info styling */
-    background: rgba(45, 45, 45, 0.8);
-    border: 1px solid var(--border-color);
-    color: var(--text-primary);
-}
-
-    background: rgba(26, 26, 26, 0.6);
-    border: 1px solid var(--border-color);
-    color: var(--text-secondary);
-}
-
-/* Enhanced filter section styling */
-    background: rgba(45, 45, 45, 0.8);
-    border: 1px solid var(--border-color);
-    backdrop-filter: blur(10px);
-}
-
-    color: var(--text-primary);
-    text-shadow: 0 2px 4px var(--shadow-color);
-}
-
-/* Enhanced schedule table styling */
-    background: rgba(45, 45, 45, 0.8);
-    border: 1px solid var(--border-color);
-    backdrop-filter: blur(10px);
-}
-
-/* Enhanced admin card styling */
-    color: var(--text-secondary);
+/* Dark Theme */
+html.theme-dark {
+  --primary-50: #0c4a6e;
+  --primary-100: #075985;
+  --primary-200: #0369a1;
+  --primary-300: #0284c7;
+  --primary-400: #0ea5e9;
+  --primary-500: #38bdf8;
+  --primary-600: #7dd3fc;
+  --primary-700: #bae6fd;
+  --primary-800: #e0f2fe;
+  --primary-900: #f0f9ff;
+  
+  --neutral-50: #171717;
+  --neutral-100: #262626;
+  --neutral-200: #404040;
+  --neutral-300: #525252;
+  --neutral-400: #737373;
+  --neutral-500: #a3a3a3;
+  --neutral-600: #d4d4d4;
+  --neutral-700: #e5e5e5;
+  --neutral-800: #f5f5f5;
+  --neutral-900: #fafafa;
 }
 
 /* Base Styles */
@@ -126,6 +102,12 @@ h1, h2, h3, h4, h5, h6 {
   letter-spacing: -0.025em;
 }
 
+html.theme-dark h1,
+html.theme-dark h2,
+html.theme-dark h3,
+html.theme-dark h4,
+html.theme-dark h5,
+html.theme-dark h6 {
   color: var(--neutral-100);
 }
 
@@ -149,6 +131,7 @@ h6 { font-size: 1.125rem; font-weight: 500; }
   padding: 1rem 0;
 }
 
+html.theme-dark .navbar {
   background: rgba(23, 23, 23, 0.98) !important;
   border-bottom: 1px solid var(--neutral-700);
 }
@@ -169,6 +152,7 @@ h6 { font-size: 1.125rem; font-weight: 500; }
   margin: 0 0.25rem;
 }
 
+html.theme-dark .navbar-nav .nav-link {
   color: var(--neutral-400) !important;
 }
 
@@ -178,6 +162,7 @@ h6 { font-size: 1.125rem; font-weight: 500; }
   transform: translateY(-1px);
 }
 
+html.theme-dark .navbar-nav .nav-link:hover {
   background: var(--primary-900);
 }
 
@@ -187,39 +172,14 @@ h6 { font-size: 1.125rem; font-weight: 500; }
   font-weight: 600;
 }
 
+html.theme-dark .navbar-nav .nav-link.active {
   background: var(--primary-900);
 }
 
-/* Clean Hero Section */
-.hero-section {
-  background: var(--gradient-primary);
-  color: white;
-  padding: 5rem 0;
-  text-align: center;
-  position: relative;
-  overflow: hidden;
-}
 
-.hero-section h1 {
-  color: white;
-  font-weight: 700;
-  font-size: 3.5rem;
-  margin-bottom: 1.5rem;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.hero-section p {
-  font-size: 1.25rem;
-  font-weight: 400;
-  opacity: 0.95;
-  margin-bottom: 2.5rem;
-  max-width: 600px;
-  margin-left: auto;
-  margin-right: auto;
-}
 
 /* Clean Cards */
-.admin-card, .filter-section, .schedule-table, .umpire-request-form {
+.filter-section, .schedule-table, .umpire-request-form {
   background: white;
   border: 1px solid var(--neutral-200);
   border-radius: 16px;
@@ -229,32 +189,17 @@ h6 { font-size: 1.125rem; font-weight: 500; }
   transition: all 0.2s ease;
 }
 
+html.theme-dark .filter-section,
+html.theme-dark .schedule-table,
+html.theme-dark .umpire-request-form {
   background: var(--neutral-800);
   border: 1px solid var(--neutral-700);
 }
 
-.admin-card:hover, .filter-section:hover, .schedule-table:hover {
+.filter-section:hover, .schedule-table:hover {
   transform: translateY(-2px);
   box-shadow: var(--shadow-md);
   border-color: var(--primary-300);
-}
-
-/* Card Headers */
-.admin-card-header {
-  background: var(--gradient-primary);
-  color: white;
-  padding: 1.5rem 2rem;
-  margin: -2rem -2rem 2rem -2rem;
-  border-radius: 16px 16px 0 0;
-  font-weight: 600;
-  font-size: 1.25rem;
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.admin-card-header i {
-  font-size: 1.5rem;
 }
 
 /* Clean Tables */
@@ -266,6 +211,7 @@ h6 { font-size: 1.125rem; font-weight: 500; }
   border: 1px solid var(--neutral-200);
 }
 
+html.theme-dark .table-container {
   background: var(--neutral-800);
   border-color: var(--neutral-700);
 }
@@ -277,6 +223,7 @@ h6 { font-size: 1.125rem; font-weight: 500; }
   border-spacing: 0;
 }
 
+html.theme-dark .table {
   color: var(--neutral-100);
 }
 
@@ -309,6 +256,7 @@ h6 { font-size: 1.125rem; font-weight: 500; }
   transition: all 0.2s ease;
 }
 
+html.theme-dark .table td {
   border-bottom-color: var(--neutral-700);
 }
 
@@ -321,6 +269,7 @@ h6 { font-size: 1.125rem; font-weight: 500; }
   transform: none;
 }
 
+html.theme-dark .table tbody tr:hover {
   background: var(--primary-900);
 }
 
@@ -473,6 +422,8 @@ h6 { font-size: 1.125rem; font-weight: 500; }
   font-family: 'Plus Jakarta Sans', sans-serif;
 }
 
+html.theme-dark .form-control,
+html.theme-dark .form-select {
   background: var(--neutral-800);
   color: var(--neutral-100);
   border-color: var(--neutral-600);
@@ -496,6 +447,7 @@ h6 { font-size: 1.125rem; font-weight: 500; }
   font-family: 'Plus Jakarta Sans', sans-serif;
 }
 
+html.theme-dark .form-label {
   color: var(--neutral-300);
 }
 
@@ -552,6 +504,7 @@ h6 { font-size: 1.125rem; font-weight: 500; }
   cursor: pointer;
 }
 
+html.theme-dark .csv-upload-area {
   background: var(--neutral-800);
   border-color: var(--neutral-600);
 }
@@ -562,6 +515,7 @@ h6 { font-size: 1.125rem; font-weight: 500; }
   transform: translateY(-2px);
 }
 
+html.theme-dark .csv-upload-area:hover {
   background: var(--primary-900);
 }
 
@@ -576,6 +530,7 @@ h6 { font-size: 1.125rem; font-weight: 500; }
   border: 1px solid var(--neutral-200);
 }
 
+html.theme-dark .concession-info {
   background: var(--neutral-800);
   border-color: var(--neutral-700);
 }
@@ -595,6 +550,7 @@ h6 { font-size: 1.125rem; font-weight: 500; }
   color: #065f46;
 }
 
+html.theme-dark .concession-info .staff-info {
   background: var(--accent-emerald);
   color: white;
 }
@@ -652,6 +608,7 @@ h6 { font-size: 1.125rem; font-weight: 500; }
   background: white;
 }
 
+html.theme-dark .filter-section {
   background: var(--neutral-800);
 }
 
@@ -664,6 +621,7 @@ h6 { font-size: 1.125rem; font-weight: 500; }
   font-size: 1.25rem;
 }
 
+html.theme-dark .filter-section h5 {
   color: var(--neutral-100);
 }
 
@@ -681,6 +639,7 @@ h6 { font-size: 1.125rem; font-weight: 500; }
   overflow: hidden;
 }
 
+html.theme-dark .schedule-table {
   background: var(--neutral-800);
   border-color: var(--neutral-700);
 }
@@ -759,15 +718,7 @@ h6 { font-size: 1.125rem; font-weight: 500; }
 
 /* Responsive Design */
 @media (max-width: 768px) {
-  .hero-section h1 {
-    font-size: 2.5rem;
-  }
-  
-  .hero-section {
-    padding: 3rem 0;
-  }
-  
-  .admin-card, .filter-section, .schedule-table {
+  .filter-section, .schedule-table {
     padding: 1.5rem;
     margin-bottom: 1.5rem;
   }
@@ -796,7 +747,7 @@ h6 { font-size: 1.125rem; font-weight: 500; }
 }
 
 /* Clean Animations */
-.admin-card, .filter-section, .schedule-table, .btn, .badge, .alert {
+.filter-section, .schedule-table, .btn, .badge, .alert {
   animation: fadeInUp 0.4s ease-out;
 }
 
@@ -811,52 +762,8 @@ h6 { font-size: 1.125rem; font-weight: 500; }
   }
 }
 
-/* Floating Elements */
-.float {
-  animation: float 6s ease-in-out infinite;
-}
 
-@keyframes float {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-10px); }
-}
 
-/* Gradient Text */
-.gradient-text {
-  background: var(--gradient-primary);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
 
-/* Clean Shadows */
-.shadow-3d {
-  box-shadow: var(--shadow-md);
-}
 
-/* Stats Cards */
-.admin-card.text-center {
-  text-align: center;
-}
 
-.admin-card.text-center .mb-3 {
-  margin-bottom: 1.5rem;
-}
-
-.admin-card.text-center .fa-3x {
-  font-size: 3rem;
-  margin-bottom: 1rem;
-}
-
-.admin-card.text-center h4 {
-  margin-bottom: 0.5rem;
-}
-
-.admin-card.text-center p {
-  margin-bottom: 0;
-  color: var(--neutral-600);
-  font-size: 0.95rem;
-}
-
-  color: var(--neutral-400);
-}
