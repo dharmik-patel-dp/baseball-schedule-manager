@@ -755,8 +755,10 @@ function getActiveFilters() {
                 // Handle date range filters separately
                 if (fieldName === 'start_date') {
                     filters.start_date = element.value;
+                    console.log(`📅 Start date filter set to: ${element.value}`);
                 } else if (fieldName === 'end_date') {
                     filters.end_date = element.value;
+                    console.log(`📅 End date filter set to: ${element.value}`);
                 }
             } else {
                 filters[fieldName] = element.value;
@@ -795,9 +797,13 @@ function matchesFilters(schedule, filters) {
                 return schedule.concession_staff === value;
                 case 'start_date':
                     // Check if schedule date is on or after start date
+                    if (!value) return true; // No start date filter
+                    console.log(`🔍 Date filter: schedule.date (${schedule.date}) >= start_date (${value}) = ${schedule.date >= value}`);
                     return schedule.date >= value;
                 case 'end_date':
                     // Check if schedule date is on or before end date
+                    if (!value) return true; // No end date filter
+                    console.log(`🔍 Date filter: schedule.date (${schedule.date}) <= end_date (${value}) = ${schedule.date <= value}`);
                     return schedule.date <= value;
             case 'start_time':
                     return schedule.start_time === value;
@@ -839,6 +845,9 @@ function applyFilters() {
     
     // Apply dropdown filters
     if (Object.keys(activeFilters).length > 0) {
+        console.log('🔍 Active filters before filtering:', activeFilters);
+        console.log('🔍 Sample schedule dates:', allSchedules.slice(0, 3).map(s => ({ id: s.id, date: s.date, dateType: typeof s.date })));
+        
         filteredSchedules = filteredSchedules.filter(schedule => 
             matchesFilters(schedule, activeFilters)
         );
