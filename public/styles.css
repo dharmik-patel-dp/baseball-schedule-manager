@@ -796,8 +796,33 @@ html.theme-dark .schedule-table {
   }
 }
 
+/* Date Range Filter Styles */
+input[type="date"].filter-select {
+  font-family: inherit;
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  border: 1px solid #d1d3e2;
+  transition: all 0.3s ease;
+  background: white;
+  color: var(--neutral-900);
+}
 
+input[type="date"].filter-select:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25);
+  outline: none;
+}
 
+html.theme-dark input[type="date"].filter-select {
+  background: var(--neutral-800);
+  color: var(--neutral-100);
+  border-color: var(--neutral-600);
+}
 
-
-
+/* Date range filter responsive styling */
+@media (max-width: 768px) {
+  input[type="date"].filter-select {
+    font-size: 0.875rem;
+    padding: 0.5rem;
+  }
+}

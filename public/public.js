@@ -228,7 +228,7 @@ function setupEventListeners() {
     const filterElements = [
         'seasonFilter', 'eventTypeFilter', 'dayFilter', 'divisionFilter',
         'teamFilter', 'venueFilter', 'coachFilter', 'plateUmpireFilter', 'baseUmpireFilter',
-        'concessionFilter', 'concessionStaffFilter', 'dateFilter', 'timeFilter'
+        'concessionFilter', 'concessionStaffFilter', 'startDateFilter', 'endDateFilter', 'timeFilter'
     ];
     
     filterElements.forEach(id => {
@@ -743,14 +743,24 @@ function getActiveFilters() {
         'baseUmpireFilter': 'base_umpire',
         'concessionFilter': 'concession_stand',
         'concessionStaffFilter': 'concession_staff',
-        'dateFilter': 'date',
+        'startDateFilter': 'start_date',
+        'endDateFilter': 'end_date',
         'timeFilter': 'start_time'
     };
     
     Object.entries(filterMappings).forEach(([elementId, fieldName]) => {
         const element = document.getElementById(elementId);
         if (element && element.value) {
-            filters[fieldName] = element.value;
+            if (fieldName === 'start_date' || fieldName === 'end_date') {
+                // Handle date range filters separately
+                if (fieldName === 'start_date') {
+                    filters.start_date = element.value;
+                } else if (fieldName === 'end_date') {
+                    filters.end_date = element.value;
+                }
+            } else {
+                filters[fieldName] = element.value;
+            }
         }
     });
     
@@ -783,8 +793,12 @@ function matchesFilters(schedule, filters) {
                     return schedule.concession_stand === value;
             case 'concession_staff':
                 return schedule.concession_staff === value;
-                case 'date':
-                    return schedule.date === value;
+                case 'start_date':
+                    // Check if schedule date is on or after start date
+                    return schedule.date >= value;
+                case 'end_date':
+                    // Check if schedule date is on or before end date
+                    return schedule.date <= value;
             case 'start_time':
                     return schedule.start_time === value;
                 default:
@@ -917,7 +931,7 @@ function clearAllFilters() {
     const filterElements = [
         'seasonFilter', 'eventTypeFilter', 'dayFilter', 'divisionFilter',
         'teamFilter', 'venueFilter', 'coachFilter', 'plateUmpireFilter', 'baseUmpireFilter',
-        'concessionFilter', 'concessionStaffFilter', 'dateFilter', 'timeFilter'
+        'concessionFilter', 'concessionStaffFilter', 'startDateFilter', 'endDateFilter', 'timeFilter'
     ];
     
     filterElements.forEach(id => {
@@ -999,8 +1013,19 @@ function showActiveFilters() {
         message = 'No active filters or search terms.';
     } else {
         Object.entries(activeFilters).forEach(([key, value]) => {
-            const displayName = key.replace('_', ' ').replace(/\\b\\w/g, l => l.toUpperCase());
-            message += `• ${displayName}: ${value}\\n`;
+            let displayName = key.replace('_', ' ').replace(/\\b\\w/g, l => l.toUpperCase());
+            let displayValue = value;
+            
+            // Handle date range display
+            if (key === 'start_date') {
+                displayName = 'Start Date';
+                displayValue = new Date(value).toLocaleDateString();
+            } else if (key === 'end_date') {
+                displayName = 'End Date';
+                displayValue = new Date(value).toLocaleDateString();
+            }
+            
+            message += `• ${displayName}: ${displayValue}\\n`;
         });
     }
     
@@ -1564,6 +1589,40 @@ function add3DEffects() {
         });
     });
 }
+
+// Enhanced theme toggle with 3D effects
+function initEnhancedTheme() {
+    try {
+        const saved = localStorage.getItem('theme') || 'light';
+        if (saved === 'dark') document.documentElement.classList.add('theme-dark');
+        
+        const nav = document.querySelector('.navbar .container');
+        if (nav) {
+            const btn = document.createElement('button');
+            btn.className = 'btn btn-outline-primary btn-sm shadow-3d';
+            btn.type = 'button';
+            btn.style.marginLeft = 'auto';
+            btn.innerHTML = '<i class="fas fa-moon me-1"></i>Theme';
+            btn.onclick = () => {
+                document.documentElement.classList.toggle('theme-dark');
+                const dark = document.documentElement.classList.contains('theme-dark');
+                localStorage.setItem('theme', dark ? 'dark' : 'light');
+                
+                // Add 3D effect to button
+                btn.style.transform = 'scale(1.1) rotateY(180deg)';
+                setTimeout(() => {
+                    btn.style.transform = 'scale(1) rotateY(0deg)';
+                }, 300);
+            };
+            nav.appendChild(btn);
+        }
+    } catch (e) { 
+        console.warn('Enhanced theme init failed', e); 
+    }
+}
+
+// Initialize enhanced theme
+initEnhancedTheme(); 
 
 // Helper function to get status badge
 function getStatusBadge(status) {
