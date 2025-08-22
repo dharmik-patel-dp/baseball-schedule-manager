@@ -71,7 +71,8 @@ async function refreshAllData() {
             loadConcessionStaffRequests(),
             loadFilterOptions(),
             loadPlateUmpires(),
-            loadBaseUmpires()
+            loadBaseUmpires(),
+            loadConcessionStaff()
         ]);
         
         // Update last updated time
@@ -141,6 +142,7 @@ document.addEventListener('DOMContentLoaded', function() {
     loadFilterOptions();
     loadPlateUmpires();
     loadBaseUmpires();
+    loadConcessionStaff();
     setupEventListeners();
     
     // Set initial last updated time
@@ -277,11 +279,15 @@ async function loadFilterOptions() {
         filterOptions = await filtersResponse.json();
         const staffData = await staffResponse.json();
         
+        // Extract staff names from the staff data (it has name and role fields)
+        const staffNames = staffData.map(staff => staff.name).filter(Boolean);
+        console.log('📋 Staff names loaded:', staffNames);
+        
         // Add staff names to filter options
-        filterOptions.concession_staff = staffData;
+        filterOptions.concession_staff = staffNames;
         
         populateFilterDropdowns();
-        populateRequestDropdowns();
+        // Don't call populateRequestDropdowns here - it will be called when forms are shown
     } catch (error) {
         console.error('Error loading filter options:', error);
         // Initialize empty filter options to prevent errors
@@ -387,10 +393,31 @@ async function populateRequestDropdowns() {
         
         // Get concession staff names
         staffNames = filterOptions?.concession_staff || [];
-        if (staffNames.length === 0 && allSchedules && allSchedules.length > 0) {
+        console.log('📋 Concession staff from filterOptions:', staffNames);
+        
+        // Try to get from dedicated concession staff data first
+        if (window.allConcessionStaff && window.allConcessionStaff.length > 0) {
+            staffNames = window.allConcessionStaff;
+            console.log('📋 Using dedicated concession staff data:', staffNames);
+        } else if (staffNames.length === 0 && allSchedules && allSchedules.length > 0) {
             const uniqueStaff = [...new Set(allSchedules.map(s => s.concession_staff).filter(Boolean))];
             staffNames = uniqueStaff;
-            console.log('Using staff names from schedules:', uniqueStaff);
+            console.log('📋 Using staff names from schedules:', uniqueStaff);
+        }
+        
+        // If still no staff data, try to load it directly
+        if (staffNames.length === 0) {
+            console.log('📋 No staff data available, trying to load directly...');
+            try {
+                const staffResponse = await fetch('/api/staff-names');
+                if (staffResponse.ok) {
+                    const staffData = await staffResponse.json();
+                    staffNames = staffData.map(staff => staff.name).filter(Boolean);
+                    console.log('📋 Staff names loaded directly:', staffNames);
+                }
+            } catch (error) {
+                console.error('❌ Error loading staff names directly:', error);
+            }
         }
         
         // Fallback for umpire names if dedicated lists aren't available
@@ -1178,7 +1205,25 @@ async function loadBaseUmpires() {
     }
 }
 
-// Load staff data from schedules
+// Load concession staff data
+async function loadConcessionStaff() {
+    try {
+        const response = await fetch('/api/staff-names');
+        if (!response.ok) throw new Error('Failed to load concession staff');
+        const data = await response.json();
+        const staffNames = data.map(staff => staff.name).filter(Boolean);
+        window.allConcessionStaff = staffNames;
+        console.log('✅ Concession staff loaded:', staffNames.length);
+        
+        // Also update filterOptions if available
+        if (filterOptions) {
+            filterOptions.concession_staff = staffNames;
+        }
+    } catch (error) {
+        console.error('❌ Error loading concession staff:', error);
+        window.allConcessionStaff = [];
+    }
+}
 
 // Show umpire request form
 async function showUmpireRequestForm(gameId) {
