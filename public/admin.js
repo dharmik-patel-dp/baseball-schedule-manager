@@ -81,7 +81,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         initAdminEnhancedTheme();
         
         // Setup event listeners
-        setupEventListeners();
+    setupEventListeners();
         
         // Load data in proper order
         await loadSchedules(); // Wait for schedules to load first
@@ -2871,7 +2871,7 @@ async function handleEditPlateUmpireSubmit(e) {
         });
         
         if (!response.ok) throw new Error('Failed to update plate umpire');
-        
+
         const result = await response.json();
         console.log('✅ Plate umpire updated successfully:', result);
         
