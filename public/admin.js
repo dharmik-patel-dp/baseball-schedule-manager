@@ -84,8 +84,8 @@ document.addEventListener('DOMContentLoaded', function() {
         setupEventListeners();
         
         // Load data
-        loadSchedules();
-        loadUmpireRequests();
+    loadSchedules();
+    loadUmpireRequests();
         loadConcessionStaffRequests();
         loadStaff();
         
@@ -390,8 +390,8 @@ function renderScheduleTable() {
         if (searchFilter) activeFilters.push(`Search: "${searchFilter}"`);
         
         if (activeFilters.length > 0) {
-            tbody.innerHTML = `
-                <tr>
+        tbody.innerHTML = `
+            <tr>
                     <td colspan="11" class="no-data text-center">
                         <div class="py-5">
                             <i class="fas fa-search fa-3x text-warning mb-4"></i>
@@ -410,9 +410,9 @@ function renderScheduleTable() {
                                 </button>
                             </div>
                         </div>
-                    </td>
-                </tr>
-            `;
+                </td>
+            </tr>
+        `;
         } else {
             tbody.innerHTML = `
                 <tr>
@@ -427,7 +427,7 @@ function renderScheduleTable() {
         }
         return;
     }
-    
+
     tbody.innerHTML = schedulesToRender.map(schedule => `
         <tr>
             <td><input type="checkbox" class="schedule-select" data-id="${schedule.id}" onchange="onScheduleSelectChange()"></td>
@@ -544,8 +544,8 @@ function renderUmpireRequestsTable() {
                         <i class="fas fa-times"></i>
                     </button>
                 ` : 'No actions needed'}
-            </td>
-        </tr>
+                </td>
+            </tr>
     `).join('');
 }
 
@@ -560,7 +560,7 @@ function renderConcessionStaffRequestsTable() {
         tbody.innerHTML = '<tr><td colspan="6" class="no-data">No pending concession staff requests</td></tr>';
         return;
     }
-    
+
     tbody.innerHTML = pendingRequests.map(request => `
         <tr>
             <td>${request.game_details || 'N/A'}</td>
@@ -571,11 +571,11 @@ function renderConcessionStaffRequestsTable() {
             <td>
                 ${request.status === 'pending' ? `
                     <button class="btn btn-sm btn-outline-success me-1" onclick="updateConcessionRequestStatus(${request.id}, 'approved')">
-                        <i class="fas fa-check"></i>
-                    </button>
+                    <i class="fas fa-check"></i>
+                </button>
                     <button class="btn btn-sm btn-outline-danger" onclick="updateConcessionRequestStatus(${request.id}, 'rejected')">
-                        <i class="fas fa-times"></i>
-                    </button>
+                    <i class="fas fa-times"></i>
+                </button>
                 ` : 'No actions needed'}
             </td>
         </tr>
@@ -1012,13 +1012,13 @@ function showAlert(message, type) {
 function formatDate(dateString) {
     if (!dateString) return 'N/A';
     try {
-        const date = new Date(dateString);
+    const date = new Date(dateString);
         if (isNaN(date.getTime())) return 'Invalid Date';
-        return date.toLocaleDateString('en-US', { 
-            month: 'short', 
-            day: 'numeric', 
-            year: 'numeric' 
-        });
+    return date.toLocaleDateString('en-US', { 
+        month: 'short', 
+        day: 'numeric', 
+        year: 'numeric' 
+    });
     } catch (error) {
         console.error('Error formatting date:', error);
         return 'Invalid Date';
@@ -1148,16 +1148,16 @@ async function handleEditScheduleSubmit(e) {
     };
     
     console.log('📝 Updating schedule:', scheduleId, 'with data:', formData);
-    
+
     try {
         const response = await fetch(`/api/schedules/${scheduleId}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(formData)
         });
-        
+
         if (!response.ok) throw new Error('Failed to update schedule');
-        
+
         const result = await response.json();
         console.log('✅ Schedule updated successfully:', result);
         
@@ -1250,7 +1250,7 @@ async function handleEditStaffSubmit(e) {
         });
         
         if (!response.ok) throw new Error('Failed to update staff member');
-        
+
         const result = await response.json();
         console.log('✅ Staff member updated successfully:', result);
         
@@ -1282,7 +1282,7 @@ async function deleteStaff(id) {
 
         const result = await response.json();
         console.log('✅ Staff member deleted successfully:', result);
-
+        
         showAlert('Staff member deleted successfully!', 'success');
         
         // Reload staff to remove the deleted member

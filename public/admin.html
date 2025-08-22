@@ -9,7 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            /* Baseball/Softball Theme Colors */
+            /* Baseball/Softball 3D Theme Colors */
             --baseball-red: #dc2626;
             --baseball-blue: #1d4ed8;
             --softball-purple: #7c3aed;
@@ -26,14 +26,8 @@
             --info-color: var(--softball-purple);
             --warning-color: #f59e0b;
             --danger-color: #ef4444;
-            
-            /* Neutral Colors */
-            --light-bg: #f1f5f9;
-            --white: #ffffff;
-            --border-color: #cbd5e1;
-            --text-primary: #1e293b;
-            --text-secondary: #475569;
-            --text-muted: #64748b;
+            --light-color: var(--fence-white);
+            --dark-color: var(--night-dark);
             
             /* Spacing */
             --sidebar-width: 280px;
@@ -64,7 +58,7 @@
         body {
             font-family: 'Inter', sans-serif;
             background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
-            color: var(--text-primary);
+            color: var(--dark-color);
             overflow-x: hidden;
             line-height: 1.6;
             position: relative;
@@ -243,7 +237,6 @@
         .nav-link.active {
             color: white;
             background: rgba(255, 255, 255, 0.2);
-            font-weight: 600;
             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
             border-left: 4px solid var(--baseball-red);
         }
@@ -469,15 +462,15 @@
             color: white;
             border-bottom: 2px solid rgba(255, 255, 255, 0.2);
             font-weight: 700;
-            padding: 1rem;
+            padding: 1.5rem 1rem;
             font-size: 0.875rem;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.75px;
             text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
         }
 
                 .table tbody td {
-            padding: 0.875rem 1rem;
+            padding: 1.25rem 1rem;
             vertical-align: middle;
             border-bottom: 1px solid rgba(220, 38, 38, 0.1);
             font-size: 0.875rem;
@@ -485,7 +478,7 @@
         
         .table tbody tr:hover {
             background: linear-gradient(135deg, rgba(220, 38, 38, 0.05) 0%, rgba(29, 78, 216, 0.05) 100%);
-            transform: scale(1.005);
+            transform: scale(1.01);
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
@@ -494,9 +487,9 @@
         .btn {
             border-radius: var(--border-radius);
             font-weight: 600;
-            padding: 0.625rem 1.25rem;
+            padding: 0.75rem 1.5rem;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            border: 2px solid transparent;
+            border: none;
             font-size: 0.875rem;
             text-transform: uppercase;
             letter-spacing: 0.5px;
@@ -526,26 +519,22 @@
 
         .btn-primary {
             background: var(--baseball-gradient);
-            border-color: var(--baseball-red);
-            color: white;
+            box-shadow: 0 4px 15px rgba(220, 38, 38, 0.3);
         }
 
         .btn-success {
             background: var(--field-gradient);
-            border-color: var(--field-green);
-            color: white;
+            box-shadow: 0 4px 15px rgba(5, 150, 105, 0.3);
         }
 
         .btn-warning {
             background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-            border-color: #f59e0b;
-            color: white;
+            box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);
         }
 
         .btn-danger {
             background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-            border-color: #ef4444;
-            color: white;
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
         }
 
         .btn-outline-primary {
@@ -666,7 +655,7 @@
         .csv-upload-area {
             border: 3px dashed var(--baseball-red);
             border-radius: var(--border-radius-lg);
-            padding: 2rem 1.5rem;
+            padding: 3rem 2rem;
             text-align: center;
             cursor: pointer;
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
@@ -702,8 +691,8 @@
         
         .csv-upload-area i {
             color: var(--baseball-red);
-            margin-bottom: 1rem;
-            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            font-size: 3rem;
             transition: all 0.3s ease;
         }
         
@@ -796,10 +785,10 @@
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(20px);
             border-radius: var(--border-radius-lg);
-            padding: 1rem;
+            padding: 2rem;
             box-shadow: var(--shadow-lg);
             border: 1px solid rgba(255, 255, 255, 0.2);
-            margin-bottom: 1rem;
+            margin-bottom: 2rem;
             position: relative;
             overflow: hidden;
         }
@@ -817,8 +806,8 @@
         .filter-section h5 {
             color: var(--baseball-red);
             font-weight: 700;
-            margin-bottom: 0.75rem;
-            font-size: 1rem;
+            margin-bottom: 1.5rem;
+            font-size: 1.25rem;
             text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
         
@@ -855,7 +844,7 @@
             background: var(--baseball-blue);
             color: white;
             transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
+            box-shadow: 0 4px 12px rgba(29, 78, 216, 0.3);
         }
         
         .filter-counts {
@@ -880,30 +869,6 @@
 
         .section.active {
             display: block;
-        }
-        
-        /* Dashboard specific spacing */
-        #dashboard {
-            margin-top: 0;
-            padding-top: 0;
-        }
-        
-        #dashboard .section-header {
-            margin-bottom: 0.25rem;
-            padding-bottom: 0.25rem;
-        }
-        
-        #dashboard .row {
-            margin-top: 0;
-        }
-        
-        #dashboard .dashboard-card:first-child {
-            margin-top: 0;
-        }
-        
-        #dashboard .section-title {
-            font-size: 1.125rem;
-            margin-bottom: 0;
         }
 
         /* Dark Theme */
@@ -1216,7 +1181,7 @@
             </div>
             
             <!-- Stats Cards -->
-            <div class="row g-2 mb-2">
+            <div class="row g-4 mb-5">
                 <div class="col-xl-3 col-lg-4 col-md-6">
                     <div class="dashboard-card">
                         <div class="card-icon primary">
@@ -1256,14 +1221,14 @@
             </div>
 
             <!-- Quick Actions & Recent Activity -->
-            <div class="row g-2">
+            <div class="row g-4">
                 <div class="col-lg-6">
                     <div class="dashboard-card">
-                        <h5 class="mb-2">
+                        <h5 class="mb-4">
                             <i class="fas fa-bolt me-2 text-warning"></i>
                             Quick Actions
                         </h5>
-                        <div class="d-grid gap-1">
+                        <div class="d-grid gap-3">
                             <button class="btn btn-primary" onclick="showCreateScheduleModal()">
                                 <i class="fas fa-plus me-2"></i>Add New Schedule
                             </button>
@@ -1278,12 +1243,12 @@
                 </div>
                 <div class="col-lg-6">
                     <div class="dashboard-card">
-                        <h5 class="mb-2">
+                        <h5 class="mb-4">
                             <i class="fas fa-chart-line me-2 text-info"></i>
                             Recent Activity
                         </h5>
                         <div id="recentActivity">
-                            <div class="d-flex align-items-center mb-1">
+                            <div class="d-flex align-items-center mb-3">
                                 <div class="bg-primary rounded-circle p-2 me-3">
                                     <i class="fas fa-calendar-plus text-white"></i>
                                 </div>
@@ -1292,7 +1257,7 @@
                                     <small class="text-muted">Eagles vs Sharks - 2:00 PM</small>
                                 </div>
                             </div>
-                            <div class="d-flex align-items-center mb-1">
+                            <div class="d-flex align-items-center mb-3">
                                 <div class="bg-success rounded-circle p-2 me-3">
                                     <i class="fas fa-user-check text-white"></i>
                                 </div>
