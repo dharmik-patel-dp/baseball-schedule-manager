@@ -1160,9 +1160,69 @@ async function loadUmpireRequests() {
         if (!response.ok) throw new Error('Failed to fetch umpire requests');
         
         allUmpireRequests = await response.json();
+        
+        // Render the table after loading data
+        renderUmpireRequestsTable();
     } catch (error) {
         console.error('Error loading umpire requests:', error);
     }
+}
+
+// Render umpire requests table
+function renderUmpireRequestsTable() {
+    const tableBody = document.getElementById('umpireRequestsTableBody');
+    if (!tableBody) {
+        console.error('❌ Umpire requests table body not found');
+        return;
+    }
+    
+    if (!allUmpireRequests || allUmpireRequests.length === 0) {
+        tableBody.innerHTML = `
+            <tr>
+                <td colspan="6" class="text-center text-muted">
+                    <i class="fas fa-inbox me-2"></i>No umpire change requests found
+                </td>
+            </tr>
+        `;
+        return;
+    }
+    
+    tableBody.innerHTML = allUmpireRequests.map(request => {
+        // Find the corresponding game schedule
+        const game = allSchedules.find(s => s.id == request.game_id);
+        const gameDetails = game ? `${game.home_team} vs ${game.visitor_team} on ${formatDate(game.date)} at ${game.start_time}` : 'N/A';
+        
+        const currentUmpires = `Plate: ${request.current_plate_umpire || 'N/A'}, Base: ${request.current_base_umpire || 'N/A'}`;
+        const requestedUmpires = `Plate: ${request.requested_plate_umpire || 'No change'}, Base: ${request.requested_base_umpire || 'No change'}`;
+        const reason = request.reason || 'No reason provided';
+        const status = request.status || 'pending';
+        
+        const statusBadge = getStatusBadge(status);
+        
+        return `
+            <tr>
+                <td>${gameDetails}</td>
+                <td>${currentUmpires}</td>
+                <td>${requestedUmpires}</td>
+                <td>${reason}</td>
+                <td>${statusBadge}</td>
+                <td>
+                    ${status === 'pending' ? `
+                        <button class="btn btn-sm btn-success me-1" onclick="approveUmpireRequest(${request.id})" title="Approve">
+                            <i class="fas fa-check"></i>
+                        </button>
+                        <button class="btn btn-sm btn-danger" onclick="rejectUmpireRequest(${request.id})" title="Reject">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    ` : `
+                        <span class="text-muted">${status === 'approved' ? 'Approved' : 'Rejected'}</span>
+                    `}
+                </td>
+            </tr>
+        `;
+    }).join('');
+    
+    console.log('✅ Umpire requests table rendered with', allUmpireRequests.length, 'requests');
 }
 
 // Load concession staff requests
@@ -1172,9 +1232,69 @@ async function loadConcessionStaffRequests() {
         if (!response.ok) throw new Error('Failed to fetch concession staff requests');
         
         allConcessionStaffRequests = await response.json();
+        
+        // Render the table after loading data
+        renderConcessionStaffRequestsTable();
     } catch (error) {
         console.error('Error loading concession staff requests:', error);
     }
+}
+
+// Render concession staff requests table
+function renderConcessionStaffRequestsTable() {
+    const tableBody = document.getElementById('concessionStaffRequestsTableBody');
+    if (!tableBody) {
+        console.error('❌ Concession staff requests table body not found');
+        return;
+    }
+    
+    if (!allConcessionStaffRequests || allConcessionStaffRequests.length === 0) {
+        tableBody.innerHTML = `
+            <tr>
+                <td colspan="6" class="text-center text-muted">
+                    <i class="fas fa-inbox me-2"></i>No concession staff change requests found
+                </td>
+            </tr>
+        `;
+        return;
+    }
+    
+    tableBody.innerHTML = allConcessionStaffRequests.map(request => {
+        // Find the corresponding game schedule
+        const game = allSchedules.find(s => s.id == request.game_id);
+        const gameDetails = game ? `${game.home_team} vs ${game.visitor_team} on ${formatDate(game.date)} at ${game.start_time}` : 'N/A';
+        
+        const currentStaff = request.current_concession_staff || 'No staff assigned';
+        const requestedStaff = request.requested_concession_staff || 'No change';
+        const reason = request.reason || 'No reason provided';
+        const status = request.status || 'pending';
+        
+        const statusBadge = getStatusBadge(status);
+        
+        return `
+            <tr>
+                <td>${gameDetails}</td>
+                <td>${currentStaff}</td>
+                <td>${requestedStaff}</td>
+                <td>${reason}</td>
+                <td>${statusBadge}</td>
+                <td>
+                    ${status === 'pending' ? `
+                        <button class="btn btn-sm btn-success me-1" onclick="approveConcessionStaffRequest(${request.id})" title="Approve">
+                            <i class="fas fa-check"></i>
+                        </button>
+                        <button class="btn btn-sm btn-danger" onclick="rejectConcessionStaffRequest(${request.id})" title="Reject">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    ` : `
+                        <span class="text-muted">${status === 'approved' ? 'Approved' : 'Rejected'}</span>
+                    `}
+                </td>
+            </tr>
+        `;
+    }).join('');
+    
+    console.log('✅ Concession staff requests table rendered with', allConcessionStaffRequests.length, 'requests');
 }
 
 // Load plate umpires data
@@ -1478,3 +1598,103 @@ function initEnhancedTheme() {
 
 // Initialize enhanced theme
 initEnhancedTheme(); 
+
+// Helper function to get status badge
+function getStatusBadge(status) {
+    const statusMap = {
+        'pending': '<span class="badge bg-warning text-dark">PENDING</span>',
+        'approved': '<span class="badge bg-success">APPROVED</span>',
+        'rejected': '<span class="badge bg-danger">REJECTED</span>'
+    };
+    return statusMap[status] || statusMap['pending'];
+}
+
+// Approve umpire request
+async function approveUmpireRequest(requestId) {
+    try {
+        const response = await fetch(`/api/umpire-requests/${requestId}/status`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ status: 'approved' })
+        });
+        
+        if (!response.ok) throw new Error('Failed to approve umpire request');
+        
+        showAlert('Umpire request approved successfully!', 'success');
+        
+        // Reload data to show updates
+        await Promise.all([
+            loadUmpireRequests(),
+            loadSchedules()
+        ]);
+    } catch (error) {
+        console.error('Error approving umpire request:', error);
+        showAlert('Error approving umpire request. Please try again.', 'danger');
+    }
+}
+
+// Reject umpire request
+async function rejectUmpireRequest(requestId) {
+    try {
+        const response = await fetch(`/api/umpire-requests/${requestId}/status`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ status: 'rejected' })
+        });
+        
+        if (!response.ok) throw new Error('Failed to reject umpire request');
+        
+        showAlert('Umpire request rejected successfully!', 'success');
+        
+        // Reload data to show updates
+        await loadUmpireRequests();
+    } catch (error) {
+        console.error('Error rejecting umpire request:', error);
+        showAlert('Error rejecting umpire request. Please try again.', 'danger');
+    }
+}
+
+// Approve concession staff request
+async function approveConcessionStaffRequest(requestId) {
+    try {
+        const response = await fetch(`/api/concession-staff-requests/${requestId}/status`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ status: 'approved' })
+        });
+        
+        if (!response.ok) throw new Error('Failed to approve concession staff request');
+        
+        showAlert('Concession staff request approved successfully!', 'success');
+        
+        // Reload data to show updates
+        await Promise.all([
+            loadConcessionStaffRequests(),
+            loadSchedules()
+        ]);
+    } catch (error) {
+        console.error('Error approving concession staff request:', error);
+        showAlert('Error approving concession staff request. Please try again.', 'danger');
+    }
+}
+
+// Reject concession staff request
+async function rejectConcessionStaffRequest(requestId) {
+    try {
+        const response = await fetch(`/api/concession-staff-requests/${requestId}/status`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ status: 'rejected' })
+        });
+        
+        if (!response.ok) throw new Error('Failed to reject concession staff request');
+        
+        showAlert('Concession staff request rejected successfully!', 'success');
+        
+        // Reload data to show updates
+        await loadConcessionStaffRequests();
+    } catch (error) {
+        console.error('Error rejecting concession staff request:', error);
+        showAlert('Error rejecting concession staff request. Please try again.', 'danger');
+    }
+} 
