@@ -13,59 +13,129 @@
     <link href="/styles.css" rel="stylesheet">
     <style>
         :root {
-            /* Clean Professional Colors */
-            --primary-color: #2563eb;
-            --secondary-color: #64748b;
-            --success-color: #059669;
-            --warning-color: #d97706;
-            --danger-color: #dc2626;
-            --info-color: #0891b2;
+            /* Baseball/Softball Theme Colors */
+            --baseball-red: #dc2626;
+            --baseball-blue: #1d4ed8;
+            --softball-purple: #7c3aed;
+            --field-green: #059669;
+            --dirt-brown: #92400e;
+            --fence-white: #f8fafc;
+            --night-dark: #0f172a;
+            --day-light: #ffffff;
+            
+            /* Modern UI Colors */
+            --primary-color: var(--baseball-red);
+            --secondary-color: var(--baseball-blue);
+            --success-color: var(--field-green);
+            --info-color: var(--softball-purple);
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
             
             /* Neutral Colors */
-            --light-bg: #f8fafc;
+            --light-bg: #f1f5f9;
             --white: #ffffff;
-            --border-color: #e2e8f0;
+            --border-color: #cbd5e1;
             --text-primary: #1e293b;
-            --text-secondary: #64748b;
-            --text-muted: #94a3b8;
+            --text-secondary: #475569;
+            --text-muted: #64748b;
             
             /* Spacing */
-            --border-radius: 8px;
-            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+            --border-radius: 16px;
+            --border-radius-lg: 24px;
+            
+            /* 3D Shadows */
+            --shadow-sm: 0 2px 4px 0 rgba(0, 0, 0, 0.1);
+            --shadow-md: 0 8px 16px -4px rgba(0, 0, 0, 0.15);
+            --shadow-lg: 0 20px 40px -8px rgba(0, 0, 0, 0.2);
+            --shadow-xl: 0 32px 64px -12px rgba(0, 0, 0, 0.25);
+            
+            /* Gradients */
+            --baseball-gradient: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+            --softball-gradient: linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%);
+            --field-gradient: linear-gradient(135deg, #059669 0%, #047857 100%);
+            --night-gradient: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            --glass-gradient: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
         }
 
         body {
-            background-color: var(--light-bg);
+            background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
             font-family: 'Plus Jakarta Sans', sans-serif;
             color: var(--text-primary);
             line-height: 1.6;
+            position: relative;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(220, 38, 38, 0.03) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(29, 78, 216, 0.03) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(124, 58, 237, 0.02) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
         }
 
         .navbar-brand {
-            font-weight: 700;
-            color: var(--primary-color) !important;
-            font-size: 1.25rem;
+            font-weight: 800;
+            color: var(--baseball-red) !important;
+            font-size: 1.5rem;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .navbar-brand::before {
+            content: '⚾';
+            font-size: 1.8rem;
+            animation: baseballBounce 2s ease-in-out infinite;
+        }
+        
+        @keyframes baseballBounce {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            25% { transform: translateY(-8px) rotate(90deg); }
+            50% { transform: translateY(-12px) rotate(180deg); }
+            75% { transform: translateY(-8px) rotate(270deg); }
         }
 
         .hero-section {
-            background: var(--primary-color);
+            background: var(--baseball-gradient);
             color: white;
-            padding: 3rem 0;
-            margin-bottom: 2rem;
+            padding: 4rem 0;
+            margin-bottom: 3rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.05) 0%, transparent 50%);
+            pointer-events: none;
         }
         
         .hero-section h1 {
-            font-size: 2.5rem;
-            font-weight: 700;
+            font-size: 3.5rem;
+            font-weight: 800;
+            text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
             margin-bottom: 1rem;
         }
         
         .hero-section p {
-            font-size: 1.125rem;
+            font-size: 1.25rem;
             font-weight: 500;
-            opacity: 0.9;
+            opacity: 0.95;
         }
 
         .filter-section {
@@ -506,9 +576,9 @@
         .admin-card {
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(20px);
-            border-radius: 1.5rem;
+            border-radius: var(--border-radius-lg);
             padding: 2.5rem 2rem;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            box-shadow: var(--shadow-lg);
             border: 1px solid rgba(255, 255, 255, 0.2);
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             height: 100%;
@@ -528,19 +598,38 @@
             transition: transform 0.4s ease;
         }
         
+        .admin-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(220, 38, 38, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(29, 78, 216, 0.05) 0%, transparent 50%);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+        
         .admin-card:hover {
             transform: translateY(-8px) scale(1.02);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+            box-shadow: var(--shadow-xl);
         }
         
         .admin-card:hover::before {
             transform: scaleX(1);
         }
         
+        .admin-card:hover::after {
+            opacity: 1;
+        }
+        
         .admin-card i {
             color: var(--baseball-red);
             margin-bottom: 1.5rem;
             transition: all 0.3s ease;
+            font-size: 3rem;
         }
         
         .admin-card:hover i {
@@ -553,9 +642,10 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            font-size: 2.5rem;
+            font-size: 2.75rem;
             font-weight: 800;
             margin-bottom: 1rem;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
     </style>
 </head>
