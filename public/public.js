@@ -38,6 +38,16 @@ function addCustomStyles() {
             font-weight: bold;
             color: #28a745;
         }
+        
+        .form-select option[data-current="true"] {
+            font-weight: bold;
+            color: #6c757d;
+            background-color: #f8f9fa;
+        }
+        
+        .form-select option[data-current="true"]:hover {
+            background-color: #e9ecef;
+        }
     `;
     document.head.appendChild(style);
 }
@@ -459,19 +469,35 @@ function populateRequestDropdowns() {
                 currentOption.textContent = `Current: ${currentGame.concession_staff}`;
                 currentOption.disabled = true;
                 currentOption.style.fontStyle = 'italic';
+                currentOption.setAttribute('data-current', 'true'); // Mark as current
                 concessionStaffSelect.appendChild(currentOption);
             }
             
-            // Add available alternatives
+            // Add ALL available alternatives (including current assignment)
             staffNames.forEach(name => {
-                // Don't add if it's the current assignment
-                if (!currentGame || name !== currentGame.concession_staff) {
-                    const option = document.createElement('option');
-                    option.value = name;
+                // Always add all staff members, even if it's the current assignment
+                const option = document.createElement('option');
+                option.value = name;
+                
+                // Mark current assignment differently
+                if (currentGame && name === currentGame.concession_staff) {
+                    option.textContent = `${name} (Current)`;
+                    option.style.fontWeight = 'bold';
+                    option.style.color = '#6c757d';
+                    option.setAttribute('data-current', 'true'); // Mark as current
+                } else {
                     option.textContent = name;
-                    concessionStaffSelect.appendChild(option);
                 }
+                
+                concessionStaffSelect.appendChild(option);
             });
+            
+            // Add helpful note below the dropdown
+            const noteElement = document.getElementById('concessionStaffNote');
+            if (noteElement) {
+                noteElement.innerHTML = '<small class="text-muted"><i class="fas fa-info-circle me-1"></i>All available concession staff members are shown. Current assignment is marked with "(Current)".</small>';
+            }
+            
             console.log('✅ Concession staff dropdown populated with', concessionStaffSelect.options.length, 'options');
         } else {
             console.error('❌ Concession staff dropdown element not found!');
