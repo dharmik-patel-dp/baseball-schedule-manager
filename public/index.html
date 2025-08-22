@@ -25,17 +25,9 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
-        .navbar-brand {
-            font-weight: bold;
-            color: var(--primary-color) !important;
-        }
 
-        .hero-section {
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            color: white;
-            padding: 3rem 0;
-            margin-bottom: 2rem;
-        }
+
+
 
         .filter-section {
             background: white;
@@ -241,67 +233,23 @@
     </style>
 </head>
 <body>
-    <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
-        <div class="container">
-            <a class="navbar-brand" href="#">
-                <i class="fas fa-baseball-ball me-2"></i>
-                Baseball/Softball Schedule Manager
-            </a>
-            <a href="/admin" class="btn btn-outline-primary">
+
+
+
+
+    <!-- Main Content -->
+    
+    <!-- Admin Panel Link -->
+    <div class="container mt-4">
+        <div class="text-end">
+            <a href="/admin" class="btn btn-outline-primary btn-sm">
                 <i class="fas fa-cog me-2"></i>Admin Panel
             </a>
         </div>
-    </nav>
-
-    <!-- Hero Section -->
-    <div class="hero-section text-center">
-        <div class="container">
-            <div class="header-content">
-                <h1 class="main-title">
-                    <i class="fas fa-baseball-ball me-3"></i>
-                    Baseball & Softball Schedule Manager
-                </h1>
-                <div class="header-actions">
-                    <button class="btn btn-outline-light btn-sm" onclick="refreshAllData()" title="Refresh Data">
-                        <i class="fas fa-sync-alt me-2"></i>Refresh Data
-                    </button>
-                </div>
-            </div>
-            <div class="float">
-                <p class="lead mb-4">Professional schedule management system with advanced features and real-time updates</p>
-                <div class="d-flex justify-content-center gap-3">
-                    <button class="btn btn-light btn-lg shadow-3d" onclick="toggleFilterSection()">
-                        <i class="fas fa-filter me-2"></i>Filter Schedules
-                    </button>
-                    <button class="btn btn-outline-light btn-lg shadow-3d" onclick="scrollToScheduleTable()">
-                        <i class="fas fa-calendar-alt me-2"></i>View All
-                    </button>
-                </div>
-            </div>
-        </div>
     </div>
-    
-    <!-- Last Updated Indicator -->
-    <div class="container mt-3">
-        <div class="row justify-content-center">
-            <div class="col-md-6 text-center">
-                <small class="text-muted">
-                    <i class="fas fa-clock me-1"></i>
-                    Last updated: <span id="lastUpdatedTime">Loading...</span>
-                    <span class="ms-2" id="autoRefreshStatus">
-                        <i class="fas fa-sync-alt fa-spin text-primary"></i>
-                        Auto-refreshing every 15s
-                    </span>
-                </small>
-            </div>
-        </div>
-    </div>
-
-    <!-- Main Content -->
 
     <!-- Stats Section -->
-    <div class="container mt-5">
+    <div class="container mt-3">
         <div class="row g-4 mb-5">
             <div class="col-md-3">
                 <div class="admin-card text-center shadow-3d">
