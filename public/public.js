@@ -6,6 +6,42 @@ let filterOptions = {};
 let currentFilters = {};
 let filteredSchedules = [];
 
+// Add custom CSS for current assignments display
+function addCustomStyles() {
+    const style = document.createElement('style');
+    style.textContent = `
+        .current-assignment {
+            padding: 10px;
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+        
+        .current-assignment .badge {
+            font-size: 0.9em;
+            margin-left: 5px;
+        }
+        
+        .current-assignment strong {
+            color: #495057;
+            font-weight: 600;
+        }
+        
+        .form-select option:disabled {
+            font-style: italic;
+            color: #6c757d;
+            background-color: #f8f9fa;
+        }
+        
+        .form-select option[value=""] {
+            font-weight: bold;
+            color: #28a745;
+        }
+    `;
+    document.head.appendChild(style);
+}
+
 // Manual refresh function for users
 async function refreshAllData() {
     console.log('🔄 Manual refresh requested by user');
@@ -88,6 +124,9 @@ function checkForStatusChanges() {
 // Initialize the application
 document.addEventListener('DOMContentLoaded', function() {
     console.log('🚀 DOM Content Loaded - Starting application initialization');
+    
+    // Add custom CSS for current assignments
+    addCustomStyles();
     
     loadSchedules();
     loadUmpireRequests();
@@ -301,36 +340,79 @@ function populateRequestDropdowns() {
     console.log('Current allSchedules length:', allSchedules ? allSchedules.length : 'undefined');
     
     try {
-        // Get staff names for umpire requests
-        let staffNames = filterOptions?.concession_staff || [];
-        console.log('Initial staff names from filterOptions:', staffNames);
+        // Get current game data if available (for editing existing requests)
+        const currentGameId = getCurrentGameId();
+        const currentGame = currentGameId ? allSchedules.find(s => s.id == currentGameId) : null;
         
-        // If no staff data is available, try to get it from the schedules
+        console.log('Current game ID:', currentGameId);
+        console.log('Current game data:', currentGame);
+        
+        // Get staff names for umpire requests - use dedicated umpire lists if available
+        let plateUmpireNames = [];
+        let baseUmpireNames = [];
+        let staffNames = [];
+        
+        // Try to get umpire names from dedicated umpire tables first
+        if (window.allPlateUmpires && window.allPlateUmpires.length > 0) {
+            plateUmpireNames = window.allPlateUmpires.map(u => u.name);
+            console.log('Using dedicated plate umpire names:', plateUmpireNames);
+        }
+        
+        if (window.allBaseUmpires && window.allBaseUmpires.length > 0) {
+            baseUmpireNames = window.allBaseUmpires.map(u => u.name);
+            console.log('Using dedicated base umpire names:', baseUmpireNames);
+        }
+        
+        // Get concession staff names
+        staffNames = filterOptions?.concession_staff || [];
         if (staffNames.length === 0 && allSchedules && allSchedules.length > 0) {
             const uniqueStaff = [...new Set(allSchedules.map(s => s.concession_staff).filter(Boolean))];
             staffNames = uniqueStaff;
             console.log('Using staff names from schedules:', uniqueStaff);
         }
         
-        // If still no staff data, use a fallback list
-        if (staffNames.length === 0) {
-            staffNames = ['Dylan LeLacheur', 'Scott Patenaude', 'Arthur DeSouza', 'Brady Foote', 'James Kane', 'Logan Kelly', 'Connor Stevens', 'Jack Duffy', 'Nathan Nelson', 'Ryan Abrams', 'Matthew Rurak', 'Zach Chachus', 'Andrey LeMay', 'Ben Durkin', 'Emily Lelacheur', 'Kate LeLacheur', 'Danny Gallo', 'Brayden Shea'];
-            console.log('Using fallback staff names:', staffNames);
+        // Fallback for umpire names if dedicated lists aren't available
+        if (plateUmpireNames.length === 0) {
+            plateUmpireNames = ['Dylan LeLacheur', 'Arthur DeSouza', 'Connor Stevens', 'James Kane', 'Nathan Nelson', 'Scott Patenaude'];
         }
         
-        console.log('Final staff names to use:', staffNames);
+        if (baseUmpireNames.length === 0) {
+            baseUmpireNames = ['Scott Patenaude', 'Brady Foote', 'Jack Duffy', 'Logan Kelly', 'Ryan Abrams', 'Zach Chachus'];
+        }
+        
+        // Fallback for staff names
+        if (staffNames.length === 0) {
+            staffNames = ['Dylan LeLacheur', 'Scott Patenaude', 'Arthur DeSouza', 'Brady Foote', 'James Kane', 'Logan Kelly', 'Connor Stevens', 'Jack Duffy', 'Nathan Nelson', 'Ryan Abrams', 'Matthew Rurak', 'Zach Chachus', 'Andrey LeMay', 'Ben Durkin', 'Emily Lelacheur', 'Kate LeLacheur', 'Danny Gallo', 'Brayden Shea'];
+        }
+        
+        console.log('Final names to use - Plate:', plateUmpireNames.length, 'Base:', baseUmpireNames.length, 'Staff:', staffNames.length);
         
         // Populate plate umpire dropdown
         const plateUmpireSelect = document.getElementById('requestedPlateUmpire');
         if (plateUmpireSelect) {
             plateUmpireSelect.innerHTML = '<option value="">No change</option>';
-            staffNames.forEach(name => {
-                const option = document.createElement('option');
-                option.value = name;
-                option.textContent = name;
-                plateUmpireSelect.appendChild(option);
+            
+            // Add current assignment first if available
+            if (currentGame && currentGame.plate_umpire) {
+                const currentOption = document.createElement('option');
+                currentOption.value = currentGame.plate_umpire;
+                currentOption.textContent = `Current: ${currentGame.plate_umpire}`;
+                currentOption.disabled = true;
+                currentOption.style.fontStyle = 'italic';
+                plateUmpireSelect.appendChild(currentOption);
+            }
+            
+            // Add available alternatives
+            plateUmpireNames.forEach(name => {
+                // Don't add if it's the current assignment
+                if (!currentGame || name !== currentGame.plate_umpire) {
+                    const option = document.createElement('option');
+                    option.value = name;
+                    option.textContent = name;
+                    plateUmpireSelect.appendChild(option);
+                }
             });
-            console.log('✅ Plate umpire dropdown populated with', staffNames.length, 'options');
+            console.log('✅ Plate umpire dropdown populated with', plateUmpireSelect.options.length, 'options');
         } else {
             console.error('❌ Plate umpire dropdown element not found!');
         }
@@ -339,13 +421,28 @@ function populateRequestDropdowns() {
         const baseUmpireSelect = document.getElementById('requestedBaseUmpire');
         if (baseUmpireSelect) {
             baseUmpireSelect.innerHTML = '<option value="">No change</option>';
-            staffNames.forEach(name => {
-                const option = document.createElement('option');
-                option.value = name;
-                option.textContent = name;
-                baseUmpireSelect.appendChild(option);
+            
+            // Add current assignment first if available
+            if (currentGame && currentGame.base_umpire) {
+                const currentOption = document.createElement('option');
+                currentOption.value = currentGame.base_umpire;
+                currentOption.textContent = `Current: ${currentGame.base_umpire}`;
+                currentOption.disabled = true;
+                currentOption.style.fontStyle = 'italic';
+                baseUmpireSelect.appendChild(currentOption);
+            }
+            
+            // Add available alternatives
+            baseUmpireNames.forEach(name => {
+                // Don't add if it's the current assignment
+                if (!currentGame || name !== currentGame.base_umpire) {
+                    const option = document.createElement('option');
+                    option.value = name;
+                    option.textContent = name;
+                    baseUmpireSelect.appendChild(option);
+                }
             });
-            console.log('✅ Base umpire dropdown populated with', staffNames.length, 'options');
+            console.log('✅ Base umpire dropdown populated with', baseUmpireSelect.options.length, 'options');
         } else {
             console.error('❌ Base umpire dropdown element not found!');
         }
@@ -353,14 +450,29 @@ function populateRequestDropdowns() {
         // Populate concession staff dropdown
         const concessionStaffSelect = document.getElementById('requestedConcessionStaff');
         if (concessionStaffSelect) {
-            concessionStaffSelect.innerHTML = '<option value="">Select Staff Member</option>';
+            concessionStaffSelect.innerHTML = '<option value="">No change</option>';
+            
+            // Add current assignment first if available
+            if (currentGame && currentGame.concession_staff) {
+                const currentOption = document.createElement('option');
+                currentOption.value = currentGame.concession_staff;
+                currentOption.textContent = `Current: ${currentGame.concession_staff}`;
+                currentOption.disabled = true;
+                currentOption.style.fontStyle = 'italic';
+                concessionStaffSelect.appendChild(currentOption);
+            }
+            
+            // Add available alternatives
             staffNames.forEach(name => {
-                const option = document.createElement('option');
-                option.value = name;
-                option.textContent = name;
-                concessionStaffSelect.appendChild(option);
+                // Don't add if it's the current assignment
+                if (!currentGame || name !== currentGame.concession_staff) {
+                    const option = document.createElement('option');
+                    option.value = name;
+                    option.textContent = name;
+                    concessionStaffSelect.appendChild(option);
+                }
             });
-            console.log('✅ Concession staff dropdown populated with', staffNames.length, 'options');
+            console.log('✅ Concession staff dropdown populated with', concessionStaffSelect.options.length, 'options');
         } else {
             console.error('❌ Concession staff dropdown element not found!');
         }
@@ -375,6 +487,42 @@ function populateRequestDropdowns() {
         // Fallback: populate with basic options
         populateRequestDropdownsFallback();
     }
+}
+
+// Helper function to get current game ID from the form or context
+function getCurrentGameId() {
+    // Try to get from umpire request form
+    const umpireGameIdInput = document.getElementById('requestGameId');
+    if (umpireGameIdInput && umpireGameIdInput.value) {
+        return umpireGameIdInput.value;
+    }
+    
+    // Try to get from concession staff request form
+    const concessionGameIdInput = document.getElementById('concessionRequestGameId');
+    if (concessionGameIdInput && concessionGameIdInput.value) {
+        return concessionGameIdInput.value;
+    }
+    
+    // Try to get from URL parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    const gameId = urlParams.get('game_id');
+    if (gameId) {
+        return gameId;
+    }
+    
+    // Try to get from form data attributes
+    const umpireForm = document.getElementById('umpireRequestFormElement');
+    const concessionForm = document.getElementById('concessionStaffRequestFormElement');
+    
+    if (umpireForm && umpireForm.dataset.gameId) {
+        return umpireForm.dataset.gameId;
+    }
+    
+    if (concessionForm && concessionForm.dataset.gameId) {
+        return concessionForm.dataset.gameId;
+    }
+    
+    return null;
 }
 
 // Verify that dropdowns are properly populated
@@ -969,10 +1117,24 @@ function showUmpireRequestForm(gameId) {
     // Populate form fields
     document.getElementById('requestGameId').value = gameId;
     document.getElementById('gameDetails').textContent = `${schedule.home_team} vs ${schedule.visitor_team} on ${formatDate(schedule.date)} at ${schedule.start_time}`;
-    document.getElementById('currentUmpires').textContent = `Plate: ${schedule.plate_umpire || 'N/A'}, Base: ${schedule.base_umpire || 'N/A'}`;
+    
+    // Enhanced current umpires display
+    const currentPlate = schedule.plate_umpire || 'N/A';
+    const currentBase = schedule.base_umpire || 'N/A';
+    document.getElementById('currentUmpires').innerHTML = `
+        <div class="current-assignment">
+            <strong>Plate Umpire:</strong> <span class="badge bg-primary">${currentPlate}</span><br>
+            <strong>Base Umpire:</strong> <span class="badge bg-primary">${currentBase}</span>
+        </div>
+    `;
     
     // Show form
     document.getElementById('umpireRequestForm').style.display = 'block';
+    
+    // Populate dropdowns with current game context
+    setTimeout(() => {
+        populateRequestDropdowns();
+    }, 100);
     
     // Scroll to form
     document.getElementById('umpireRequestForm').scrollIntoView({ behavior: 'smooth' });
@@ -1028,10 +1190,22 @@ function showConcessionStaffRequestForm(gameId) {
     // Populate form fields
     document.getElementById('concessionRequestGameId').value = gameId;
     document.getElementById('concessionGameDetails').textContent = `${schedule.home_team} vs ${schedule.visitor_team} on ${formatDate(schedule.date)} at ${schedule.start_time}`;
-    document.getElementById('currentConcessionStaff').textContent = schedule.concession_staff || 'No staff assigned';
+    
+    // Enhanced current concession staff display
+    const currentStaff = schedule.concession_staff || 'No staff assigned';
+    document.getElementById('currentConcessionStaff').innerHTML = `
+        <div class="current-assignment">
+            <strong>Current Staff:</strong> <span class="badge bg-primary">${currentStaff}</span>
+        </div>
+    `;
     
     // Show form
     document.getElementById('concessionStaffRequestForm').style.display = 'block';
+    
+    // Populate dropdowns with current game context
+    setTimeout(() => {
+        populateRequestDropdowns();
+    }, 100);
     
     // Scroll to form
     document.getElementById('concessionStaffRequestForm').scrollIntoView({ behavior: 'smooth' });
