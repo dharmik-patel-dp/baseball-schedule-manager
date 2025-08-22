@@ -686,6 +686,12 @@
                 </a>
             </div>
             <div class="nav-item">
+                <a href="#umpires" class="nav-link" onclick="showSection('umpires')">
+                    <i class="fas fa-user-tie"></i>
+                    <span class="nav-text">Umpire Management</span>
+                </a>
+            </div>
+            <div class="nav-item">
                 <a href="#requests" class="nav-link" onclick="showSection('requests')">
                     <i class="fas fa-clipboard-list"></i>
                     <span class="nav-text">Change Requests</span>
@@ -971,6 +977,80 @@
                                 <td colspan="8" class="loading">
                                     <i class="fas fa-spinner fa-spin"></i>
                                     <div>Loading staff...</div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Umpire Management Section -->
+        <div id="umpires" class="section">
+            <div class="section-header">
+                <h1 class="section-title">
+                    <i class="fas fa-user-tie"></i>
+                    Umpire Management
+                </h1>
+                <div class="section-actions">
+                    <button class="btn btn-primary" onclick="showAddPlateUmpireModal()">
+                        <i class="fas fa-plus me-2"></i>Add Plate Umpire
+                    </button>
+                    <button class="btn btn-primary" onclick="showAddBaseUmpireModal()">
+                        <i class="fas fa-plus me-2"></i>Add Base Umpire
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Plate Umpires -->
+            <div class="dashboard-card mb-4">
+                <h5 class="mb-3">
+                    <i class="fas fa-user-tie me-2"></i>Plate Umpires
+                </h5>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>Availability</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="plateUmpiresTableBody">
+                            <tr>
+                                <td colspan="5" class="loading">
+                                    <i class="fas fa-spinner fa-spin"></i>
+                                    <div>Loading plate umpires...</div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Base Umpires -->
+            <div class="dashboard-card">
+                <h5 class="mb-3">
+                    <i class="fas fa-user-tie me-2"></i>Base Umpires
+                </h5>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>Availability</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="baseUmpiresTableBody">
+                            <tr>
+                                <td colspan="5" class="loading">
+                                    <i class="fas fa-spinner fa-spin"></i>
+                                    <div>Loading base umpires...</div>
                                 </td>
                             </tr>
                         </tbody>
@@ -1379,6 +1459,176 @@
                     <button type="button" class="btn btn-danger" onclick="confirmBulkDeleteStaff()">
                         <i class="fas fa-trash me-2"></i>Delete Staff Members
                     </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Plate Umpire Modal -->
+    <div class="modal fade" id="addPlateUmpireModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add Plate Umpire</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="plateUmpireForm">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Name *</label>
+                                <input type="text" class="form-control" id="plateUmpireName" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Availability</label>
+                                <select class="form-select" id="plateUmpireAvailability">
+                                    <option value="Available">Available</option>
+                                    <option value="Unavailable">Unavailable</option>
+                                    <option value="Part-time">Part-time</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Email</label>
+                                <input type="email" class="form-control" id="plateUmpireEmail" placeholder="umpire@example.com">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Phone</label>
+                                <input type="text" class="form-control" id="plateUmpirePhone" placeholder="555-0101">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary" form="plateUmpireForm">Add Plate Umpire</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Plate Umpire Modal -->
+    <div class="modal fade" id="editPlateUmpireModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Plate Umpire</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editPlateUmpireForm">
+                        <input type="hidden" id="editPlateUmpireId">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Name *</label>
+                                <input type="text" class="form-control" id="editPlateUmpireName" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Availability</label>
+                                <select class="form-select" id="editPlateUmpireAvailability">
+                                    <option value="Available">Available</option>
+                                    <option value="Unavailable">Unavailable</option>
+                                    <option value="Part-time">Part-time</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Email</label>
+                                <input type="email" class="form-control" id="editPlateUmpireEmail" placeholder="umpire@example.com">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Phone</label>
+                                <input type="text" class="form-control" id="editPlateUmpirePhone" placeholder="555-0101">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary" form="editPlateUmpireForm">Update Plate Umpire</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Base Umpire Modal -->
+    <div class="modal fade" id="addBaseUmpireModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add Base Umpire</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="baseUmpireForm">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Name *</label>
+                                <input type="text" class="form-control" id="baseUmpireName" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Availability</label>
+                                <select class="form-select" id="baseUmpireAvailability">
+                                    <option value="Available">Available</option>
+                                    <option value="Unavailable">Unavailable</option>
+                                    <option value="Part-time">Part-time</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Email</label>
+                                <input type="email" class="form-control" id="baseUmpireEmail" placeholder="umpire@example.com">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Phone</label>
+                                <input type="text" class="form-control" id="baseUmpirePhone" placeholder="555-0101">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary" form="baseUmpireForm">Add Base Umpire</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Base Umpire Modal -->
+    <div class="modal fade" id="editBaseUmpireModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Base Umpire</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editBaseUmpireForm">
+                        <input type="hidden" id="editBaseUmpireId">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Name *</label>
+                                <input type="text" class="form-control" id="editBaseUmpireName" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Availability</label>
+                                <select class="form-select" id="editBaseUmpireAvailability">
+                                    <option value="Available">Available</option>
+                                    <option value="Unavailable">Unavailable</option>
+                                    <option value="Part-time">Part-time</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Email</label>
+                                <input type="email" class="form-control" id="editBaseUmpireEmail" placeholder="umpire@example.com">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Phone</label>
+                                <input type="text" class="form-control" id="editBaseUmpirePhone" placeholder="555-0101">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary" form="editBaseUmpireForm">Update Base Umpire</button>
                 </div>
             </div>
         </div>

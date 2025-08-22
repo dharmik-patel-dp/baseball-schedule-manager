@@ -84,10 +84,12 @@ document.addEventListener('DOMContentLoaded', function() {
         setupEventListeners();
         
         // Load data
-    loadSchedules();
-    loadUmpireRequests();
+        loadSchedules();
+        loadUmpireRequests();
         loadConcessionStaffRequests();
         loadStaff();
+        loadPlateUmpires();
+        loadBaseUmpires();
         
         // Add 3D effects after DOM loads
         setTimeout(addAdmin3DEffects, 1000);
@@ -148,6 +150,18 @@ function setupEventListeners() {
         editStaffForm.addEventListener('submit', handleEditStaffSubmit);
     }
     
+    // Edit Plate Umpire form submission
+    const editPlateUmpireForm = document.getElementById('editPlateUmpireForm');
+    if (editPlateUmpireForm) {
+        editPlateUmpireForm.addEventListener('submit', handleEditPlateUmpireSubmit);
+    }
+    
+    // Edit Base Umpire form submission
+    const editBaseUmpireForm = document.getElementById('editBaseUmpireForm');
+    if (editBaseUmpireForm) {
+        editBaseUmpireForm.addEventListener('submit', handleEditBaseUmpireSubmit);
+    }
+    
     // CSV file input
     const csvFile = document.getElementById('csvFile');
     if (csvFile) {
@@ -177,6 +191,18 @@ function setupEventListeners() {
         staffUploadModal.addEventListener('hidden.bs.modal', () => {
             resetStaffCSVModalState();
         });
+    }
+
+    // Plate Umpire form submission
+    const plateUmpireForm = document.getElementById('plateUmpireForm');
+    if (plateUmpireForm) {
+        plateUmpireForm.addEventListener('submit', handlePlateUmpireSubmit);
+    }
+
+    // Base Umpire form submission
+    const baseUmpireForm = document.getElementById('baseUmpireForm');
+    if (baseUmpireForm) {
+        baseUmpireForm.addEventListener('submit', handleBaseUmpireSubmit);
     }
 }
 
@@ -698,11 +724,85 @@ async function handleStaffSubmit(e) {
         document.getElementById('staffForm').reset();
         bootstrap.Modal.getInstance(document.getElementById('addStaffModal')).hide();
         
-        // Reload staff to show the new member
+        // Reload staff to show the new one
         await loadStaff();
     } catch (error) {
         console.error('❌ Error adding staff member:', error);
         showAlert('Error adding staff member. Please try again.', 'danger');
+    }
+}
+
+// Handle plate umpire form submission
+async function handlePlateUmpireSubmit(e) {
+    e.preventDefault();
+    
+    const formData = {
+        name: document.getElementById('plateUmpireName').value,
+        email: document.getElementById('plateUmpireEmail').value,
+        phone: document.getElementById('plateUmpirePhone').value,
+        availability: document.getElementById('plateUmpireAvailability').value
+    };
+    
+    console.log('📝 Adding plate umpire with data:', formData);
+    
+    try {
+        const response = await fetch('/api/plate-umpires', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(formData)
+        });
+        
+        if (!response.ok) throw new Error('Failed to add plate umpire');
+        
+        const result = await response.json();
+        console.log('✅ Plate umpire added successfully:', result);
+        
+        showAlert('Plate umpire added successfully!', 'success');
+        document.getElementById('plateUmpireForm').reset();
+        bootstrap.Modal.getInstance(document.getElementById('addPlateUmpireModal')).hide();
+        
+        // Reload plate umpires to show the new one
+        await loadPlateUmpires();
+    } catch (error) {
+        console.error('❌ Error adding plate umpire:', error);
+        showAlert('Error adding plate umpire. Please try again.', 'danger');
+    }
+}
+
+// Handle base umpire form submission
+async function handleBaseUmpireSubmit(e) {
+    e.preventDefault();
+    
+    const formData = {
+        name: document.getElementById('baseUmpireName').value,
+        email: document.getElementById('baseUmpireEmail').value,
+        phone: document.getElementById('baseUmpirePhone').value,
+        availability: document.getElementById('baseUmpireAvailability').value
+    };
+    
+    console.log('📝 Adding base umpire with data:', formData);
+    
+    try {
+        const response = await fetch('/api/base-umpires', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(formData)
+        });
+        
+        if (!response.ok) throw new Error('Failed to add base umpire');
+        
+        const result = await response.json();
+        console.log('✅ Base umpire added successfully:', result);
+        
+        showAlert('Base umpire added successfully!', 'success');
+        document.getElementById('baseUmpireForm').reset();
+        bootstrap.Modal.getInstance(document.getElementById('addBaseUmpireModal')).hide();
+        
+        // Reload base umpires to show the new one
+        await loadBaseUmpires();
+    } catch (error) {
+        console.error('❌ Error adding base umpire:', error);
+        showAlert('Error adding base umpire. Please try again.', 'danger');
     }
 }
 
@@ -1683,14 +1783,14 @@ async function handleEditStaffSubmit(e) {
         });
         
         if (!response.ok) throw new Error('Failed to update staff member');
-
+        
         const result = await response.json();
         console.log('✅ Staff member updated successfully:', result);
         
         showAlert('Staff member updated successfully!', 'success');
         bootstrap.Modal.getInstance(document.getElementById('editStaffModal')).hide();
         
-        // Reload staff to show the updated member
+        // Reload staff to show the updated one
         await loadStaff();
     } catch (error) {
         console.error('❌ Error updating staff member:', error);
@@ -2103,3 +2203,172 @@ function showNoResultsBanner() {
 }
 
 // Duplicate functions removed - these are already defined above
+
+// Umpire Management Functions
+let allPlateUmpires = [];
+let allBaseUmpires = [];
+
+function showAddPlateUmpireModal() {
+    const modal = new bootstrap.Modal(document.getElementById('addPlateUmpireModal'));
+    modal.show();
+}
+
+function showAddBaseUmpireModal() {
+    const modal = new bootstrap.Modal(document.getElementById('addBaseUmpireModal'));
+    modal.show();
+}
+
+function showEditPlateUmpireModal(id) {
+    const umpire = allPlateUmpires.find(u => u.id === id);
+    if (!umpire) return;
+    
+    document.getElementById('editPlateUmpireId').value = umpire.id;
+    document.getElementById('editPlateUmpireName').value = umpire.name;
+    document.getElementById('editPlateUmpireEmail').value = umpire.email || '';
+    document.getElementById('editPlateUmpirePhone').value = umpire.phone || '';
+    document.getElementById('editPlateUmpireAvailability').value = umpire.availability || 'Available';
+    
+    const modal = new bootstrap.Modal(document.getElementById('editPlateUmpireModal'));
+    modal.show();
+}
+
+function showEditBaseUmpireModal(id) {
+    const umpire = allBaseUmpires.find(u => u.id === id);
+    if (!umpire) return;
+    
+    document.getElementById('editBaseUmpireId').value = umpire.id;
+    document.getElementById('editBaseUmpireName').value = umpire.name;
+    document.getElementById('editBaseUmpireEmail').value = umpire.email || '';
+    document.getElementById('editBaseUmpirePhone').value = umpire.phone || '';
+    document.getElementById('editBaseUmpireAvailability').value = umpire.availability || 'Available';
+    
+    const modal = new bootstrap.Modal(document.getElementById('editBaseUmpireModal'));
+    modal.show();
+}
+
+async function loadPlateUmpires() {
+    try {
+        const response = await fetch('/api/plate-umpires');
+        if (!response.ok) throw new Error('Failed to fetch plate umpires');
+        
+        allPlateUmpires = await response.json();
+        renderPlateUmpiresTable();
+    } catch (error) {
+        console.error('❌ Error loading plate umpires:', error);
+        showAlert('Error loading plate umpires', 'danger');
+    }
+}
+
+async function loadBaseUmpires() {
+    try {
+        const response = await fetch('/api/base-umpires');
+        if (!response.ok) throw new Error('Failed to fetch base umpires');
+        
+        allBaseUmpires = await response.json();
+        renderBaseUmpiresTable();
+    } catch (error) {
+        console.error('❌ Error loading base umpires:', error);
+        showAlert('Error loading base umpires', 'danger');
+    }
+}
+
+function renderPlateUmpiresTable() {
+    const tbody = document.getElementById('plateUmpiresTableBody');
+    if (!tbody) return;
+    
+    if (allPlateUmpires.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" class="no-data">No plate umpires found</td></tr>';
+        return;
+    }
+    
+    tbody.innerHTML = allPlateUmpires.map(umpire => `
+        <tr>
+            <td><strong>${umpire.name || 'N/A'}</strong></td>
+            <td>${umpire.email || '<em class="text-muted">Not provided</em>'}</td>
+            <td>${umpire.phone || '<em class="text-muted">Not provided</em>'}</td>
+            <td><span class="badge bg-${getAvailabilityBadgeClass(umpire.availability)}">${umpire.availability || 'Available'}</span></td>
+            <td>
+                <button class="btn btn-sm btn-outline-primary me-1" onclick="showEditPlateUmpireModal(${umpire.id})" title="Edit Plate Umpire">
+                    <i class="fas fa-edit"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-danger" onclick="deletePlateUmpire(${umpire.id})" title="Delete Plate Umpire">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </td>
+        </tr>
+    `).join('');
+}
+
+function renderBaseUmpiresTable() {
+    const tbody = document.getElementById('baseUmpiresTableBody');
+    if (!tbody) return;
+    
+    if (allBaseUmpires.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" class="no-data">No base umpires found</td></tr>';
+        return;
+    }
+    
+    tbody.innerHTML = allBaseUmpires.map(umpire => `
+        <tr>
+            <td><strong>${umpire.name || 'N/A'}</strong></td>
+            <td>${umpire.email || '<em class="text-muted">Not provided</em>'}</td>
+            <td>${umpire.phone || '<em class="text-muted">Not provided</em>'}</td>
+            <td><span class="badge bg-${getAvailabilityBadgeClass(umpire.availability)}">${umpire.availability || 'Available'}</span></td>
+            <td>
+                <button class="btn btn-sm btn-outline-primary me-1" onclick="showEditBaseUmpireModal(${umpire.id})" title="Edit Base Umpire">
+                    <i class="fas fa-edit"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-danger" onclick="deleteBaseUmpire(${umpire.id})" title="Delete Base Umpire">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </td>
+        </tr>
+    `).join('');
+}
+
+function getAvailabilityBadgeClass(availability) {
+    switch (availability) {
+        case 'Available': return 'success';
+        case 'Unavailable': return 'danger';
+        case 'Part-time': return 'warning';
+        default: return 'secondary';
+    }
+}
+
+async function deletePlateUmpire(id) {
+    if (!confirm('Are you sure you want to delete this plate umpire?')) return;
+    
+    try {
+        const response = await fetch(`/api/plate-umpires/${id}`, {
+            method: 'DELETE'
+        });
+        
+        if (!response.ok) throw new Error('Failed to delete plate umpire');
+        
+        showAlert('Plate umpire deleted successfully!', 'success');
+        await loadPlateUmpires();
+    } catch (error) {
+        console.error('❌ Error deleting plate umpire:', error);
+        showAlert('Error deleting plate umpire', 'danger');
+    }
+}
+
+async function deleteBaseUmpire(id) {
+    if (!confirm('Are you sure you want to delete this base umpire?')) return;
+    
+    try {
+        const response = await fetch(`/api/base-umpires/${id}`, {
+            method: 'DELETE'
+        });
+        
+        if (!response.ok) throw new Error('Failed to delete base umpire');
+        
+        showAlert('Base umpire deleted successfully!', 'success');
+        await loadBaseUmpires();
+    } catch (error) {
+        console.error('❌ Error deleting base umpire:', error);
+        showAlert('Error deleting base umpire', 'danger');
+    }
+}
+
+// Utility functions

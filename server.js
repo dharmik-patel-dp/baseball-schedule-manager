@@ -110,6 +110,26 @@ db.serialize(() => {
     FOREIGN KEY (game_id) REFERENCES schedules (id)
   )`);
 
+  // Plate Umpires table
+  db.run(`CREATE TABLE IF NOT EXISTS plate_umpires (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL UNIQUE,
+    email TEXT,
+    phone TEXT,
+    availability TEXT DEFAULT 'Available',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  )`);
+
+  // Base Umpires table
+  db.run(`CREATE TABLE IF NOT EXISTS base_umpires (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL UNIQUE,
+    email TEXT,
+    phone TEXT,
+    availability TEXT DEFAULT 'Available',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  )`);
+
   // Insert sample staff data if table is empty
   db.get("SELECT COUNT(*) as count FROM staff_directory", [], (err, row) => {
     if (err) {
@@ -148,6 +168,62 @@ db.serialize(() => {
       
       insertStaff.finalize();
       console.log('Sample staff data inserted');
+    }
+  });
+
+  // Insert sample plate umpires if table is empty
+  db.get("SELECT COUNT(*) as count FROM plate_umpires", [], (err, row) => {
+    if (err) {
+      console.error('Error checking plate umpires count:', err);
+      return;
+    }
+    
+    if (row.count === 0) {
+      const samplePlateUmpires = [
+        ['Dylan LeLacheur', 'dlelacheur16@gmail.com', '978-337-8174', 'Available'],
+        ['Arthur DeSouza', '', '', 'Available'],
+        ['Connor Stevens', '', '', 'Available'],
+        ['James Kane', '', '', 'Available'],
+        ['Nathan Nelson', '', '', 'Available'],
+        ['Scott Patenaude', '', '', 'Available']
+      ];
+
+      const insertPlateUmpire = db.prepare("INSERT INTO plate_umpires (name, email, phone, availability) VALUES (?, ?, ?, ?)");
+      
+      samplePlateUmpires.forEach(umpire => {
+        insertPlateUmpire.run(umpire);
+      });
+      
+      insertPlateUmpire.finalize();
+      console.log('Sample plate umpires data inserted');
+    }
+  });
+
+  // Insert sample base umpires if table is empty
+  db.get("SELECT COUNT(*) as count FROM base_umpires", [], (err, row) => {
+    if (err) {
+      console.error('Error checking base umpires count:', err);
+      return;
+    }
+    
+    if (row.count === 0) {
+      const sampleBaseUmpires = [
+        ['Scott Patenaude', '', '', 'Available'],
+        ['Brady Foote', '', '', 'Available'],
+        ['Jack Duffy', '', '', 'Available'],
+        ['Logan Kelly', '', '', 'Available'],
+        ['Ryan Abrams', '', '', 'Available'],
+        ['Zach Chachus', '', '', 'Available']
+      ];
+
+      const insertBaseUmpire = db.prepare("INSERT INTO base_umpires (name, email, phone, availability) VALUES (?, ?, ?, ?)");
+      
+      sampleBaseUmpires.forEach(umpire => {
+        insertBaseUmpire.run(umpire);
+      });
+      
+      insertBaseUmpire.finalize();
+      console.log('Sample base umpires data inserted');
     }
   });
   
@@ -240,6 +316,110 @@ app.post('/api/staff/bulk-delete', (req, res) => {
       return;
     }
     res.json({ message: `${this.changes} staff members deleted successfully` });
+  });
+});
+
+// Plate Umpires Routes
+app.get('/api/plate-umpires', (req, res) => {
+  const query = 'SELECT * FROM plate_umpires ORDER BY name';
+  db.all(query, [], (err, rows) => {
+    if (err) {
+      res.status(500).json({ error: err.message });
+      return;
+    }
+    res.json(rows);
+  });
+});
+
+app.post('/api/plate-umpires', (req, res) => {
+  const { name, email, phone, availability } = req.body;
+  
+  const query = `INSERT INTO plate_umpires (name, email, phone, availability) VALUES (?, ?, ?, ?)`;
+
+  db.run(query, [name, email || '', phone || '', availability || 'Available'], function(err) {
+    if (err) {
+      res.status(500).json({ error: err.message });
+      return;
+    }
+    res.json({ id: this.lastID, message: 'Plate umpire added successfully' });
+  });
+});
+
+app.put('/api/plate-umpires/:id', (req, res) => {
+  const { id } = req.params;
+  const { name, email, phone, availability } = req.body;
+  
+  const query = `UPDATE plate_umpires SET name = ?, email = ?, phone = ?, availability = ? WHERE id = ?`;
+
+  db.run(query, [name, email || '', phone || '', availability || 'Available', id], function(err) {
+    if (err) {
+      res.status(500).json({ error: err.message });
+      return;
+    }
+    res.json({ message: 'Plate umpire updated successfully' });
+  });
+});
+
+app.delete('/api/plate-umpires/:id', (req, res) => {
+  const { id } = req.params;
+  db.run('DELETE FROM plate_umpires WHERE id = ?', [id], function(err) {
+    if (err) {
+      res.status(500).json({ error: err.message });
+      return;
+    }
+    res.json({ message: 'Plate umpire deleted successfully' });
+  });
+});
+
+// Base Umpires Routes
+app.get('/api/base-umpires', (req, res) => {
+  const query = 'SELECT * FROM base_umpires ORDER BY name';
+  db.all(query, [], (err, rows) => {
+    if (err) {
+      res.status(500).json({ error: err.message });
+      return;
+    }
+    res.json(rows);
+  });
+});
+
+app.post('/api/base-umpires', (req, res) => {
+  const { name, email, phone, availability } = req.body;
+  
+  const query = `INSERT INTO base_umpires (name, email, phone, availability) VALUES (?, ?, ?, ?)`;
+
+  db.run(query, [name, email || '', phone || '', availability || 'Available'], function(err) {
+    if (err) {
+      res.status(500).json({ error: err.message });
+      return;
+    }
+    res.json({ id: this.lastID, message: 'Base umpire added successfully' });
+  });
+});
+
+app.put('/api/base-umpires/:id', (req, res) => {
+  const { id } = req.params;
+  const { name, email, phone, availability } = req.body;
+  
+  const query = `UPDATE base_umpires SET name = ?, email = ?, phone = ?, availability = ? WHERE id = ?`;
+
+  db.run(query, [name, email || '', phone || '', availability || 'Available', id], function(err) {
+    if (err) {
+      res.status(500).json({ error: err.message });
+      return;
+    }
+    res.json({ message: 'Base umpire updated successfully' });
+  });
+});
+
+app.delete('/api/base-umpires/:id', (req, res) => {
+  const { id } = req.params;
+  db.run('DELETE FROM base_umpires WHERE id = ?', [id], function(err) {
+    if (err) {
+      res.status(500).json({ error: err.message });
+      return;
+    }
+    res.json({ message: 'Base umpire deleted successfully' });
   });
 });
 
