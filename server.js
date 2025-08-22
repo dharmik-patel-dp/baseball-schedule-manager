@@ -224,6 +224,25 @@ app.delete('/api/staff/:id', (req, res) => {
   });
 });
 
+// Bulk delete staff members
+app.post('/api/staff/bulk-delete', (req, res) => {
+  const { ids } = req.body;
+  if (!ids || !Array.isArray(ids) || ids.length === 0) {
+    return res.status(400).json({ error: 'No valid IDs provided' });
+  }
+
+  const placeholders = ids.map(() => '?').join(',');
+  const query = `DELETE FROM staff_directory WHERE id IN (${placeholders})`;
+
+  db.run(query, ids, function(err) {
+    if (err) {
+      res.status(500).json({ error: err.message });
+      return;
+    }
+    res.json({ message: `${this.changes} staff members deleted successfully` });
+  });
+});
+
 // Get all schedules
 app.get('/api/schedules', (req, res) => {
   const query = 'SELECT * FROM schedules ORDER BY date, start_time';

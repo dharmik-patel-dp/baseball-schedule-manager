@@ -588,12 +588,13 @@ function renderStaffTable() {
     if (!tbody) return;
     
     if (allStaff.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="8" class="no-data">No staff members found</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="9" class="no-data">No staff members found</td></tr>';
         return;
     }
     
     tbody.innerHTML = allStaff.map(staff => `
         <tr>
+            <td><input type="checkbox" name="staffCheckbox" value="${staff.id}" onchange="toggleStaffSelection(this)"></td>
             <td><strong>${staff.name || 'N/A'}</strong></td>
             <td><span class="badge bg-info">${staff.role || 'N/A'}</span></td>
             <td>${staff.phone || '<em class="text-muted">Not provided</em>'}</td>
@@ -611,6 +612,9 @@ function renderStaffTable() {
             </td>
         </tr>
     `).join('');
+    
+    // Update bulk delete UI after rendering
+    updateBulkDeleteStaffUI();
 }
 
 // Handle schedule form submission
@@ -1186,6 +1190,123 @@ function renderStaffCSVResultReport(result) {
         `;
     } else {
         rowErrors.innerHTML = '';
+    }
+}
+
+// Staff Bulk Delete Functions
+let selectedStaffIds = new Set();
+
+function toggleSelectAllStaff(checkbox) {
+    const staffCheckboxes = document.querySelectorAll('input[name="staffCheckbox"]');
+    staffCheckboxes.forEach(cb => {
+        cb.checked = checkbox.checked;
+        if (checkbox.checked) {
+            selectedStaffIds.add(parseInt(cb.value));
+        } else {
+            selectedStaffIds.delete(parseInt(cb.value));
+        }
+    });
+    updateBulkDeleteStaffUI();
+}
+
+function toggleStaffSelection(checkbox) {
+    const staffId = parseInt(checkbox.value);
+    if (checkbox.checked) {
+        selectedStaffIds.add(staffId);
+    } else {
+        selectedStaffIds.delete(staffId);
+    }
+    updateBulkDeleteStaffUI();
+}
+
+function updateBulkDeleteStaffUI() {
+    const bulkDeleteBtn = document.getElementById('bulkDeleteStaffBtn');
+    const selectedCountSpan = document.getElementById('selectedCount');
+    const selectAllCheckbox = document.getElementById('selectAllStaff');
+    
+    if (selectedStaffIds.size > 0) {
+        bulkDeleteBtn.style.display = 'inline-block';
+        selectedCountSpan.textContent = selectedStaffIds.size;
+    } else {
+        bulkDeleteBtn.style.display = 'none';
+        selectedCountSpan.textContent = '0';
+    }
+    
+    // Update select all checkbox state
+    const staffCheckboxes = document.querySelectorAll('input[name="staffCheckbox"]');
+    const checkedCount = Array.from(staffCheckboxes).filter(cb => cb.checked).length;
+    
+    if (checkedCount === 0) {
+        selectAllCheckbox.checked = false;
+        selectAllCheckbox.indeterminate = false;
+    } else if (checkedCount === staffCheckboxes.length) {
+        selectAllCheckbox.checked = true;
+        selectAllCheckbox.indeterminate = false;
+    } else {
+        selectAllCheckbox.checked = false;
+        selectAllCheckbox.indeterminate = true;
+    }
+}
+
+function bulkDeleteStaff() {
+    if (selectedStaffIds.size === 0) {
+        showAlert('Please select staff members to delete', 'warning');
+        return;
+    }
+    
+    // Show confirmation modal
+    const modal = new bootstrap.Modal(document.getElementById('bulkDeleteStaffModal'));
+    const deleteCount = document.getElementById('deleteCount');
+    const staffToDelete = document.getElementById('staffToDelete');
+    
+    deleteCount.textContent = selectedStaffIds.size;
+    
+    // Get staff names for display
+    const selectedStaff = Array.from(selectedStaffIds).map(id => {
+        const staff = allStaff.find(s => s.id === id);
+        return staff ? staff.name : `Staff ID ${id}`;
+    });
+    
+    staffToDelete.innerHTML = selectedStaff.map(name => 
+        `<div class="mb-1"><i class="fas fa-user me-2"></i>${escapeHtml(name)}</div>`
+    ).join('');
+    
+    modal.show();
+}
+
+async function confirmBulkDeleteStaff() {
+    try {
+        const response = await fetch('/api/staff/bulk-delete', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                ids: Array.from(selectedStaffIds)
+            })
+        });
+        
+        if (!response.ok) {
+            throw new Error('Failed to delete staff members');
+        }
+        
+        const result = await response.json();
+        console.log('✅ Bulk delete result:', result);
+        
+        // Close modal
+        const modal = bootstrap.Modal.getInstance(document.getElementById('bulkDeleteStaffModal'));
+        if (modal) modal.hide();
+        
+        // Show success message
+        showAlert(result.message, 'success');
+        
+        // Clear selection and reload staff
+        selectedStaffIds.clear();
+        await loadStaff();
+        
+    } catch (error) {
+        console.error('❌ Error bulk deleting staff:', error);
+        showAlert(`Error deleting staff members: ${error.message}`, 'danger');
     }
 }
 
