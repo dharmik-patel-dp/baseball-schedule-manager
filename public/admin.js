@@ -2793,3 +2793,77 @@ async function deleteBaseUmpire(id) {
 }
 
 // Utility functions
+
+// Handle edit plate umpire form submission
+async function handleEditPlateUmpireSubmit(e) {
+    e.preventDefault();
+    
+    const umpireId = document.getElementById('editPlateUmpireId').value;
+    const formData = {
+        name: document.getElementById('editPlateUmpireName').value,
+        email: document.getElementById('editPlateUmpireEmail').value,
+        phone: document.getElementById('editPlateUmpirePhone').value,
+        availability: document.getElementById('editPlateUmpireAvailability').value
+    };
+    
+    console.log('📝 Updating plate umpire:', umpireId, 'with data:', formData);
+    
+    try {
+        const response = await fetch(`/api/plate-umpires/${umpireId}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(formData)
+        });
+        
+        if (!response.ok) throw new Error('Failed to update plate umpire');
+        
+        const result = await response.json();
+        console.log('✅ Plate umpire updated successfully:', result);
+        
+        showAlert('Plate umpire updated successfully!', 'success');
+        bootstrap.Modal.getInstance(document.getElementById('editPlateUmpireModal')).hide();
+        
+        // Reload plate umpires to show the updated one
+        await loadPlateUmpires();
+    } catch (error) {
+        console.error('❌ Error updating plate umpire:', error);
+        showAlert('Error updating plate umpire. Please try again.', 'danger');
+    }
+}
+
+// Handle edit base umpire form submission
+async function handleEditBaseUmpireSubmit(e) {
+    e.preventDefault();
+    
+    const umpireId = document.getElementById('editBaseUmpireId').value;
+    const formData = {
+        name: document.getElementById('editBaseUmpireName').value,
+        email: document.getElementById('editBaseUmpireEmail').value,
+        phone: document.getElementById('editBaseUmpirePhone').value,
+        availability: document.getElementById('editBaseUmpireAvailability').value
+    };
+    
+    console.log('📝 Updating base umpire:', umpireId, 'with data:', formData);
+    
+    try {
+        const response = await fetch(`/api/base-umpires/${umpireId}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(formData)
+        });
+        
+        if (!response.ok) throw new Error('Failed to update base umpire');
+        
+        const result = await response.json();
+        console.log('✅ Base umpire updated successfully:', result);
+        
+        showAlert('Base umpire updated successfully!', 'success');
+        bootstrap.Modal.getInstance(document.getElementById('editBaseUmpireModal')).hide();
+        
+        // Reload base umpires to show the updated one
+        await loadBaseUmpires();
+    } catch (error) {
+        console.error('❌ Error updating base umpire:', error);
+        showAlert('Error updating base umpire. Please try again.', 'danger');
+    }
+}
