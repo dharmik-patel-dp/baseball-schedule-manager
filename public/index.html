@@ -13,355 +13,88 @@
     <link href="/styles.css" rel="stylesheet">
     <style>
         :root {
-            /* Baseball/Softball 3D Theme Colors */
-            --baseball-red: #dc2626;
-            --baseball-blue: #1d4ed8;
-            --softball-purple: #7c3aed;
-            --field-green: #059669;
-            --dirt-brown: #92400e;
-            --fence-white: #f8fafc;
-            --night-dark: #0f172a;
-            --day-light: #ffffff;
-            
-            /* Modern UI Colors */
-            --primary-color: var(--baseball-red);
-            --secondary-color: var(--baseball-blue);
-            --success-color: var(--field-green);
-            --info-color: var(--softball-purple);
-            --warning-color: #f59e0b;
-            --danger-color: #ef4444;
-            --light-color: var(--fence-white);
-            --dark-color: var(--night-dark);
-            
-            /* Spacing */
-            --border-radius: 16px;
-            --border-radius-lg: 24px;
-            
-            /* 3D Shadows */
-            --shadow-sm: 0 2px 4px 0 rgba(0, 0, 0, 0.1);
-            --shadow-md: 0 8px 16px -4px rgba(0, 0, 0, 0.15);
-            --shadow-lg: 0 20px 40px -8px rgba(0, 0, 0, 0.2);
-            --shadow-xl: 0 32px 64px -12px rgba(0, 0, 0, 0.25);
-            
-            /* Gradients */
-            --baseball-gradient: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
-            --softball-gradient: linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%);
-            --field-gradient: linear-gradient(135deg, #059669 0%, #047857 100%);
-            --night-gradient: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-            --glass-gradient: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+            --primary-color: #1e3a8a;
+            --secondary-color: #dc2626;
+            --accent-color: #f59e0b;
+            --light-bg: #f8fafc;
+            --border-color: #e2e8f0;
         }
 
         body {
-            background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            color: var(--dark-color);
-            line-height: 1.6;
-            position: relative;
-        }
-        
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: 
-                radial-gradient(circle at 20% 80%, rgba(220, 38, 38, 0.03) 0%, transparent 50%),
-                radial-gradient(circle at 80% 20%, rgba(29, 78, 216, 0.03) 0%, transparent 50%),
-                radial-gradient(circle at 40% 40%, rgba(124, 58, 237, 0.02) 0%, transparent 50%);
-            pointer-events: none;
-            z-index: -1;
+            background-color: var(--light-bg);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         .navbar-brand {
-            font-weight: 800;
-            color: var(--baseball-red) !important;
-            font-size: 1.5rem;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
-        
-        .navbar-brand::before {
-            content: '⚾';
-            font-size: 1.8rem;
-            animation: baseballBounce 2s ease-in-out infinite;
-        }
-        
-        @keyframes baseballBounce {
-            0%, 100% { transform: translateY(0) rotate(0deg); }
-            25% { transform: translateY(-8px) rotate(90deg); }
-            50% { transform: translateY(-12px) rotate(180deg); }
-            75% { transform: translateY(-8px) rotate(270deg); }
+            font-weight: bold;
+            color: var(--primary-color) !important;
         }
 
         .hero-section {
-            background: var(--baseball-gradient);
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
             color: white;
-            padding: 4rem 0;
-            margin-bottom: 3rem;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .hero-section::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: 
-                radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.05) 0%, transparent 50%);
-            pointer-events: none;
-        }
-        
-        .hero-section h1 {
-            font-size: 3.5rem;
-            font-weight: 800;
-            text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-            margin-bottom: 1rem;
-        }
-        
-        .hero-section p {
-            font-size: 1.25rem;
-            font-weight: 500;
-            opacity: 0.95;
+            padding: 3rem 0;
+            margin-bottom: 2rem;
         }
 
         .filter-section {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
-            border-radius: 1.5rem;
-            padding: 2.5rem;
-            margin-bottom: 3rem;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .filter-section::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: var(--baseball-gradient);
-        }
-        
-        .filter-section h3 {
-            color: var(--baseball-red);
-            font-weight: 700;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 1.5rem;
             margin-bottom: 2rem;
-            font-size: 1.5rem;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-        
-        .filter-section .form-label {
-            color: var(--dark-color);
-            font-weight: 600;
-            margin-bottom: 0.75rem;
-        }
-        
-        .filter-section .form-select,
-        .filter-section .form-control {
-            border: 2px solid rgba(212, 32, 47, 0.2);
-            border-radius: 0.75rem;
-            transition: all 0.3s ease;
-            font-weight: 500;
-        }
-        
-        .filter-section .form-select:focus,
-        .filter-section .form-control:focus {
-            border-color: var(--baseball-red);
-            box-shadow: 0 0 0 0.2rem rgba(212, 32, 47, 0.25);
-            transform: translateY(-1px);
         }
 
         .schedule-table {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
-            border-radius: 1.5rem;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             overflow: hidden;
-            position: relative;
-        }
-        
-        .schedule-table::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: var(--baseball-gradient);
         }
 
         .table th {
-            background: var(--baseball-gradient);
+            background-color: var(--primary-color);
             color: white;
             border: none;
-            font-weight: 700;
-            padding: 1.75rem 1.5rem;
-            font-size: 1rem;
-            text-transform: uppercase;
-            letter-spacing: 0.75px;
-            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+            font-weight: 600;
         }
 
         .table td {
             vertical-align: middle;
-            border-color: rgba(212, 32, 47, 0.1);
-            padding: 1.5rem 1.5rem;
-            font-size: 1rem;
-        }
-        
-        .table tbody tr:hover {
-            background: linear-gradient(135deg, rgba(212, 32, 47, 0.05) 0%, rgba(25, 118, 210, 0.05) 100%);
-            transform: scale(1.005);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        }
-
-        .btn {
-            border-radius: 1rem;
-            font-weight: 700;
-            padding: 0.875rem 1.75rem;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            border: none;
-            font-size: 0.9rem;
-            text-transform: uppercase;
-            letter-spacing: 0.75px;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            transition: left 0.5s ease;
-        }
-        
-        .btn:hover::before {
-            left: 100%;
-        }
-
-        .btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+            border-color: var(--border-color);
         }
 
         .btn-primary {
-            background: var(--baseball-gradient);
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .btn-primary:hover {
+            background-color: #1e40af;
+            border-color: #1e40af;
         }
 
         .btn-secondary {
-            background: var(--baseball-blue);
-        }
-        
-        .btn-success {
-            background: var(--field-gradient);
-        }
-        
-        .btn-warning {
-            background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
-        }
-        
-        .btn-danger {
-            background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
+            background-color: var(--secondary-color);
+            border-color: var(--secondary-color);
         }
 
         .umpire-request-form {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
-            border-radius: 1.5rem;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-            padding: 3rem;
-            margin-top: 3rem;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .umpire-request-form::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: var(--softball-gradient);
-        }
-        
-        .umpire-request-form h3 {
-            color: var(--softball-purple);
-            font-weight: 700;
-            margin-bottom: 2rem;
-            font-size: 1.75rem;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 2rem;
+            margin-top: 2rem;
         }
 
-        .form-control, .form-select {
-            border-radius: 0.75rem;
-            border: 2px solid rgba(212, 32, 47, 0.2);
-            transition: all 0.3s ease;
-            font-weight: 500;
-            padding: 0.875rem 1rem;
-        }
-        
-        .form-control:focus, .form-select:focus {
-            border-color: var(--baseball-red);
-            box-shadow: 0 0 0 0.2rem rgba(212, 32, 47, 0.25);
-            transform: translateY(-1px);
-        }
-        
-        .form-label {
-            color: var(--dark-color);
-            font-weight: 600;
-            margin-bottom: 0.75rem;
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(30, 58, 138, 0.25);
         }
 
         .alert {
-            border-radius: 1rem;
+            border-radius: 8px;
             border: none;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            font-weight: 500;
-            padding: 1.25rem 1.5rem;
-        }
-        
-        .alert-success {
-            background: linear-gradient(135deg, rgba(56, 142, 60, 0.1) 0%, rgba(76, 175, 80, 0.1) 100%);
-            color: var(--field-green);
-            border-left: 4px solid var(--field-green);
-        }
-        
-        .alert-warning {
-            background: linear-gradient(135deg, rgba(255, 152, 0, 0.1) 0%, rgba(255, 193, 7, 0.1) 100%);
-            color: #f57c00;
-            border-left: 4px solid #f57c00;
-        }
-        
-        .alert-danger {
-            background: linear-gradient(135deg, rgba(244, 67, 54, 0.1) 0%, rgba(229, 57, 53, 0.1) 100%);
-            color: var(--danger-color);
-            border-left: 4px solid var(--danger-color);
-        }
-        
-        .alert-info {
-            background: linear-gradient(135deg, rgba(123, 31, 162, 0.1) 0%, rgba(156, 39, 176, 0.1) 100%);
-            color: var(--softball-purple);
-            border-left: 4px solid var(--softball-purple);
         }
 
         .filter-toggle {
@@ -505,122 +238,6 @@
             padding: 2rem;
             color: #6b7280;
         }
-        
-        /* Enhanced Badge Styling */
-        .badge {
-            border-radius: 0.5rem;
-            font-weight: 600;
-            padding: 0.5rem 0.75rem;
-            font-size: 0.8rem;
-        }
-        
-        .badge.bg-success {
-            background: var(--field-gradient) !important;
-        }
-        
-        .badge.bg-warning {
-            background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%) !important;
-        }
-        
-        .badge.bg-danger {
-            background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%) !important;
-        }
-        
-        .badge.bg-info {
-            background: var(--softball-gradient) !important;
-        }
-        
-        /* Enhanced Container Spacing */
-        .container {
-            padding: 2rem 1rem;
-        }
-        
-        .row {
-            margin-bottom: 2rem;
-        }
-        
-        .col-md-6, .col-lg-4, .col-xl-3 {
-            margin-bottom: 2rem;
-        }
-        
-        /* Baseball Theme Enhancements */
-        .baseball-diamond {
-            position: relative;
-            width: 100%;
-            height: 100%;
-        }
-        
-        .baseball-diamond::before {
-            content: '⚾';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 2rem;
-            opacity: 0.1;
-            animation: rotate 10s linear infinite;
-        }
-        
-        @keyframes rotate {
-            from { transform: translate(-50%, -50%) rotate(0deg); }
-            to { transform: translate(-50%, -50%) rotate(360deg); }
-        }
-        
-        /* Enhanced Stats Cards */
-        .admin-card {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
-            border-radius: 1.5rem;
-            padding: 2.5rem 2rem;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            height: 100%;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .admin-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: var(--baseball-gradient);
-            transform: scaleX(0);
-            transition: transform 0.4s ease;
-        }
-        
-        .admin-card:hover {
-            transform: translateY(-8px) scale(1.02);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-        }
-        
-        .admin-card:hover::before {
-            transform: scaleX(1);
-        }
-        
-        .admin-card i {
-            color: var(--baseball-red);
-            margin-bottom: 1.5rem;
-            transition: all 0.3s ease;
-        }
-        
-        .admin-card:hover i {
-            color: var(--baseball-blue);
-            transform: scale(1.1);
-        }
-        
-        .gradient-text {
-            background: var(--baseball-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            font-size: 2.5rem;
-            font-weight: 800;
-            margin-bottom: 1rem;
-        }
     </style>
 </head>
 <body>
@@ -628,6 +245,7 @@
     <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
         <div class="container">
             <a class="navbar-brand" href="#">
+                <i class="fas fa-baseball-ball me-2"></i>
                 Baseball/Softball Schedule Manager
             </a>
             <a href="/admin" class="btn btn-outline-primary">
@@ -639,17 +257,20 @@
     <!-- Hero Section -->
     <div class="hero-section text-center">
         <div class="container">
-            <h1 class="display-4 fw-bold mb-4">
-                Baseball & Softball Schedule Manager
-            </h1>
-            <p class="lead mb-4">Professional schedule management system with advanced features and real-time updates</p>
-            <div class="d-flex justify-content-center gap-3">
-                <button class="btn btn-light btn-lg" onclick="toggleFilterSection()">
-                    <i class="fas fa-filter me-2"></i>Filter Schedules
-                </button>
-                <button class="btn btn-outline-light btn-lg" onclick="scrollToScheduleTable()">
-                    <i class="fas fa-calendar-alt me-2"></i>View All
-                </button>
+            <div class="float">
+                <h1 class="display-4 fw-bold mb-4">
+                    <i class="fas fa-baseball-ball me-3"></i>
+                    Baseball & Softball Schedule Manager
+                </h1>
+                <p class="lead mb-4">Professional schedule management system with advanced features and real-time updates</p>
+                <div class="d-flex justify-content-center gap-3">
+                    <button class="btn btn-light btn-lg shadow-3d" onclick="toggleFilterSection()">
+                        <i class="fas fa-filter me-2"></i>Filter Schedules
+                    </button>
+                    <button class="btn btn-outline-light btn-lg shadow-3d" onclick="scrollToScheduleTable()">
+                        <i class="fas fa-calendar-alt me-2"></i>View All
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -658,36 +279,36 @@
     <div class="container mt-5">
         <div class="row g-4 mb-5">
             <div class="col-md-3">
-                <div class="admin-card text-center">
+                <div class="admin-card text-center shadow-3d">
                     <div class="mb-3">
-                        <i class="fas fa-calendar-check fa-3x"></i>
+                        <i class="fas fa-calendar-check fa-3x text-primary"></i>
                     </div>
                     <h4 class="gradient-text" id="totalGames">0</h4>
                     <p class="text-muted mb-0">Total Games</p>
                 </div>
             </div>
             <div class="col-md-3">
-                <div class="admin-card text-center">
+                <div class="admin-card text-center shadow-3d">
                     <div class="mb-3">
-                        <i class="fas fa-users fa-3x"></i>
+                        <i class="fas fa-users fa-3x text-success"></i>
                     </div>
                     <h4 class="gradient-text" id="totalTeams">0</h4>
                     <p class="text-muted mb-0">Active Teams</p>
                 </div>
             </div>
             <div class="col-md-3">
-                <div class="admin-card text-center">
+                <div class="admin-card text-center shadow-3d">
                     <div class="mb-3">
-                        <i class="fas fa-map-marker-alt fa-3x"></i>
+                        <i class="fas fa-map-marker-alt fa-3x text-warning"></i>
                     </div>
                     <h4 class="gradient-text" id="totalVenues">0</h4>
                     <p class="text-muted mb-0">Venues</p>
                 </div>
             </div>
             <div class="col-md-3">
-                <div class="admin-card text-center">
+                <div class="admin-card text-center shadow-3d">
                     <div class="mb-3">
-                        <i class="fas fa-utensils fa-3x"></i>
+                        <i class="fas fa-utensils fa-3x text-info"></i>
                     </div>
                     <h4 class="gradient-text" id="totalConcessions">0</h4>
                     <p class="text-muted mb-0">Concession Stands</p>

@@ -98,6 +98,18 @@ db.serialize(() => {
     FOREIGN KEY (game_id) REFERENCES schedules (id)
   )`);
 
+  // Concession staff request table
+  db.run(`CREATE TABLE IF NOT EXISTS concession_staff_requests (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    game_id INTEGER NOT NULL,
+    current_concession_staff TEXT NOT NULL,
+    requested_concession_staff TEXT,
+    reason TEXT NOT NULL,
+    status TEXT DEFAULT 'pending',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (game_id) REFERENCES schedules (id)
+  )`);
+
   // Insert sample staff data if table is empty
   db.get("SELECT COUNT(*) as count FROM staff_directory", [], (err, row) => {
     if (err) {
@@ -358,6 +370,55 @@ app.put('/api/umpire-requests/:id/status', (req, res) => {
   const { status } = req.body;
 
   db.run('UPDATE umpire_requests SET status = ? WHERE id = ?', [status, id], function(err) {
+    if (err) {
+      res.status(500).json({ error: err.message });
+      return;
+    }
+    res.json({ message: 'Request status updated successfully' });
+  });
+});
+
+// Concession Staff Request Routes
+app.post('/api/concession-staff-requests', (req, res) => {
+  const {
+    game_id, current_concession_staff, requested_concession_staff, reason
+  } = req.body;
+
+  const query = `INSERT INTO concession_staff_requests (
+    game_id, current_concession_staff, requested_concession_staff, reason
+  ) VALUES (?, ?, ?, ?)`;
+
+  db.run(query, [game_id, current_concession_staff, requested_concession_staff, reason], function(err) {
+    if (err) {
+      res.status(500).json({ error: err.message });
+      return;
+    }
+    res.json({ id: this.lastID, message: 'Request submitted successfully' });
+  });
+});
+
+app.get('/api/concession-staff-requests', (req, res) => {
+  const query = `
+    SELECT csr.*, s.date, s.start_time, s.home_team, s.visitor_team, s.venue
+    FROM concession_staff_requests csr
+    JOIN schedules s ON csr.game_id = s.id
+    ORDER BY csr.created_at DESC
+  `;
+  
+  db.all(query, [], (err, rows) => {
+    if (err) {
+      res.status(500).json({ error: err.message });
+      return;
+    }
+    res.json(rows);
+  });
+});
+
+app.put('/api/concession-staff-requests/:id/status', (req, res) => {
+  const { id } = req.params;
+  const { status } = req.body;
+
+  db.run('UPDATE concession_staff_requests SET status = ? WHERE id = ?', [status, id], function(err) {
     if (err) {
       res.status(500).json({ error: err.message });
       return;
