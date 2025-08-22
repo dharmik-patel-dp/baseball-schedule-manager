@@ -75,7 +75,7 @@ function showSection(sectionName) {
 }
 
 // Initialize the application
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', async function() {
     try {
         // Initialize theme first
         initAdminEnhancedTheme();
@@ -83,41 +83,22 @@ document.addEventListener('DOMContentLoaded', function() {
         // Setup event listeners
         setupEventListeners();
         
-        // Load data
-    loadSchedules();
-    loadUmpireRequests();
-        loadConcessionStaffRequests();
-        loadStaff();
-        loadPlateUmpires();
-        loadBaseUmpires();
+        // Load data in proper order
+        await loadSchedules(); // Wait for schedules to load first
+        await loadUmpireRequests(); // Then load requests (which need schedules)
+        await loadConcessionStaffRequests(); // Then load concession requests
+        await loadStaff();
+        await loadPlateUmpires();
+        await loadBaseUmpires();
         
         // Add 3D effects after DOM loads
         setTimeout(addAdmin3DEffects, 1000);
         
         // Update stats after data loads
-        if (typeof loadSchedules === 'function') {
-            const originalLoadSchedules = loadSchedules;
-            loadSchedules = function() {
-                originalLoadSchedules.apply(this, arguments);
-                setTimeout(updateAdminStats, 500);
-            };
+        if (typeof updateAdminStats === 'function') {
+            setTimeout(updateAdminStats, 500);
         }
         
-        if (typeof loadUmpireRequests === 'function') {
-            const originalLoadUmpireRequests = loadUmpireRequests;
-            loadUmpireRequests = function() {
-                originalLoadUmpireRequests.apply(this, arguments);
-                setTimeout(updateAdminStats, 500);
-            };
-        }
-        
-        if (typeof loadStaff === 'function') {
-            const originalLoadStaff = loadStaff;
-            loadStaff = function() {
-                originalLoadStaff.apply(this, arguments);
-                setTimeout(updateAdminStats, 500);
-            };
-        }
     } catch (error) {
         console.error('Error during initialization:', error);
         showAlert('Error initializing admin panel. Please refresh the page.', 'danger');
@@ -284,6 +265,25 @@ async function loadUmpireRequests() {
         if (!response.ok) throw new Error('Failed to fetch umpire requests');
         
         allUmpireRequests = await response.json();
+        
+        // Enrich requests with game details
+        allUmpireRequests = allUmpireRequests.map(request => {
+            const game = allSchedules.find(s => s.id == request.game_id);
+            if (game) {
+                request.game_details = `${game.home_team} vs ${game.visitor_team} on ${formatDate(game.date)} at ${game.start_time}`;
+                // Also enrich current umpire data if not already present
+                if (!request.current_plate_umpire) {
+                    request.current_plate_umpire = game.plate_umpire || 'N/A';
+                }
+                if (!request.current_base_umpire) {
+                    request.current_base_umpire = game.base_umpire || 'N/A';
+                }
+            } else {
+                request.game_details = 'Game not found';
+            }
+            return request;
+        });
+        
         renderUmpireRequestsTable();
     } catch (error) {
         console.error('Error loading umpire requests:', error);
@@ -298,6 +298,22 @@ async function loadConcessionStaffRequests() {
         if (!response.ok) throw new Error('Failed to fetch concession staff requests');
         
         allConcessionStaffRequests = await response.json();
+        
+        // Enrich requests with game details
+        allConcessionStaffRequests = allConcessionStaffRequests.map(request => {
+            const game = allSchedules.find(s => s.id == request.game_id);
+            if (game) {
+                request.game_details = `${game.home_team} vs ${game.visitor_team} on ${formatDate(game.date)} at ${game.start_time}`;
+                // Also enrich current concession staff data if not already present
+                if (!request.current_concession_staff) {
+                    request.current_concession_staff = game.concession_staff || 'No staff assigned';
+                }
+            } else {
+                request.game_details = 'Game not found';
+            }
+            return request;
+        });
+        
         renderConcessionStaffRequestsTable();
     } catch (error) {
         console.error('Error loading concession staff requests:', error);
@@ -697,6 +713,10 @@ async function handleScheduleSubmit(e) {
         
         // Reload schedules to show the new one
         await loadSchedules();
+        
+        // Also refresh requests since they depend on schedule data
+        await loadUmpireRequests();
+        await loadConcessionStaffRequests();
     } catch (error) {
         console.error('❌ Error creating schedule:', error);
         showAlert('Error creating schedule. Please try again.', 'danger');
@@ -1710,6 +1730,10 @@ async function handleEditScheduleSubmit(e) {
         
         // Reload schedules to show the updated one
         await loadSchedules();
+        
+        // Also refresh requests since they depend on schedule data
+        await loadUmpireRequests();
+        await loadConcessionStaffRequests();
     } catch (error) {
         console.error('❌ Error updating schedule:', error);
         showAlert('Error updating schedule. Please try again.', 'danger');
@@ -1738,6 +1762,10 @@ async function deleteSchedule(id) {
         
         // Reload schedules to remove the deleted one
         await loadSchedules();
+        
+        // Also refresh requests since they depend on schedule data
+        await loadUmpireRequests();
+        await loadConcessionStaffRequests();
     } catch (error) {
         console.error('❌ Error deleting schedule:', error);
         showAlert('Error deleting schedule. Please try again.', 'danger');
