@@ -457,7 +457,7 @@ app.post('/api/upload-csv', upload.single('csv'), (req, res) => {
         db.run(query, [
           row.season, row.event_type, row.day, row.date, row.start_time, row.am_pm, row.division,
           row.home_team, row.home_coach, row.visitor_team, row.visitor_coach,
-          row.venue, row.plate_umpire, row.base_umpire, row.concession_stand, row.concession_staff
+          row.venue, row.plate_umpire, row.base_umpire, row.concession_stand, row.concession_staff || ''
         ], function(err) {
           if (err) {
             errors++;
@@ -473,6 +473,189 @@ app.post('/api/upload-csv', upload.single('csv'), (req, res) => {
               total: results.length
             });
           }
+        });
+      });
+    });
+});
+
+// Staff Directory CSV upload endpoint
+app.post('/api/upload-staff-csv', upload.single('csv'), (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ error: 'No file uploaded' });
+  }
+
+  const results = [];
+  const rowErrors = [];
+  
+  fs.createReadStream(req.file.path)
+    .pipe(csv())
+    .on('data', (data) => {
+      // Normalize keys by trimming and lowering
+      const normalized = {};
+      Object.keys(data || {}).forEach(k => {
+        if (!k) return;
+        const key = String(k).trim();
+        normalized[key] = typeof data[k] === 'string' ? data[k].trim() : data[k];
+      });
+      console.log('📊 Staff CSV row data:', normalized);
+      results.push(normalized);
+    })
+    .on('end', () => {
+      console.log(`📊 Processing ${results.length} staff CSV rows...`);
+      
+      if (results.length === 0) {
+        fs.unlink(req.file.path, (err) => {
+          if (err) console.error('Error deleting uploaded file:', err);
+        });
+        return res.status(400).json({
+          message: 'CSV file is empty',
+          committed: false,
+          totalRows: 0,
+          successCount: 0,
+          errorCount: 0,
+          rowErrors: []
+        });
+      }
+
+      // Basic validation helpers
+      function isEmpty(value) {
+        return value === undefined || value === null || String(value).trim() === '';
+      }
+
+      function validateStaffRow(row, index) {
+        const errors = [];
+        // Required fields
+        if (isEmpty(row.name)) {
+          errors.push('name is required');
+        }
+        
+        // Optional fields validation
+        if (!isEmpty(row.email) && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(row.email)) {
+          errors.push('email format is invalid');
+        }
+        
+        if (!isEmpty(row.phone) && !/^[\d\-\+\(\)\s]+$/.test(row.phone)) {
+          errors.push('phone format is invalid');
+        }
+
+        if (errors.length > 0) {
+          rowErrors.push({ row: index + 1, errors });
+          return false;
+        }
+        return true;
+      }
+
+      // Validate all rows first
+      results.forEach((row, idx) => validateStaffRow(row, idx));
+
+      if (rowErrors.length > 0) {
+        // Clean up uploaded file
+        fs.unlink(req.file.path, (err) => {
+          if (err) console.error('Error deleting uploaded file:', err);
+        });
+        return res.status(400).json({
+          message: 'Staff CSV failed validation',
+          committed: false,
+          totalRows: results.length,
+          successCount: 0,
+          errorCount: rowErrors.length,
+          rowErrors
+        });
+      }
+
+      // Start transaction
+      db.run('BEGIN TRANSACTION', (err) => {
+        if (err) {
+          console.error('Error starting transaction:', err);
+          fs.unlink(req.file.path, (err) => {
+            if (err) console.error('Error deleting uploaded file:', err);
+          });
+          return res.status(500).json({
+            message: 'Database transaction failed',
+            committed: false,
+            totalRows: results.length,
+            successCount: 0,
+            errorCount: results.length,
+            rowErrors: [{ row: 0, errors: [err.message] }]
+          });
+        }
+
+        let successCount = 0;
+        let errorCount = 0;
+        let processedCount = 0;
+
+        results.forEach((row, index) => {
+          const query = `
+            INSERT INTO staff_directory (
+              name, email, phone, parent_name, parent_email, parent_phone, role
+            ) VALUES (?, ?, ?, ?, ?, ?, ?)
+          `;
+          
+          const values = [
+            row.name,
+            row.email || '',
+            row.phone || '',
+            row.parent_name || '',
+            row.parent_email || '',
+            row.parent_phone || '',
+            row.role || 'Staff'
+          ];
+
+          db.run(query, values, function(err) {
+            processedCount++;
+            
+            if (err) {
+              console.error(`❌ Error inserting staff row ${index + 1}:`, err);
+              errorCount++;
+              rowErrors.push({ row: index + 1, errors: [err.message] });
+            } else {
+              console.log(`✅ Staff row ${index + 1} inserted successfully, ID: ${this.lastID}`);
+              successCount++;
+            }
+
+            if (processedCount === results.length) {
+              if (errorCount > 0) {
+                // Rollback transaction if there were errors
+                db.run('ROLLBACK', (rollbackErr) => {
+                  if (rollbackErr) console.error('Error rolling back transaction:', rollbackErr);
+                  
+                  // Clean up uploaded file
+                  fs.unlink(req.file.path, (err) => {
+                    if (err) console.error('Error deleting uploaded file:', err);
+                  });
+
+                  res.status(400).json({
+                    message: 'Staff CSV processing failed',
+                    committed: false,
+                    totalRows: results.length,
+                    successCount,
+                    errorCount,
+                    rowErrors
+                  });
+                });
+              } else {
+                // Commit transaction if all successful
+                db.run('COMMIT', (commitErr) => {
+                  if (commitErr) console.error('Error committing transaction:', commitErr);
+                  
+                  // Clean up uploaded file
+                  fs.unlink(req.file.path, (err) => {
+                    if (err) console.error('Error deleting uploaded file:', err);
+                  });
+
+                  console.log(`✅ Staff CSV processed successfully: ${successCount} rows inserted`);
+                  res.json({
+                    message: 'Staff CSV processed successfully',
+                    committed: true,
+                    totalRows: results.length,
+                    successCount,
+                    errorCount,
+                    rowErrors: []
+                  });
+                });
+              }
+            }
+          });
         });
       });
     });

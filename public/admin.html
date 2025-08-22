@@ -941,6 +941,9 @@
                     <button class="btn btn-primary" onclick="showAddStaffModal()">
                         <i class="fas fa-plus me-2"></i>Add Staff Member
                     </button>
+                    <button class="btn btn-outline-primary" onclick="showStaffUploadModal()">
+                        <i class="fas fa-upload me-2"></i>Upload Staff CSV
+                    </button>
                 </div>
             </div>
             
@@ -1289,6 +1292,50 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                     <button type="button" class="btn btn-primary" onclick="uploadCSV()">Upload</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Staff CSV Upload Modal -->
+    <div class="modal fade" id="staffUploadModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Bulk Upload Staff CSV</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="csv-upload-area" id="staffCsvUploadArea" 
+                         ondragover="handleStaffDragOver(event)" 
+                         ondrop="handleStaffDrop(event)" 
+                         ondragleave="handleStaffDragLeave(event)"
+                         onclick="document.getElementById('staffCsvFile').click()">
+                        <i class="fas fa-users"></i>
+                        <h5>Drag & Drop Staff CSV File</h5>
+                        <p>or click to browse</p>
+                        <input type="file" id="staffCsvFile" accept=".csv" style="display: none;" onchange="handleStaffCSVFileSelect(event)">
+                    </div>
+
+                    <!-- Staff CSV Result Report -->
+                    <div id="staffCsvResultReport" class="mt-3" style="display:none;">
+                        <div class="alert" id="staffCsvResultSummary"></div>
+                        <div id="staffCsvRowErrors" class="mt-2"></div>
+                    </div>
+
+                    <!-- Staff CSV Format Info -->
+                    <div class="mt-3">
+                        <div class="alert alert-info">
+                            <h6><i class="fas fa-info-circle me-2"></i>Staff CSV Format:</h6>
+                            <p class="mb-1 small">Required: <strong>name</strong></p>
+                            <p class="mb-1 small">Optional: <strong>email</strong>, <strong>phone</strong>, <strong>parent_name</strong>, <strong>parent_email</strong>, <strong>parent_phone</strong>, <strong>role</strong></p>
+                            <p class="mb-0 small">Default role: <strong>Staff</strong></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="uploadStaffCSV()">Upload Staff</button>
                 </div>
             </div>
         </div>

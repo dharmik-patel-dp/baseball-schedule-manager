@@ -158,15 +158,7 @@ function setupEventListeners() {
     const uploadModal = document.getElementById('uploadModal');
     if (uploadModal) {
         uploadModal.addEventListener('hidden.bs.modal', () => {
-            csvData = null;
-            const uploadBtn = document.querySelector('#uploadModal .btn-primary');
-            if (uploadBtn) {
-                uploadBtn.innerHTML = '<i class="fas fa-upload me-2"></i>Upload';
-            }
-            const csvFileInput = document.getElementById('csvFile');
-            if (csvFileInput) {
-                csvFileInput.value = '';
-            }
+            resetCSVModalState();
         });
     }
     
@@ -178,6 +170,14 @@ function setupEventListeners() {
     //     csvUploadArea.addEventListener('dragleave', handleDragLeave);
     //     csvUploadArea.addEventListener('click', () => csvFile?.click());
     // }
+
+    // Staff CSV Modal event listeners
+    const staffUploadModal = document.getElementById('staffUploadModal');
+    if (staffUploadModal) {
+        staffUploadModal.addEventListener('hidden.bs.modal', () => {
+            resetStaffCSVModalState();
+        });
+    }
 }
 
 // Missing functions that were referenced in HTML
@@ -977,6 +977,216 @@ function escapeHtml(str) {
         .replace(/>/g, '&gt;')
         .replace(/"/g, '&quot;')
         .replace(/'/g, '&#039;');
+}
+
+// Staff CSV Upload Functions
+let staffCsvData = null;
+
+function showStaffUploadModal() {
+    const modal = new bootstrap.Modal(document.getElementById('staffUploadModal'));
+    modal.show();
+}
+
+function handleStaffCSVFileSelect(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    
+    // Validate file type
+    if (file.type !== 'text/csv' && !file.name.toLowerCase().endsWith('.csv')) {
+        showAlert('Please select a valid CSV file', 'warning');
+        e.target.value = '';
+        return;
+    }
+    
+    // Validate file size (5MB limit)
+    if (file.size > 5 * 1024 * 1024) {
+        showAlert('File size must be less than 5MB', 'warning');
+        e.target.value = '';
+        return;
+    }
+    
+    staffCsvData = file;
+    console.log('📁 Staff CSV file selected:', file.name, 'Size:', (file.size / 1024).toFixed(2) + 'KB');
+    showAlert(`Staff CSV file selected: ${file.name}`, 'success');
+    
+    // Update upload button text
+    const uploadBtn = document.querySelector('#staffUploadModal .btn-primary');
+    if (uploadBtn) {
+        uploadBtn.innerHTML = `<i class="fas fa-upload me-2"></i>Upload ${file.name}`;
+    }
+}
+
+function handleStaffDragOver(e) {
+    e.preventDefault();
+    e.currentTarget.style.borderColor = '#4e73df';
+    e.currentTarget.style.backgroundColor = '#f8f9fc';
+}
+
+function handleStaffDrop(e) {
+    e.preventDefault();
+    const file = e.dataTransfer.files[0];
+    
+    if (!file) {
+        showAlert('No file dropped', 'warning');
+        return;
+    }
+    
+    // Validate file type
+    if (file.type !== 'text/csv' && !file.name.toLowerCase().endsWith('.csv')) {
+        showAlert('Please drop a valid CSV file', 'warning');
+        return;
+    }
+    
+    // Validate file size (5MB limit)
+    if (file.size > 5 * 1024 * 1024) {
+        showAlert('File size must be less than 5MB', 'warning');
+        return;
+    }
+    
+    staffCsvData = file;
+    console.log('📁 Staff CSV file dropped:', file.name, 'Size:', (file.size / 1024).toFixed(2) + 'KB');
+    showAlert(`Staff CSV file dropped: ${file.name}`, 'success');
+    
+    // Update upload button text
+    const uploadBtn = document.querySelector('#staffUploadModal .btn-primary');
+    if (uploadBtn) {
+        uploadBtn.innerHTML = `<i class="fas fa-upload me-2"></i>Upload ${file.name}`;
+    }
+    
+    // Reset drag area styling
+    e.currentTarget.style.borderColor = '#e3e6f0';
+    e.currentTarget.style.backgroundColor = '#f8f9fc';
+}
+
+function handleStaffDragLeave(e) {
+    e.currentTarget.style.borderColor = '#e3e6f0';
+    e.currentTarget.style.backgroundColor = '#f8f9fc';
+}
+
+async function uploadStaffCSV() {
+    if (!staffCsvData) {
+        showAlert('Please select a staff CSV file first', 'warning');
+        return;
+    }
+    
+    console.log('📤 Uploading staff CSV file:', staffCsvData.name);
+    
+    // Show loading state
+    const uploadBtn = document.querySelector('#staffUploadModal .btn-primary');
+    const originalText = uploadBtn.innerHTML;
+    uploadBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Uploading...';
+    uploadBtn.disabled = true;
+    
+    const formData = new FormData();
+    formData.append('csv', staffCsvData);
+    
+    try {
+        const response = await fetch('/api/upload-staff-csv', {
+            method: 'POST',
+            body: formData
+        });
+        
+        const result = await response.json();
+        
+        if (!response.ok) {
+            throw new Error(result.error || 'Failed to upload staff CSV');
+        }
+        
+        console.log('✅ Staff CSV upload result:', result);
+        
+        // Render detailed staff CSV result report inside modal
+        renderStaffCSVResultReport(result);
+        
+        // If committed, reload staff and optionally close modal
+        if (result.committed) {
+            await loadStaff();
+            showAlert(`Staff CSV uploaded successfully! ${result.totalRows} rows processed, ${result.successCount} inserted.`, 'success');
+            // Auto-close after 15 seconds
+            setTimeout(() => {
+                const modal = bootstrap.Modal.getInstance(document.getElementById('staffUploadModal'));
+                if (modal) modal.hide();
+                resetStaffCSVModalState();
+            }, 15000);
+        } else {
+            // Keep modal open so the admin can see errors
+            showAlert(`Staff CSV validation failed. Please review the row errors.`, 'warning');
+        }
+        
+    } catch (error) {
+        console.error('❌ Error uploading staff CSV:', error);
+        showAlert(`Error uploading staff CSV: ${error.message}`, 'danger');
+    } finally {
+        // Reset button state
+        uploadBtn.innerHTML = originalText;
+        uploadBtn.disabled = false;
+    }
+}
+
+function resetStaffCSVModalState() {
+    staffCsvData = null;
+    const uploadBtn = document.querySelector('#staffUploadModal .btn-primary');
+    if (uploadBtn) {
+        uploadBtn.innerHTML = '<i class="fas fa-upload me-2"></i>Upload Staff';
+    }
+    const csvFileInput = document.getElementById('staffCsvFile');
+    if (csvFileInput) {
+        csvFileInput.value = '';
+    }
+    const report = document.getElementById('staffCsvResultReport');
+    if (report) report.style.display = 'none';
+    const summary = document.getElementById('staffCsvResultSummary');
+    if (summary) {
+        summary.className = 'alert';
+        summary.innerHTML = '';
+    }
+    const rowErrors = document.getElementById('staffCsvRowErrors');
+    if (rowErrors) rowErrors.innerHTML = '';
+}
+
+function renderStaffCSVResultReport(result) {
+    const report = document.getElementById('staffCsvResultReport');
+    const summary = document.getElementById('staffCsvResultSummary');
+    const rowErrors = document.getElementById('staffCsvRowErrors');
+    if (!report || !summary || !rowErrors) return;
+
+    report.style.display = 'block';
+
+    const total = result.totalRows ?? result.total ?? 0;
+    const success = result.successCount ?? result.inserted ?? 0;
+    const errors = result.errorCount ?? result.errors ?? 0;
+    const committed = result.committed === true;
+    const rows = Array.isArray(result.rowErrors) ? result.rowErrors : [];
+
+    summary.className = `alert ${committed ? 'alert-success' : errors > 0 ? 'alert-warning' : 'alert-info'}`;
+    summary.innerHTML = `
+        <div class="d-flex align-items-center">
+            <i class="fas ${committed ? 'fa-check-circle text-success' : errors > 0 ? 'fa-exclamation-triangle text-warning' : 'fa-info-circle text-info'} me-2"></i>
+            <div>
+                <strong>${committed ? 'Staff Upload Successful' : errors > 0 ? 'Staff Validation Report' : 'Staff Upload Result'}</strong><br>
+                Processed: <strong>${total}</strong> &nbsp; Inserted: <strong>${success}</strong> &nbsp; Errors: <strong>${errors}</strong>
+            </div>
+        </div>
+    `;
+
+    if (rows.length > 0) {
+        rowErrors.innerHTML = `
+            <div class="card">
+                <div class="card-header py-2">
+                    <strong>Row Errors (${rows.length})</strong>
+                </div>
+                <div class="card-body p-2" style="max-height: 240px; overflow:auto;">
+                    ${rows.map(r => `
+                        <div class="mb-2 small">
+                            <span class="badge bg-danger me-2">Row ${r.row}</span>
+                            ${Array.isArray(r.errors) ? r.errors.map(e => `<span class="badge bg-light text-dark me-1">${escapeHtml(e)}</span>`).join('') : ''}
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        `;
+    } else {
+        rowErrors.innerHTML = '';
+    }
 }
 
 // Utility functions
