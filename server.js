@@ -81,8 +81,27 @@ db.serialize(() => {
     base_umpire TEXT NOT NULL,
     concession_stand TEXT NOT NULL,
     concession_staff TEXT,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
   )`);
+
+  // Add updated_at column to existing schedules table if it doesn't exist
+  db.run(`ALTER TABLE schedules ADD COLUMN updated_at DATETIME DEFAULT CURRENT_TIMESTAMP`, (err) => {
+    if (err && !err.message.includes('duplicate column name')) {
+      console.log('ℹ️ updated_at column already exists or added successfully');
+    }
+  });
+
+  // Create trigger to automatically update updated_at timestamp
+  db.run(`CREATE TRIGGER IF NOT EXISTS update_schedules_timestamp 
+          AFTER UPDATE ON schedules 
+          BEGIN 
+            UPDATE schedules SET updated_at = CURRENT_TIMESTAMP WHERE id = NEW.id; 
+          END`, (err) => {
+    if (err) {
+      console.log('ℹ️ Trigger already exists or created successfully');
+    }
+  });
 
   // Umpire request table
   db.run(`CREATE TABLE IF NOT EXISTS umpire_requests (
@@ -568,12 +587,89 @@ app.put('/api/umpire-requests/:id/status', (req, res) => {
   const { id } = req.params;
   const { status } = req.body;
 
-  db.run('UPDATE umpire_requests SET status = ? WHERE id = ?', [status, id], function(err) {
+  // First, get the umpire request details to know which game and what umpires were requested
+  db.get('SELECT * FROM umpire_requests WHERE id = ?', [id], (err, request) => {
     if (err) {
       res.status(500).json({ error: err.message });
       return;
     }
-    res.json({ message: 'Request status updated successfully' });
+    
+    if (!request) {
+      res.status(404).json({ error: 'Umpire request not found' });
+      return;
+    }
+
+    // Start a transaction to update both the request status and the game schedule
+    db.run('BEGIN TRANSACTION', (err) => {
+      if (err) {
+        res.status(500).json({ error: 'Failed to start transaction' });
+        return;
+      }
+
+      // Update the umpire request status
+      db.run('UPDATE umpire_requests SET status = ? WHERE id = ?', [status, id], function(err) {
+        if (err) {
+          db.run('ROLLBACK', () => {});
+          res.status(500).json({ error: err.message });
+          return;
+        }
+
+        // If the request is approved, update the game schedule with the new umpire assignments
+        if (status === 'approved') {
+          const updateQuery = `
+            UPDATE schedules 
+            SET plate_umpire = ?, base_umpire = ?, updated_at = CURRENT_TIMESTAMP
+            WHERE id = ?
+          `;
+          
+          const updateValues = [
+            request.requested_plate_umpire || request.current_plate_umpire,
+            request.requested_base_umpire || request.current_base_umpire,
+            request.game_id
+          ];
+
+          db.run(updateQuery, updateValues, function(err) {
+            if (err) {
+              db.run('ROLLBACK', () => {});
+              res.status(500).json({ error: 'Failed to update game schedule: ' + err.message });
+              return;
+            }
+
+            // Commit the transaction
+            db.run('COMMIT', (err) => {
+              if (err) {
+                res.status(500).json({ error: 'Failed to commit transaction' });
+                return;
+              }
+
+              console.log(`✅ Umpire request ${id} approved and game schedule updated for game ${request.game_id}`);
+              res.json({ 
+                message: 'Request approved and game schedule updated successfully',
+                gameId: request.game_id,
+                updatedUmpires: {
+                  plate_umpire: request.requested_plate_umpire || request.current_plate_umpire,
+                  base_umpire: request.requested_base_umpire || request.current_base_umpire
+                }
+              });
+            });
+          });
+        } else {
+          // If not approved, just commit the status update
+          db.run('COMMIT', (err) => {
+            if (err) {
+              res.status(500).json({ error: 'Failed to commit transaction' });
+              return;
+            }
+
+            console.log(`✅ Umpire request ${id} status updated to: ${status}`);
+            res.json({ 
+              message: 'Request status updated successfully',
+              status: status
+            });
+          });
+        }
+      });
+    });
   });
 });
 
@@ -617,12 +713,85 @@ app.put('/api/concession-staff-requests/:id/status', (req, res) => {
   const { id } = req.params;
   const { status } = req.body;
 
-  db.run('UPDATE concession_staff_requests SET status = ? WHERE id = ?', [status, id], function(err) {
+  // First, get the concession staff request details to know which game and what staff was requested
+  db.get('SELECT * FROM concession_staff_requests WHERE id = ?', [id], (err, request) => {
     if (err) {
       res.status(500).json({ error: err.message });
       return;
     }
-    res.json({ message: 'Request status updated successfully' });
+    
+    if (!request) {
+      res.status(404).json({ error: 'Concession staff request not found' });
+      return;
+    }
+
+    // Start a transaction to update both the request status and the game schedule
+    db.run('BEGIN TRANSACTION', (err) => {
+      if (err) {
+        res.status(500).json({ error: 'Failed to start transaction' });
+        return;
+      }
+
+      // Update the concession staff request status
+      db.run('UPDATE concession_staff_requests SET status = ? WHERE id = ?', [status, id], function(err) {
+        if (err) {
+          db.run('ROLLBACK', () => {});
+          res.status(500).json({ error: err.message });
+          return;
+        }
+
+        // If the request is approved, update the game schedule with the new concession staff assignment
+        if (status === 'approved') {
+          const updateQuery = `
+            UPDATE schedules 
+            SET concession_staff = ?, updated_at = CURRENT_TIMESTAMP
+            WHERE id = ?
+          `;
+          
+          const updateValues = [
+            request.requested_concession_staff || request.current_concession_staff,
+            request.game_id
+          ];
+
+          db.run(updateQuery, updateValues, function(err) {
+            if (err) {
+              db.run('ROLLBACK', () => {});
+              res.status(500).json({ error: 'Failed to update game schedule: ' + err.message });
+              return;
+            }
+
+            // Commit the transaction
+            db.run('COMMIT', (err) => {
+              if (err) {
+                res.status(500).json({ error: 'Failed to commit transaction' });
+                return;
+              }
+
+              console.log(`✅ Concession staff request ${id} approved and game schedule updated for game ${request.game_id}`);
+              res.json({ 
+                message: 'Request approved and game schedule updated successfully',
+                gameId: request.game_id,
+                updatedConcessionStaff: request.requested_concession_staff || request.current_concession_staff
+              });
+            });
+          });
+        } else {
+          // If not approved, just commit the status update
+          db.run('COMMIT', (err) => {
+            if (err) {
+              res.status(500).json({ error: 'Failed to commit transaction' });
+              return;
+            }
+
+            console.log(`✅ Concession staff request ${id} status updated to: ${status}`);
+            res.json({ 
+              message: 'Request status updated successfully',
+              status: status
+            });
+          });
+        }
+      });
+    });
   });
 });
 
