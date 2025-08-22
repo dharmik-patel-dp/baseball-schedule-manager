@@ -6,6 +6,85 @@ let filterOptions = {};
 let currentFilters = {};
 let filteredSchedules = [];
 
+// Manual refresh function for users
+async function refreshAllData() {
+    console.log('🔄 Manual refresh requested by user');
+    
+    // Show loading state
+    const refreshBtn = document.querySelector('.header-actions .btn-outline-light');
+    if (refreshBtn) {
+        const originalContent = refreshBtn.innerHTML;
+        refreshBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Refreshing...';
+        refreshBtn.disabled = true;
+        
+        try {
+            // Refresh all data
+            await Promise.all([
+                loadSchedules(),
+                loadUmpireRequests(),
+                loadConcessionStaffRequests(),
+                loadFilterOptions()
+            ]);
+            
+            // Update last updated time
+            updateLastUpdatedTime();
+            
+            // Show success message
+            showAlert('Data refreshed successfully!', 'success');
+            
+            // Reset button after 2 seconds
+            setTimeout(() => {
+                refreshBtn.innerHTML = originalContent;
+                refreshBtn.disabled = false;
+            }, 2000);
+            
+        } catch (error) {
+            console.error('❌ Error during manual refresh:', error);
+            showAlert('Error refreshing data. Please try again.', 'danger');
+            
+            // Reset button immediately on error
+            refreshBtn.innerHTML = originalContent;
+            refreshBtn.disabled = false;
+        }
+    }
+}
+
+// Update last updated time indicator
+function updateLastUpdatedTime() {
+    const now = new Date();
+    const timeString = now.toLocaleTimeString();
+    const dateString = now.toLocaleDateString();
+    
+    const lastUpdatedElement = document.getElementById('lastUpdatedTime');
+    if (lastUpdatedElement) {
+        lastUpdatedElement.textContent = `${dateString} at ${timeString}`;
+    }
+}
+
+// Update auto-refresh countdown
+function updateAutoRefreshCountdown() {
+    const now = new Date();
+    const nextRefresh = new Date(now.getTime() + 15000); // 15 seconds from now
+    const timeString = nextRefresh.toLocaleTimeString();
+    
+    const statusElement = document.getElementById('autoRefreshStatus');
+    if (statusElement) {
+        statusElement.innerHTML = `
+            <i class="fas fa-sync-alt text-primary"></i>
+            Next refresh at ${timeString}
+        `;
+    }
+}
+
+// Check for request status changes and notify users
+function checkForStatusChanges() {
+    // This function will be called after each data refresh to check if user's requests have status changes
+    console.log('🔍 Checking for request status changes...');
+    
+    // You can implement logic here to compare previous and current request statuses
+    // and show notifications to users about their request updates
+}
+
 // Initialize the application
 document.addEventListener('DOMContentLoaded', function() {
     console.log('🚀 DOM Content Loaded - Starting application initialization');
@@ -15,6 +94,9 @@ document.addEventListener('DOMContentLoaded', function() {
     loadConcessionStaffRequests();
     loadFilterOptions();
     setupEventListeners();
+    
+    // Set initial last updated time
+    updateLastUpdatedTime();
     
     // Add 3D effects after DOM loads
     setTimeout(add3DEffects, 1000);
@@ -47,10 +129,21 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Set up periodic refresh to show real-time updates
     setInterval(() => {
+        console.log('🔄 Auto-refreshing data...');
         loadSchedules();
         loadUmpireRequests();
         loadConcessionStaffRequests();
-    }, 30000); // Refresh every 30 seconds
+        updateLastUpdatedTime(); // Update the time indicator
+        updateAutoRefreshCountdown(); // Update the countdown
+        
+        // Check for status changes after refresh
+        setTimeout(checkForStatusChanges, 1000);
+    }, 15000); // Refresh every 15 seconds for more responsive updates
+    
+    // Set up countdown timer that updates every second
+    setInterval(() => {
+        updateAutoRefreshCountdown();
+    }, 1000); // Update countdown every second
 });
 
 // Setup event listeners

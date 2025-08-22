@@ -257,11 +257,23 @@
     <!-- Hero Section -->
     <div class="hero-section text-center">
         <div class="container">
-            <div class="float">
-                <h1 class="display-4 fw-bold mb-4">
+            <div class="header-content">
+                <h1 class="main-title">
                     <i class="fas fa-baseball-ball me-3"></i>
                     Baseball & Softball Schedule Manager
                 </h1>
+                <div class="header-actions">
+                    <button class="btn btn-outline-light btn-sm" onclick="refreshAllData()" title="Refresh Data">
+                        <i class="fas fa-sync-alt"></i>
+                        <span class="d-none d-md-inline ms-1">Refresh</span>
+                    </button>
+                    <button class="btn btn-outline-light btn-sm" onclick="toggleTheme()" title="Toggle Theme">
+                        <i class="fas fa-moon"></i>
+                        <span class="d-none d-md-inline ms-1">Theme</span>
+                    </button>
+                </div>
+            </div>
+            <div class="float">
                 <p class="lead mb-4">Professional schedule management system with advanced features and real-time updates</p>
                 <div class="d-flex justify-content-center gap-3">
                     <button class="btn btn-light btn-lg shadow-3d" onclick="toggleFilterSection()">
@@ -274,6 +286,24 @@
             </div>
         </div>
     </div>
+    
+    <!-- Last Updated Indicator -->
+    <div class="container mt-3">
+        <div class="row justify-content-center">
+            <div class="col-md-6 text-center">
+                <small class="text-muted">
+                    <i class="fas fa-clock me-1"></i>
+                    Last updated: <span id="lastUpdatedTime">Loading...</span>
+                    <span class="ms-2" id="autoRefreshStatus">
+                        <i class="fas fa-sync-alt fa-spin text-primary"></i>
+                        Auto-refreshing every 15s
+                    </span>
+                </small>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
 
     <!-- Stats Section -->
     <div class="container mt-5">
