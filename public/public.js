@@ -454,17 +454,31 @@ async function populateRequestDropdowns() {
                 plateUmpireSelect.appendChild(currentOption);
             }
             
-            // Add available alternatives
+            // Add ALL available alternatives (including current assignment)
             plateUmpireNames.forEach(name => {
-                // Don't add if it's the current assignment
-                if (!currentGame || name !== currentGame.plate_umpire) {
-                    const option = document.createElement('option');
-                    option.value = name;
+                // Always add all plate umpires, even if it's the current assignment
+                const option = document.createElement('option');
+                option.value = name;
+                
+                // Mark current assignment differently
+                if (currentGame && name === currentGame.plate_umpire) {
+                    option.textContent = `${name} (Current)`;
+                    option.style.fontWeight = 'bold';
+                    option.style.color = '#6c757d';
+                    option.setAttribute('data-current', 'true'); // Mark as current
+                } else {
                     option.textContent = name;
-                    plateUmpireSelect.appendChild(option);
                 }
+                
+                plateUmpireSelect.appendChild(option);
             });
             console.log('✅ Plate umpire dropdown populated with', plateUmpireSelect.options.length, 'options');
+            
+            // Add helpful note below the dropdown
+            const plateUmpireNote = document.getElementById('plateUmpireNote');
+            if (plateUmpireNote) {
+                plateUmpireNote.innerHTML = '<small class="text-muted"><i class="fas fa-info-circle me-1"></i>All available plate umpires are shown. Current assignment is marked with "(Current)".</small>';
+            }
         } else {
             console.error('❌ Plate umpire dropdown element not found!');
         }
@@ -484,17 +498,31 @@ async function populateRequestDropdowns() {
                 baseUmpireSelect.appendChild(currentOption);
             }
             
-            // Add available alternatives
+            // Add ALL available alternatives (including current assignment)
             baseUmpireNames.forEach(name => {
-                // Don't add if it's the current assignment
-                if (!currentGame || name !== currentGame.base_umpire) {
-                    const option = document.createElement('option');
-                    option.value = name;
+                // Always add all base umpires, even if it's the current assignment
+                const option = document.createElement('option');
+                option.value = name;
+                
+                // Mark current assignment differently
+                if (currentGame && name === currentGame.base_umpire) {
+                    option.textContent = `${name} (Current)`;
+                    option.style.fontWeight = 'bold';
+                    option.style.color = '#6c757d';
+                    option.setAttribute('data-current', 'true'); // Mark as current
+                } else {
                     option.textContent = name;
-                    baseUmpireSelect.appendChild(option);
                 }
+                
+                baseUmpireSelect.appendChild(option);
             });
             console.log('✅ Base umpire dropdown populated with', baseUmpireSelect.options.length, 'options');
+            
+            // Add helpful note below the dropdown
+            const baseUmpireNote = document.getElementById('baseUmpireNote');
+            if (baseUmpireNote) {
+                baseUmpireNote.innerHTML = '<small class="text-muted"><i class="fas fa-info-circle me-1"></i>All available base umpires are shown. Current assignment is marked with "(Current)".</small>';
+            }
         } else {
             console.error('❌ Base umpire dropdown element not found!');
         }
