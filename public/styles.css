@@ -178,6 +178,32 @@ html.theme-dark .navbar-nav .nav-link.active {
 
 
 
+/* Website Header */
+.website-title {
+  font-size: 3.5rem;
+  font-weight: 800;
+  color: var(--primary-color);
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.website-subtitle {
+  font-size: 1.25rem;
+  color: var(--neutral-600);
+  margin-bottom: 2rem;
+  font-weight: 400;
+}
+
+html.theme-dark .website-title {
+  color: var(--primary-300);
+}
+
+html.theme-dark .website-subtitle {
+  color: var(--neutral-400);
+}
+
 /* Clean Cards */
 .filter-section, .schedule-table, .umpire-request-form {
   background: white;
@@ -718,6 +744,14 @@ html.theme-dark .schedule-table {
 
 /* Responsive Design */
 @media (max-width: 768px) {
+  .website-title {
+    font-size: 2.5rem;
+  }
+  
+  .website-subtitle {
+    font-size: 1.1rem;
+  }
+  
   .filter-section, .schedule-table {
     padding: 1.5rem;
     margin-bottom: 1.5rem;
