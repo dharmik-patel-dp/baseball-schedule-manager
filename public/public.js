@@ -798,13 +798,17 @@ function matchesFilters(schedule, filters) {
                 case 'start_date':
                     // Check if schedule date is on or after start date
                     if (!value) return true; // No start date filter
-                    console.log(`🔍 Date filter: schedule.date (${schedule.date}) >= start_date (${value}) = ${schedule.date >= value}`);
-                    return schedule.date >= value;
+                    // Convert schedule date to YYYY-MM-DD format for comparison
+                    const scheduleDate = new Date(schedule.date).toISOString().split('T')[0];
+                    console.log(`🔍 Date filter: schedule.date (${schedule.date}) -> normalized (${scheduleDate}) >= start_date (${value}) = ${scheduleDate >= value}`);
+                    return scheduleDate >= value;
                 case 'end_date':
                     // Check if schedule date is on or before end date
                     if (!value) return true; // No end date filter
-                    console.log(`🔍 Date filter: schedule.date (${schedule.date}) <= end_date (${value}) = ${schedule.date <= value}`);
-                    return schedule.date <= value;
+                    // Convert schedule date to YYYY-MM-DD format for comparison
+                    const scheduleDateEnd = new Date(schedule.date).toISOString().split('T')[0];
+                    console.log(`🔍 Date filter: schedule.date (${schedule.date}) -> normalized (${scheduleDateEnd}) <= end_date (${value}) = ${scheduleDateEnd <= value}`);
+                    return scheduleDateEnd <= value;
             case 'start_time':
                     return schedule.start_time === value;
                 default:
