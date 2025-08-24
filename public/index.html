@@ -357,6 +357,20 @@
                                 <option value="">All Staff</option>
                             </select>
                         </div>
+                        
+                        <!-- Unfilled Positions Filter -->
+                        <div class="col-lg-2 col-md-3 col-sm-6">
+                            <label class="form-label">Unfilled Positions</label>
+                            <select class="form-select filter-select" id="unfilledFilter">
+                                <option value="">All Games</option>
+                                <option value="unfilled-plate-umpire">Unfilled Plate Umpire</option>
+                                <option value="unfilled-base-umpire">Unfilled Base Umpire</option>
+                                <option value="unfilled-concession-staff">Unfilled Concession Staff</option>
+                                <option value="unfilled-concession-stand">Unfilled Concession Stand</option>
+                                <option value="unfilled-multiple">Multiple Unfilled</option>
+                                <option value="fully-staffed">Fully Staffed</option>
+                            </select>
+                        </div>
                         <div class="col-lg-2 col-md-3 col-sm-6">
                             <label class="form-label">Start Date</label>
                             <input type="date" class="form-control filter-select" id="startDateFilter">
@@ -377,18 +391,6 @@
                             <label class="form-label">Time</label>
                             <select class="form-select filter-select" id="timeFilter">
                                 <option value="">All Times</option>
-                            </select>
-                        </div>
-                        
-                        <!-- Unfilled Games Filter -->
-                        <div class="col-lg-2 col-md-3 col-sm-6">
-                            <label class="form-label">Game Status</label>
-                            <select class="form-select filter-select" id="gameStatusFilter">
-                                <option value="">All Games</option>
-                                <option value="unfilled-umpires">Unfilled Umpires</option>
-                                <option value="unfilled-concession">Unfilled Concession</option>
-                                <option value="unfilled-both">Unfilled Both</option>
-                                <option value="fully-staffed">Fully Staffed</option>
                             </select>
                         </div>
                     </div>
@@ -426,58 +428,50 @@
             </div>
         </div>
 
-        <!-- No Results Banner -->
-        <div id="noResultsBanner" class="mb-4" style="display: none;"></div>
-        
-        <!-- Game Status Summary -->
-        <div class="game-status-summary mb-4" id="gameStatusSummary">
+        <!-- Unfilled Positions Summary -->
+        <div class="unfilled-summary mb-4" id="unfilledSummary">
             <div class="row g-3">
                 <div class="col-lg-3 col-md-6">
-                    <div class="status-card bg-success text-white">
-                        <div class="status-icon">
-                            <i class="fas fa-check-circle"></i>
-                        </div>
-                        <div class="status-content">
-                            <div class="status-number" id="fullyStaffedCount">0</div>
-                            <div class="status-label">Fully Staffed</div>
+                    <div class="card bg-success text-white h-100">
+                        <div class="card-body text-center">
+                            <i class="fas fa-check-circle fa-2x mb-2"></i>
+                            <h4 class="card-title mb-1" id="fullyStaffedCount">0</h4>
+                            <p class="card-text small">Fully Staffed Games</p>
                         </div>
                     </div>
                 </div>
                 <div class="col-lg-3 col-md-6">
-                    <div class="status-card bg-warning text-dark">
-                        <div class="status-icon">
-                            <i class="fas fa-exclamation-triangle"></i>
-                        </div>
-                        <div class="status-content">
-                            <div class="status-number" id="unfilledUmpiresCount">0</div>
-                            <div class="status-label">Unfilled Umpires</div>
+                    <div class="card bg-warning text-dark h-100">
+                        <div class="card-body text-center">
+                            <i class="fas fa-exclamation-triangle fa-2x mb-2"></i>
+                            <h4 class="card-title mb-1" id="unfilledUmpiresCount">0</h4>
+                            <p class="card-text small">Unfilled Umpire Positions</p>
                         </div>
                     </div>
                 </div>
                 <div class="col-lg-3 col-md-6">
-                    <div class="status-card bg-orange text-white">
-                        <div class="status-icon">
-                            <i class="fas fa-utensils"></i>
-                        </div>
-                        <div class="status-content">
-                            <div class="status-number" id="unfilledConcessionCount">0</div>
-                            <div class="status-label">Unfilled Concession</div>
+                    <div class="card bg-info text-white h-100">
+                        <div class="card-body text-center">
+                            <i class="fas fa-utensils fa-2x mb-2"></i>
+                            <h4 class="card-title mb-1" id="unfilledConcessionCount">0</h4>
+                            <p class="card-text small">Unfilled Concession Positions</p>
                         </div>
                     </div>
                 </div>
                 <div class="col-lg-3 col-md-6">
-                    <div class="status-card bg-danger text-white">
-                        <div class="status-icon">
-                            <i class="fas fa-times-circle"></i>
-                        </div>
-                        <div class="status-content">
-                            <div class="status-number" id="unfilledBothCount">0</div>
-                            <div class="status-label">Unfilled Both</div>
+                    <div class="card bg-danger text-white h-100">
+                        <div class="card-body text-center">
+                            <i class="fas fa-times-circle fa-2x mb-2"></i>
+                            <h4 class="card-title mb-1" id="unfilledMultipleCount">0</h4>
+                            <p class="card-text small">Multiple Unfilled Positions</p>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+
+        <!-- No Results Banner -->
+        <div id="noResultsBanner" class="mb-4" style="display: none;"></div>
         
         <!-- Schedule Table -->
         <div class="schedule-table">

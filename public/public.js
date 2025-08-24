@@ -137,17 +137,13 @@ document.addEventListener('DOMContentLoaded', function() {
     addCustomStyles();
     
     loadSchedules();
+    loadUmpireRequests();
+    loadConcessionStaffRequests();
     loadFilterOptions();
     loadPlateUmpires();
     loadBaseUmpires();
     loadConcessionStaff();
     setupEventListeners();
-    
-    // Only load admin-specific data if we're on the admin page
-    if (window.location.pathname.includes('/admin')) {
-        loadUmpireRequests();
-        loadConcessionStaffRequests();
-    }
     
     // Set initial last updated time
     updateLastUpdatedTime();
@@ -185,16 +181,13 @@ document.addEventListener('DOMContentLoaded', function() {
     setInterval(() => {
         console.log('🔄 Auto-refreshing data...');
         loadSchedules();
+        loadUmpireRequests();
+        loadConcessionStaffRequests();
         updateLastUpdatedTime(); // Update the time indicator
         updateAutoRefreshCountdown(); // Update the countdown
         
-        // Only load admin-specific data if we're on the admin page
-        if (window.location.pathname.includes('/admin')) {
-            loadUmpireRequests();
-            loadConcessionStaffRequests();
-            // Check for status changes after refresh
-            setTimeout(checkForStatusChanges, 1000);
-        }
+        // Check for status changes after refresh
+        setTimeout(checkForStatusChanges, 1000);
     }, 15000); // Refresh every 15 seconds for more responsive updates
     
     // Set up countdown timer that updates every second
@@ -257,10 +250,11 @@ async function loadSchedules() {
         
         allSchedules = await response.json();
         filteredSchedules = [...allSchedules];
-        renderScheduleTable();
         
-        // Update game status counts
-        updateGameStatusCounts();
+        // Update unfilled positions summary
+        updateUnfilledSummary();
+        
+        renderScheduleTable();
         
         // Ensure request dropdowns are populated even if filter options fail
         setTimeout(() => {
@@ -784,7 +778,7 @@ function getActiveFilters() {
         'startDateFilter': 'start_date',
         'endDateFilter': 'end_date',
         'timeFilter': 'start_time',
-        'gameStatusFilter': 'game_status'
+        'unfilledFilter': 'unfilled_positions'
     };
     
     Object.entries(filterMappings).forEach(([elementId, fieldName]) => {
@@ -806,26 +800,6 @@ function getActiveFilters() {
     });
     
     return filters;
-}
-
-// Check game status for unfilled games filter
-function checkGameStatus(schedule, status) {
-    const hasPlateUmpire = schedule.plate_umpire && schedule.plate_umpire.trim() !== '';
-    const hasBaseUmpire = schedule.base_umpire && schedule.base_umpire.trim() !== '';
-    const hasConcessionStaff = schedule.concession_staff && schedule.concession_staff.trim() !== '';
-    
-    switch (status) {
-        case 'unfilled-umpires':
-            return !hasPlateUmpire || !hasBaseUmpire;
-        case 'unfilled-concession':
-            return !hasConcessionStaff;
-        case 'unfilled-both':
-            return (!hasPlateUmpire || !hasBaseUmpire) && !hasConcessionStaff;
-        case 'fully-staffed':
-            return hasPlateUmpire && hasBaseUmpire && hasConcessionStaff;
-        default:
-            return true;
-    }
 }
 
 // Check if schedule matches filters
@@ -870,12 +844,80 @@ function matchesFilters(schedule, filters) {
                     return scheduleDateEnd <= value;
             case 'start_time':
                     return schedule.start_time === value;
-                case 'game_status':
-                    return checkGameStatus(schedule, value);
+            case 'unfilled_positions':
+                    return checkUnfilledPositions(schedule, value);
                 default:
                     return true;
             }
         });
+}
+
+// Check if schedule has unfilled positions based on filter
+function checkUnfilledPositions(schedule, filterValue) {
+    const hasPlateUmpire = schedule.plate_umpire && schedule.plate_umpire.trim() !== '';
+    const hasBaseUmpire = schedule.base_umpire && schedule.base_umpire.trim() !== '';
+    const hasConcessionStaff = schedule.concession_staff && schedule.concession_staff.trim() !== '';
+    const hasConcessionStand = schedule.concession_stand && schedule.concession_stand.trim() !== '';
+    
+    switch (filterValue) {
+        case 'unfilled-plate-umpire':
+            return !hasPlateUmpire;
+        case 'unfilled-base-umpire':
+            return !hasBaseUmpire;
+        case 'unfilled-concession-staff':
+            return !hasConcessionStaff;
+        case 'unfilled-concession-stand':
+            return !hasConcessionStand;
+        case 'unfilled-multiple':
+            const unfilledCount = [hasPlateUmpire, hasBaseUmpire, hasConcessionStaff, hasConcessionStand]
+                .filter(Boolean).length;
+            return unfilledCount <= 2; // 2 or fewer positions filled
+        case 'fully-staffed':
+            return hasPlateUmpire && hasBaseUmpire && hasConcessionStaff && hasConcessionStand;
+        default:
+            return true;
+    }
+}
+
+// Update unfilled positions summary
+function updateUnfilledSummary() {
+    const schedulesToCount = filteredSchedules.length > 0 ? filteredSchedules : allSchedules;
+    
+    let fullyStaffedCount = 0;
+    let unfilledUmpiresCount = 0;
+    let unfilledConcessionCount = 0;
+    let unfilledMultipleCount = 0;
+    
+    schedulesToCount.forEach(schedule => {
+        const hasPlateUmpire = schedule.plate_umpire && schedule.plate_umpire.trim() !== '';
+        const hasBaseUmpire = schedule.base_umpire && schedule.base_umpire.trim() !== '';
+        const hasConcessionStaff = schedule.concession_staff && schedule.concession_staff.trim() !== '';
+        const hasConcessionStand = schedule.concession_stand && schedule.concession_stand.trim() !== '';
+        
+        const filledPositions = [hasPlateUmpire, hasBaseUmpire, hasConcessionStaff, hasConcessionStand]
+            .filter(Boolean).length;
+        
+        if (filledPositions === 4) {
+            fullyStaffedCount++;
+        } else if (filledPositions <= 2) {
+            unfilledMultipleCount++;
+        } else if (!hasPlateUmpire || !hasBaseUmpire) {
+            unfilledUmpiresCount++;
+        } else if (!hasConcessionStaff || !hasConcessionStand) {
+            unfilledConcessionCount++;
+        }
+    });
+    
+    // Update the display
+    const fullyStaffedElement = document.getElementById('fullyStaffedCount');
+    const unfilledUmpiresElement = document.getElementById('unfilledUmpiresCount');
+    const unfilledConcessionElement = document.getElementById('unfilledConcessionCount');
+    const unfilledMultipleElement = document.getElementById('unfilledMultipleCount');
+    
+    if (fullyStaffedElement) fullyStaffedElement.textContent = fullyStaffedCount;
+    if (unfilledUmpiresElement) unfilledUmpiresElement.textContent = unfilledUmpiresCount;
+    if (unfilledConcessionElement) unfilledConcessionElement.textContent = unfilledConcessionCount;
+    if (unfilledMultipleElement) unfilledMultipleElement.textContent = unfilledMultipleCount;
 }
 
 // Apply filters (improved version)
@@ -921,8 +963,8 @@ function applyFilters() {
     updateActiveFilterCount();
     updateSearchResults(searchTerm);
     
-    // Update game status counts
-    updateGameStatusCounts();
+    // Update unfilled positions summary
+    updateUnfilledSummary();
     
     // Show/hide "No Results" banner
     showNoResultsBanner();
@@ -930,47 +972,6 @@ function applyFilters() {
     renderScheduleTable();
     
     console.log(`✅ Filtered ${filteredSchedules.length} schedules from ${allSchedules.length} total`);
-}
-
-// Update game status counts for the summary cards
-function updateGameStatusCounts() {
-    const schedulesToCount = filteredSchedules.length > 0 ? filteredSchedules : allSchedules;
-    
-    let fullyStaffed = 0;
-    let unfilledUmpires = 0;
-    let unfilledConcession = 0;
-    let unfilledBoth = 0;
-    
-    schedulesToCount.forEach(schedule => {
-        const hasPlateUmpire = schedule.plate_umpire && schedule.plate_umpire.trim() !== '';
-        const hasBaseUmpire = schedule.base_umpire && schedule.base_umpire.trim() !== '';
-        const hasConcessionStaff = schedule.concession_staff && schedule.concession_staff.trim() !== '';
-        
-        if (hasPlateUmpire && hasBaseUmpire && hasConcessionStaff) {
-            fullyStaffed++;
-        } else if (!hasPlateUmpire || !hasBaseUmpire) {
-            if (!hasConcessionStaff) {
-                unfilledBoth++;
-            } else {
-                unfilledUmpires++;
-            }
-        } else if (!hasConcessionStaff) {
-            unfilledConcession++;
-        }
-    });
-    
-    // Update the display
-    const fullyStaffedElement = document.getElementById('fullyStaffedCount');
-    const unfilledUmpiresElement = document.getElementById('unfilledUmpiresCount');
-    const unfilledConcessionElement = document.getElementById('unfilledConcessionCount');
-    const unfilledBothElement = document.getElementById('unfilledBothCount');
-    
-    if (fullyStaffedElement) fullyStaffedElement.textContent = fullyStaffed;
-    if (unfilledUmpiresElement) unfilledUmpiresElement.textContent = unfilledUmpires;
-    if (unfilledConcessionElement) unfilledConcessionElement.textContent = unfilledConcession;
-    if (unfilledBothElement) unfilledBothElement.textContent = unfilledBoth;
-    
-    console.log(`📊 Game Status Counts: ${fullyStaffed} fully staffed, ${unfilledUmpires} unfilled umpires, ${unfilledConcession} unfilled concession, ${unfilledBoth} unfilled both`);
 }
 
 // Show or hide the "No Results" banner
@@ -1253,18 +1254,20 @@ function renderScheduleTable() {
     }
 
     tbody.innerHTML = schedulesToShow.map(schedule => {
-        // Check if game has unfilled positions
+        // Determine unfilled positions and row styling
         const hasPlateUmpire = schedule.plate_umpire && schedule.plate_umpire.trim() !== '';
         const hasBaseUmpire = schedule.base_umpire && schedule.base_umpire.trim() !== '';
         const hasConcessionStaff = schedule.concession_staff && schedule.concession_staff.trim() !== '';
+        const hasConcessionStand = schedule.concession_stand && schedule.concession_stand.trim() !== '';
         
         // Determine row class based on unfilled positions
         let rowClass = '';
-        if (!hasPlateUmpire || !hasBaseUmpire) {
-            rowClass = 'table-warning'; // Unfilled umpires
-        }
-        if (!hasConcessionStaff) {
-            rowClass = rowClass ? 'table-danger' : 'table-warning'; // Unfilled concession or both
+        if (!hasPlateUmpire && !hasBaseUmpire && !hasConcessionStaff && !hasConcessionStand) {
+            rowClass = 'table-danger'; // All positions unfilled
+        } else if ((!hasPlateUmpire && !hasBaseUmpire) || (!hasConcessionStaff && !hasConcessionStand)) {
+            rowClass = 'table-warning'; // Multiple positions unfilled
+        } else if (!hasPlateUmpire || !hasBaseUmpire || !hasConcessionStaff || !hasConcessionStand) {
+            rowClass = 'table-info'; // Single position unfilled
         }
         
         return `
@@ -1285,19 +1288,34 @@ function renderScheduleTable() {
             </td>
             <td>${schedule.venue || 'N/A'}</td>
             <td>
-                <div><strong>Plate:</strong> ${schedule.plate_umpire || 'N/A'}</div>
-                <div><strong>Base:</strong> ${schedule.base_umpire || 'N/A'}</div>
+                <div>
+                    <strong>Plate:</strong> 
+                    ${hasPlateUmpire ? 
+                        schedule.plate_umpire : 
+                        '<span class="badge badge-unfilled-plate">Unfilled</span>'
+                    }
+                </div>
+                <div>
+                    <strong>Base:</strong> 
+                    ${hasBaseUmpire ? 
+                        schedule.base_umpire : 
+                        '<span class="badge badge-unfilled-base">Unfilled</span>'
+                    }
+                </div>
             </td>
             <td>
                 <div>
                     ${schedule.concession_stand === 'No Concession' ? 
                         '<span class="badge bg-secondary">No Concession</span>' : 
-                        schedule.concession_stand ? 
+                        hasConcessionStand ? 
                             `<span class="badge bg-success">${schedule.concession_stand}</span>` :
-                            '<span class="badge bg-secondary">No Info</span>'
+                            '<span class="badge badge-unfilled-concession-stand">Unfilled</span>'
                     }
                 </div>
-                ${schedule.concession_staff ? `<br><small class="text-muted">${schedule.concession_staff}</small>` : ''}
+                ${hasConcessionStaff ? 
+                    `<br><small class="text-muted">${schedule.concession_staff}</small>` : 
+                    '<br><span class="badge badge-unfilled-concession-staff">Unfilled</span>'
+                }
             </td>
             <td>
                 <button class="btn btn-sm btn-outline-primary me-1" onclick="showUmpireRequestForm(${schedule.id})">
@@ -1308,20 +1326,13 @@ function renderScheduleTable() {
                 </button>
             </td>
         </tr>
-        `;
+    `;
     }).join('');
 }
 
 // Load umpire requests
 async function loadUmpireRequests() {
     try {
-        // Check if we're on the admin page before trying to load requests
-        const umpireRequestsTable = document.getElementById('umpireRequestsTableBody');
-        if (!umpireRequestsTable) {
-            console.log('ℹ️ Umpire requests table not found - likely on public page, skipping load');
-            return;
-        }
-        
         const response = await fetch('/api/umpire-requests');
         if (!response.ok) throw new Error('Failed to fetch umpire requests');
         
@@ -1338,7 +1349,7 @@ async function loadUmpireRequests() {
 function renderUmpireRequestsTable() {
     const tableBody = document.getElementById('umpireRequestsTableBody');
     if (!tableBody) {
-        console.log('ℹ️ Umpire requests table body not found - likely on public page, skipping render');
+        console.error('❌ Umpire requests table body not found');
         return;
     }
     
@@ -1394,13 +1405,6 @@ function renderUmpireRequestsTable() {
 // Load concession staff requests
 async function loadConcessionStaffRequests() {
     try {
-        // Check if we're on the admin page before trying to load requests
-        const concessionStaffRequestsTable = document.getElementById('concessionStaffRequestsTableBody');
-        if (!concessionStaffRequestsTable) {
-            console.log('ℹ️ Concession staff requests table not found - likely on public page, skipping load');
-            return;
-        }
-        
         const response = await fetch('/api/concession-staff-requests');
         if (!response.ok) throw new Error('Failed to fetch concession staff requests');
         
@@ -1417,7 +1421,7 @@ async function loadConcessionStaffRequests() {
 function renderConcessionStaffRequestsTable() {
     const tableBody = document.getElementById('concessionStaffRequestsTableBody');
     if (!tableBody) {
-        console.log('ℹ️ Concession staff requests table body not found - likely on public page, skipping render');
+        console.error('❌ Concession staff requests table body not found');
         return;
     }
     
