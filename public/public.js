@@ -216,13 +216,19 @@ function setupEventListeners() {
         filterToggleBtn.addEventListener('click', toggleFilters);
     }
     
-    // Live search functionality removed as requested
+    // Live search input
+    const liveSearchInput = document.getElementById('liveSearchInput');
+    if (liveSearchInput) {
+        liveSearchInput.addEventListener('input', handleLiveSearch);
+        liveSearchInput.addEventListener('keyup', handleLiveSearch);
+        console.log('✅ Live search listener added');
+    }
     
     // Filter change events for immediate filtering
     const filterElements = [
         'seasonFilter', 'eventTypeFilter', 'dayFilter', 'divisionFilter',
         'teamFilter', 'venueFilter', 'coachFilter', 'plateUmpireFilter', 'baseUmpireFilter',
-        'startDateFilter', 'endDateFilter', 'timeFilter'
+        'concessionFilter', 'concessionStaffFilter', 'startDateFilter', 'endDateFilter', 'timeFilter'
     ];
     
     filterElements.forEach(id => {
@@ -305,7 +311,9 @@ function populateFilterDropdowns() {
         'venueFilter': 'venue',
         'coachFilter': 'home_coach',
         'plateUmpireFilter': 'plate_umpire',
-        'baseUmpireFilter': 'base_umpire'
+        'baseUmpireFilter': 'base_umpire',
+        'concessionFilter': 'concession_stand',
+        'concessionStaffFilter': 'concession_staff'
     };
 
     Object.entries(filterMappings).forEach(([elementId, filterKey]) => {
@@ -696,7 +704,57 @@ function populateRequestDropdownsFallback() {
     }
 }
 
-
+// Live search functionality
+function handleLiveSearch() {
+    const searchInput = document.getElementById('liveSearchInput');
+    const searchTerm = searchInput ? searchInput.value.toLowerCase().trim() : '';
+    
+    if (searchTerm === '') {
+        // If no search term, apply only the filter dropdowns
+        applyFilters();
+        updateSearchResults('');
+        return;
+    }
+    
+    console.log(`🔍 Live search for: "${searchTerm}"`);
+    
+    // Search across all schedule fields
+    filteredSchedules = allSchedules.filter(schedule => {
+        const searchableFields = [
+            schedule.season,
+            schedule.event_type,
+            schedule.day,
+            schedule.division,
+            schedule.home_team,
+            schedule.visitor_team,
+            schedule.venue,
+            schedule.home_coach,
+            schedule.visitor_coach,
+            schedule.plate_umpire,
+            schedule.base_umpire,
+            schedule.concession_stand,
+            schedule.concession_staff,
+            schedule.date,
+            schedule.start_time,
+            schedule.am_pm
+        ];
+        
+        return searchableFields.some(field => 
+            field && field.toString().toLowerCase().includes(searchTerm)
+        );
+    });
+    
+    // Also apply any active dropdown filters
+    const activeFilters = getActiveFilters();
+    if (Object.keys(activeFilters).length > 0) {
+        filteredSchedules = filteredSchedules.filter(schedule => 
+            matchesFilters(schedule, activeFilters)
+        );
+    }
+    
+    updateSearchResults(searchTerm);
+    renderScheduleTable();
+}
 
 // Get active filters from dropdowns
 function getActiveFilters() {
@@ -711,6 +769,8 @@ function getActiveFilters() {
         'coachFilter': 'coach',
         'plateUmpireFilter': 'plate_umpire',
         'baseUmpireFilter': 'base_umpire',
+        'concessionFilter': 'concession_stand',
+        'concessionStaffFilter': 'concession_staff',
         'startDateFilter': 'start_date',
         'endDateFilter': 'end_date',
         'timeFilter': 'start_time'
@@ -788,11 +848,32 @@ function matchesFilters(schedule, filters) {
 // Apply filters (improved version)
 function applyFilters() {
     const activeFilters = getActiveFilters();
+    const searchInput = document.getElementById('liveSearchInput');
+    const searchTerm = searchInput ? searchInput.value.toLowerCase().trim() : '';
     
     console.log('🔍 Applying filters:', activeFilters);
+    console.log('🔍 Search term:', searchTerm);
     
     // Start with all schedules
     filteredSchedules = [...allSchedules];
+    
+    // Apply search term first
+    if (searchTerm) {
+        filteredSchedules = filteredSchedules.filter(schedule => {
+            const searchableFields = [
+                schedule.season, schedule.event_type, schedule.day, schedule.division,
+                schedule.home_team, schedule.visitor_team, schedule.venue,
+                schedule.home_coach, schedule.visitor_coach,
+                schedule.plate_umpire, schedule.base_umpire,
+                schedule.concession_stand, schedule.concession_staff,
+                schedule.date, schedule.start_time, schedule.am_pm
+            ];
+            
+            return searchableFields.some(field => 
+                field && field.toString().toLowerCase().includes(searchTerm)
+            );
+        });
+    }
     
     // Apply dropdown filters
     if (Object.keys(activeFilters).length > 0) {
@@ -805,6 +886,7 @@ function applyFilters() {
     }
     
     updateActiveFilterCount();
+    updateSearchResults(searchTerm);
     
     // Show/hide "No Results" banner
     showNoResultsBanner();
@@ -821,8 +903,10 @@ function showNoResultsBanner() {
     
     // Check if any filters are active
     const activeFilters = getActiveFilters();
+    const searchInput = document.getElementById('liveSearchInput');
+    const searchTerm = searchInput ? searchInput.value.toLowerCase().trim() : '';
     
-    const hasActiveFilters = Object.keys(activeFilters).length > 0;
+    const hasActiveFilters = Object.keys(activeFilters).length > 0 || searchTerm;
     
     if (hasActiveFilters && filteredSchedules.length === 0) {
         // Show banner when filters are active but return no results
@@ -833,6 +917,7 @@ function showNoResultsBanner() {
                 filterDetails.push(`${label}: ${value}`);
             }
         });
+        if (searchTerm) filterDetails.push(`Search: "${searchTerm}"`);
         
         bannerContainer.innerHTML = `
             <div class="alert alert-warning alert-dismissible fade show" role="alert">
@@ -914,9 +999,29 @@ function clearFilters() {
     clearAllFilters();
 }
 
-// Live search functionality removed as requested
+// Clear only live search
+function clearLiveSearch() {
+    const searchInput = document.getElementById('liveSearchInput');
+    if (searchInput) {
+        searchInput.value = '';
+        handleLiveSearch(); // Reapply filters without search
+    }
+}
 
-// Search results functionality removed as requested
+// Update search results display
+function updateSearchResults(searchTerm) {
+    const resultsDiv = document.getElementById('searchResults');
+    if (!resultsDiv) return;
+    
+    if (searchTerm) {
+        const total = allSchedules.length;
+        const filtered = filteredSchedules.length;
+        resultsDiv.innerHTML = `Found ${filtered} of ${total} schedules matching "${searchTerm}"`;
+        resultsDiv.className = 'mt-2 text-success small';
+    } else {
+        resultsDiv.innerHTML = '';
+    }
+}
 
 // Update active filter count
 function updateActiveFilterCount() {
@@ -924,7 +1029,11 @@ function updateActiveFilterCount() {
     if (!countElement) return;
     
     const activeFilters = getActiveFilters();
+    const searchInput = document.getElementById('liveSearchInput');
+    const hasSearch = searchInput && searchInput.value.trim() !== '';
+    
     let count = Object.keys(activeFilters).length;
+    if (hasSearch) count++;
     
     countElement.textContent = count;
 }
@@ -1011,8 +1120,10 @@ function renderScheduleTable() {
     if (schedulesToShow.length === 0) {
         // Check if filters are active
         const activeFilters = getActiveFilters();
+        const searchInput = document.getElementById('liveSearchInput');
+        const searchTerm = searchInput ? searchInput.value.toLowerCase().trim() : '';
         
-        const hasActiveFilters = Object.keys(activeFilters).length > 0;
+        const hasActiveFilters = Object.keys(activeFilters).length > 0 || searchTerm;
         
         if (hasActiveFilters) {
             // Show enhanced message when filters return no results
@@ -1023,6 +1134,7 @@ function renderScheduleTable() {
                     filterDetails.push(`${label}: ${value}`);
                 }
             });
+            if (searchTerm) filterDetails.push(`Search: "${searchTerm}"`);
             
         tbody.innerHTML = `
             <tr>

@@ -1603,22 +1603,7 @@ html.theme-dark .schedule-table {
   }
 }
 
-/* Mobile Search Improvements */
-@media (max-width: 767.98px) {
-  .search-container {
-    padding: 1rem;
-    border-radius: 12px;
-  }
-  
-  .search-container .form-control {
-    font-size: 1rem;
-    padding: 0.75rem;
-  }
-  
-  .search-container .input-group-text {
-    padding: 0.75rem;
-  }
-}
+/* Mobile Search Improvements - Removed as search functionality was removed */
 
 /* Mobile Filter Toggle */
 @media (max-width: 767.98px) {
@@ -3290,44 +3275,9 @@ html.theme-dark input[type="date"].filter-select {
   }
 }
 
-/* Mobile search improvements */
-@media (max-width: 767.98px) {
-  .search-container {
-    padding: 1rem;
-    border-radius: 12px;
-  }
-  
-  .search-container .form-control {
-    font-size: 16px;
-    padding: 0.75rem;
-  }
-  
-  .search-container .input-group-text {
-    padding: 0.75rem;
-  }
-  
-  .search-container .btn {
-    padding: 0.75rem 1rem;
-  }
-}
+/* Mobile search improvements - Removed as search functionality was removed */
 
-/* Mobile input group improvements */
-@media (max-width: 575.98px) {
-  .input-group {
-    flex-direction: column;
-  }
-  
-  .input-group .form-control,
-  .input-group .input-group-text,
-  .input-group .btn {
-    border-radius: 8px !important;
-    margin-bottom: 0.5rem;
-  }
-  
-  .input-group .btn:last-child {
-    margin-bottom: 0;
-  }
-}
+/* Mobile input group improvements - Removed as search functionality was removed */
 
 /* CRITICAL FIX: Admin dashboard mobile responsiveness */
 @media (max-width: 1200px) {
