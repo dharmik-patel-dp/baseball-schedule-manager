@@ -137,13 +137,17 @@ document.addEventListener('DOMContentLoaded', function() {
     addCustomStyles();
     
     loadSchedules();
-    loadUmpireRequests();
-    loadConcessionStaffRequests();
     loadFilterOptions();
     loadPlateUmpires();
     loadBaseUmpires();
     loadConcessionStaff();
     setupEventListeners();
+    
+    // Only load admin-specific data if we're on the admin page
+    if (window.location.pathname.includes('/admin')) {
+        loadUmpireRequests();
+        loadConcessionStaffRequests();
+    }
     
     // Set initial last updated time
     updateLastUpdatedTime();
@@ -181,13 +185,16 @@ document.addEventListener('DOMContentLoaded', function() {
     setInterval(() => {
         console.log('🔄 Auto-refreshing data...');
         loadSchedules();
-        loadUmpireRequests();
-        loadConcessionStaffRequests();
         updateLastUpdatedTime(); // Update the time indicator
         updateAutoRefreshCountdown(); // Update the countdown
         
-        // Check for status changes after refresh
-        setTimeout(checkForStatusChanges, 1000);
+        // Only load admin-specific data if we're on the admin page
+        if (window.location.pathname.includes('/admin')) {
+            loadUmpireRequests();
+            loadConcessionStaffRequests();
+            // Check for status changes after refresh
+            setTimeout(checkForStatusChanges, 1000);
+        }
     }, 15000); // Refresh every 15 seconds for more responsive updates
     
     // Set up countdown timer that updates every second
@@ -1308,6 +1315,13 @@ function renderScheduleTable() {
 // Load umpire requests
 async function loadUmpireRequests() {
     try {
+        // Check if we're on the admin page before trying to load requests
+        const umpireRequestsTable = document.getElementById('umpireRequestsTableBody');
+        if (!umpireRequestsTable) {
+            console.log('ℹ️ Umpire requests table not found - likely on public page, skipping load');
+            return;
+        }
+        
         const response = await fetch('/api/umpire-requests');
         if (!response.ok) throw new Error('Failed to fetch umpire requests');
         
@@ -1324,7 +1338,7 @@ async function loadUmpireRequests() {
 function renderUmpireRequestsTable() {
     const tableBody = document.getElementById('umpireRequestsTableBody');
     if (!tableBody) {
-        console.error('❌ Umpire requests table body not found');
+        console.log('ℹ️ Umpire requests table body not found - likely on public page, skipping render');
         return;
     }
     
@@ -1380,6 +1394,13 @@ function renderUmpireRequestsTable() {
 // Load concession staff requests
 async function loadConcessionStaffRequests() {
     try {
+        // Check if we're on the admin page before trying to load requests
+        const concessionStaffRequestsTable = document.getElementById('concessionStaffRequestsTableBody');
+        if (!concessionStaffRequestsTable) {
+            console.log('ℹ️ Concession staff requests table not found - likely on public page, skipping load');
+            return;
+        }
+        
         const response = await fetch('/api/concession-staff-requests');
         if (!response.ok) throw new Error('Failed to fetch concession staff requests');
         
@@ -1396,7 +1417,7 @@ async function loadConcessionStaffRequests() {
 function renderConcessionStaffRequestsTable() {
     const tableBody = document.getElementById('concessionStaffRequestsTableBody');
     if (!tableBody) {
-        console.error('❌ Concession staff requests table body not found');
+        console.log('ℹ️ Concession staff requests table body not found - likely on public page, skipping render');
         return;
     }
     
