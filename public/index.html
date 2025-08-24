@@ -255,26 +255,16 @@
         <div class="filter-section" id="filterSection">
             <h5 class="mb-3"><i class="fas fa-filter me-2"></i>Filter & Search Schedules</h5>
             
-            <!-- Live Search -->
+            <!-- Unfilled Positions Filter -->
             <div class="row mb-4">
                 <div class="col-12">
-                    <div class="search-container">
-                        <div class="input-group">
-                            <span class="input-group-text">
-                                <i class="fas fa-search"></i>
-                            </span>
-                            <input 
-                                type="text" 
-                                class="form-control form-control-lg" 
-                                id="liveSearchInput" 
-                                placeholder="🔍 Live search schedules... (team, coach, venue, umpire, division, etc.)"
-                                autocomplete="off"
-                            >
-                            <button class="btn btn-outline-secondary" type="button" onclick="clearLiveSearch()">
-                                <i class="fas fa-times"></i>
-                            </button>
+                    <div class="alert alert-warning" role="alert">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            <div>
+                                <strong>Unfilled Positions Filter:</strong> Use the filters below to find games with unfilled positions for umpires, concession staff, and concession stands.
+                            </div>
                         </div>
-                        <div id="searchResults" class="mt-2 text-muted small"></div>
                     </div>
                 </div>
             </div>
@@ -337,38 +327,28 @@
                             <label class="form-label">Plate Umpire</label>
                             <select class="form-select filter-select" id="plateUmpireFilter">
                                 <option value="">All Plate Umpires</option>
+                                <option value="unfilled">Unfilled Plate Umpire</option>
                             </select>
                         </div>
                         <div class="col-lg-2 col-md-3 col-sm-6">
                             <label class="form-label">Base Umpire</label>
                             <select class="form-select filter-select" id="baseUmpireFilter">
                                 <option value="">All Base Umpires</option>
+                                <option value="unfilled">Unfilled Base Umpire</option>
                             </select>
                         </div>
                         <div class="col-lg-2 col-md-3 col-sm-6">
                             <label class="form-label">Concession</label>
                             <select class="form-select filter-select" id="concessionFilter">
                                 <option value="">All Concessions</option>
+                                <option value="unfilled">Unfilled Concession Stand</option>
                             </select>
                         </div>
                         <div class="col-lg-2 col-md-3 col-sm-6">
                             <label class="form-label">Concession Staff</label>
                             <select class="form-select filter-select" id="concessionStaffFilter">
                                 <option value="">All Staff</option>
-                            </select>
-                        </div>
-                        
-                        <!-- Unfilled Positions Filter -->
-                        <div class="col-lg-2 col-md-3 col-sm-6">
-                            <label class="form-label">Unfilled Positions</label>
-                            <select class="form-select filter-select" id="unfilledFilter">
-                                <option value="">All Games</option>
-                                <option value="unfilled-plate-umpire">Unfilled Plate Umpire</option>
-                                <option value="unfilled-base-umpire">Unfilled Base Umpire</option>
-                                <option value="unfilled-concession-staff">Unfilled Concession Staff</option>
-                                <option value="unfilled-concession-stand">Unfilled Concession Stand</option>
-                                <option value="unfilled-multiple">Multiple Unfilled</option>
-                                <option value="fully-staffed">Fully Staffed</option>
+                                <option value="unfilled">Unfilled Concession Staff</option>
                             </select>
                         </div>
                         <div class="col-lg-2 col-md-3 col-sm-6">
@@ -424,48 +404,6 @@
                     <br><small class="text-muted mt-1">
                         <i class="fas fa-user me-1"></i>Staff names are displayed below each concession stand when assigned.
                     </small>
-                </div>
-            </div>
-        </div>
-
-        <!-- Unfilled Positions Summary -->
-        <div class="unfilled-summary mb-4" id="unfilledSummary">
-            <div class="row g-3">
-                <div class="col-lg-3 col-md-6">
-                    <div class="card bg-success text-white h-100">
-                        <div class="card-body text-center">
-                            <i class="fas fa-check-circle fa-2x mb-2"></i>
-                            <h4 class="card-title mb-1" id="fullyStaffedCount">0</h4>
-                            <p class="card-text small">Fully Staffed Games</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6">
-                    <div class="card bg-warning text-dark h-100">
-                        <div class="card-body text-center">
-                            <i class="fas fa-exclamation-triangle fa-2x mb-2"></i>
-                            <h4 class="card-title mb-1" id="unfilledUmpiresCount">0</h4>
-                            <p class="card-text small">Unfilled Umpire Positions</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6">
-                    <div class="card bg-info text-white h-100">
-                        <div class="card-body text-center">
-                            <i class="fas fa-utensils fa-2x mb-2"></i>
-                            <h4 class="card-title mb-1" id="unfilledConcessionCount">0</h4>
-                            <p class="card-text small">Unfilled Concession Positions</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6">
-                    <div class="card bg-danger text-white h-100">
-                        <div class="card-body text-center">
-                            <i class="fas fa-times-circle fa-2x mb-2"></i>
-                            <h4 class="card-title mb-1" id="unfilledMultipleCount">0</h4>
-                            <p class="card-text small">Multiple Unfilled Positions</p>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>

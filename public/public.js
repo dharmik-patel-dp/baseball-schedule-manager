@@ -216,13 +216,7 @@ function setupEventListeners() {
         filterToggleBtn.addEventListener('click', toggleFilters);
     }
     
-    // Live search input
-    const liveSearchInput = document.getElementById('liveSearchInput');
-    if (liveSearchInput) {
-        liveSearchInput.addEventListener('input', handleLiveSearch);
-        liveSearchInput.addEventListener('keyup', handleLiveSearch);
-        console.log('✅ Live search listener added');
-    }
+    // Live search functionality removed - using filter-based approach instead
     
     // Filter change events for immediate filtering
     const filterElements = [
@@ -250,10 +244,6 @@ async function loadSchedules() {
         
         allSchedules = await response.json();
         filteredSchedules = [...allSchedules];
-        
-        // Update unfilled positions summary
-        updateUnfilledSummary();
-        
         renderScheduleTable();
         
         // Ensure request dropdowns are populated even if filter options fail
@@ -708,57 +698,7 @@ function populateRequestDropdownsFallback() {
     }
 }
 
-// Live search functionality
-function handleLiveSearch() {
-    const searchInput = document.getElementById('liveSearchInput');
-    const searchTerm = searchInput ? searchInput.value.toLowerCase().trim() : '';
-    
-    if (searchTerm === '') {
-        // If no search term, apply only the filter dropdowns
-        applyFilters();
-        updateSearchResults('');
-        return;
-    }
-    
-    console.log(`🔍 Live search for: "${searchTerm}"`);
-    
-    // Search across all schedule fields
-    filteredSchedules = allSchedules.filter(schedule => {
-        const searchableFields = [
-            schedule.season,
-            schedule.event_type,
-            schedule.day,
-            schedule.division,
-            schedule.home_team,
-            schedule.visitor_team,
-            schedule.venue,
-            schedule.home_coach,
-            schedule.visitor_coach,
-            schedule.plate_umpire,
-            schedule.base_umpire,
-            schedule.concession_stand,
-            schedule.concession_staff,
-            schedule.date,
-            schedule.start_time,
-            schedule.am_pm
-        ];
-        
-        return searchableFields.some(field => 
-            field && field.toString().toLowerCase().includes(searchTerm)
-        );
-    });
-    
-    // Also apply any active dropdown filters
-    const activeFilters = getActiveFilters();
-    if (Object.keys(activeFilters).length > 0) {
-        filteredSchedules = filteredSchedules.filter(schedule => 
-            matchesFilters(schedule, activeFilters)
-        );
-    }
-    
-    updateSearchResults(searchTerm);
-    renderScheduleTable();
-}
+// Live search functionality removed - using filter-based approach instead
 
 // Get active filters from dropdowns
 function getActiveFilters() {
@@ -777,8 +717,7 @@ function getActiveFilters() {
         'concessionStaffFilter': 'concession_staff',
         'startDateFilter': 'start_date',
         'endDateFilter': 'end_date',
-        'timeFilter': 'start_time',
-        'unfilledFilter': 'unfilled_positions'
+        'timeFilter': 'start_time'
     };
     
     Object.entries(filterMappings).forEach(([elementId, fieldName]) => {
@@ -821,12 +760,24 @@ function matchesFilters(schedule, filters) {
                 case 'coach':
                     return schedule.home_coach === value || schedule.visitor_coach === value;
             case 'plate_umpire':
+                if (value === 'unfilled') {
+                    return !schedule.plate_umpire || schedule.plate_umpire.trim() === '';
+                }
                 return schedule.plate_umpire === value;
             case 'base_umpire':
+                if (value === 'unfilled') {
+                    return !schedule.base_umpire || schedule.base_umpire.trim() === '';
+                }
                 return schedule.base_umpire === value;
             case 'concession_stand':
-                    return schedule.concession_stand === value;
+                if (value === 'unfilled') {
+                    return !schedule.concession_stand || schedule.concession_stand.trim() === '';
+                }
+                return schedule.concession_stand === value;
             case 'concession_staff':
+                if (value === 'unfilled') {
+                    return !schedule.concession_staff || schedule.concession_staff.trim() === '';
+                }
                 return schedule.concession_staff === value;
                 case 'start_date':
                     // Check if schedule date is on or after start date
@@ -844,111 +795,20 @@ function matchesFilters(schedule, filters) {
                     return scheduleDateEnd <= value;
             case 'start_time':
                     return schedule.start_time === value;
-            case 'unfilled_positions':
-                    return checkUnfilledPositions(schedule, value);
                 default:
                     return true;
             }
         });
 }
 
-// Check if schedule has unfilled positions based on filter
-function checkUnfilledPositions(schedule, filterValue) {
-    const hasPlateUmpire = schedule.plate_umpire && schedule.plate_umpire.trim() !== '';
-    const hasBaseUmpire = schedule.base_umpire && schedule.base_umpire.trim() !== '';
-    const hasConcessionStaff = schedule.concession_staff && schedule.concession_staff.trim() !== '';
-    const hasConcessionStand = schedule.concession_stand && schedule.concession_stand.trim() !== '';
-    
-    switch (filterValue) {
-        case 'unfilled-plate-umpire':
-            return !hasPlateUmpire;
-        case 'unfilled-base-umpire':
-            return !hasBaseUmpire;
-        case 'unfilled-concession-staff':
-            return !hasConcessionStaff;
-        case 'unfilled-concession-stand':
-            return !hasConcessionStand;
-        case 'unfilled-multiple':
-            const unfilledCount = [hasPlateUmpire, hasBaseUmpire, hasConcessionStaff, hasConcessionStand]
-                .filter(Boolean).length;
-            return unfilledCount <= 2; // 2 or fewer positions filled
-        case 'fully-staffed':
-            return hasPlateUmpire && hasBaseUmpire && hasConcessionStaff && hasConcessionStand;
-        default:
-            return true;
-    }
-}
-
-// Update unfilled positions summary
-function updateUnfilledSummary() {
-    const schedulesToCount = filteredSchedules.length > 0 ? filteredSchedules : allSchedules;
-    
-    let fullyStaffedCount = 0;
-    let unfilledUmpiresCount = 0;
-    let unfilledConcessionCount = 0;
-    let unfilledMultipleCount = 0;
-    
-    schedulesToCount.forEach(schedule => {
-        const hasPlateUmpire = schedule.plate_umpire && schedule.plate_umpire.trim() !== '';
-        const hasBaseUmpire = schedule.base_umpire && schedule.base_umpire.trim() !== '';
-        const hasConcessionStaff = schedule.concession_staff && schedule.concession_staff.trim() !== '';
-        const hasConcessionStand = schedule.concession_stand && schedule.concession_stand.trim() !== '';
-        
-        const filledPositions = [hasPlateUmpire, hasBaseUmpire, hasConcessionStaff, hasConcessionStand]
-            .filter(Boolean).length;
-        
-        if (filledPositions === 4) {
-            fullyStaffedCount++;
-        } else if (filledPositions <= 2) {
-            unfilledMultipleCount++;
-        } else if (!hasPlateUmpire || !hasBaseUmpire) {
-            unfilledUmpiresCount++;
-        } else if (!hasConcessionStaff || !hasConcessionStand) {
-            unfilledConcessionCount++;
-        }
-    });
-    
-    // Update the display
-    const fullyStaffedElement = document.getElementById('fullyStaffedCount');
-    const unfilledUmpiresElement = document.getElementById('unfilledUmpiresCount');
-    const unfilledConcessionElement = document.getElementById('unfilledConcessionCount');
-    const unfilledMultipleElement = document.getElementById('unfilledMultipleCount');
-    
-    if (fullyStaffedElement) fullyStaffedElement.textContent = fullyStaffedCount;
-    if (unfilledUmpiresElement) unfilledUmpiresElement.textContent = unfilledUmpiresCount;
-    if (unfilledConcessionElement) unfilledConcessionElement.textContent = unfilledConcessionCount;
-    if (unfilledMultipleElement) unfilledMultipleElement.textContent = unfilledMultipleCount;
-}
-
 // Apply filters (improved version)
 function applyFilters() {
     const activeFilters = getActiveFilters();
-    const searchInput = document.getElementById('liveSearchInput');
-    const searchTerm = searchInput ? searchInput.value.toLowerCase().trim() : '';
     
     console.log('🔍 Applying filters:', activeFilters);
-    console.log('🔍 Search term:', searchTerm);
     
     // Start with all schedules
     filteredSchedules = [...allSchedules];
-    
-    // Apply search term first
-    if (searchTerm) {
-        filteredSchedules = filteredSchedules.filter(schedule => {
-            const searchableFields = [
-                schedule.season, schedule.event_type, schedule.day, schedule.division,
-                schedule.home_team, schedule.visitor_team, schedule.venue,
-                schedule.home_coach, schedule.visitor_coach,
-                schedule.plate_umpire, schedule.base_umpire,
-                schedule.concession_stand, schedule.concession_staff,
-                schedule.date, schedule.start_time, schedule.am_pm
-            ];
-            
-            return searchableFields.some(field => 
-                field && field.toString().toLowerCase().includes(searchTerm)
-            );
-        });
-    }
     
     // Apply dropdown filters
     if (Object.keys(activeFilters).length > 0) {
@@ -961,10 +821,6 @@ function applyFilters() {
     }
     
     updateActiveFilterCount();
-    updateSearchResults(searchTerm);
-    
-    // Update unfilled positions summary
-    updateUnfilledSummary();
     
     // Show/hide "No Results" banner
     showNoResultsBanner();
@@ -981,10 +837,8 @@ function showNoResultsBanner() {
     
     // Check if any filters are active
     const activeFilters = getActiveFilters();
-    const searchInput = document.getElementById('liveSearchInput');
-    const searchTerm = searchInput ? searchInput.value.toLowerCase().trim() : '';
     
-    const hasActiveFilters = Object.keys(activeFilters).length > 0 || searchTerm;
+    const hasActiveFilters = Object.keys(activeFilters).length > 0;
     
     if (hasActiveFilters && filteredSchedules.length === 0) {
         // Show banner when filters are active but return no results
@@ -995,7 +849,6 @@ function showNoResultsBanner() {
                 filterDetails.push(`${label}: ${value}`);
             }
         });
-        if (searchTerm) filterDetails.push(`Search: "${searchTerm}"`);
         
         bannerContainer.innerHTML = `
             <div class="alert alert-warning alert-dismissible fade show" role="alert">
@@ -1038,14 +891,8 @@ function showAllSchedules() {
 }
 }
 
-// Clear all filters and search
+// Clear all filters
 function clearAllFilters() {
-    // Clear search input
-    const searchInput = document.getElementById('liveSearchInput');
-    if (searchInput) {
-        searchInput.value = '';
-    }
-    
     // Clear all filter dropdowns
     const filterElements = [
         'seasonFilter', 'eventTypeFilter', 'dayFilter', 'divisionFilter',
@@ -1062,14 +909,13 @@ function clearAllFilters() {
     
     filteredSchedules = [...allSchedules];
     updateActiveFilterCount();
-    updateSearchResults('');
     
     // Hide the no results banner
     showNoResultsBanner();
     
     renderScheduleTable();
     
-    console.log('🗑️ All filters and search cleared');
+    console.log('🗑️ All filters cleared');
 }
 
 // Clear filters (legacy function for compatibility)
@@ -1077,29 +923,9 @@ function clearFilters() {
     clearAllFilters();
 }
 
-// Clear only live search
-function clearLiveSearch() {
-    const searchInput = document.getElementById('liveSearchInput');
-    if (searchInput) {
-        searchInput.value = '';
-        handleLiveSearch(); // Reapply filters without search
-    }
-}
+// Clear live search function removed
 
-// Update search results display
-function updateSearchResults(searchTerm) {
-    const resultsDiv = document.getElementById('searchResults');
-    if (!resultsDiv) return;
-    
-    if (searchTerm) {
-        const total = allSchedules.length;
-        const filtered = filteredSchedules.length;
-        resultsDiv.innerHTML = `Found ${filtered} of ${total} schedules matching "${searchTerm}"`;
-        resultsDiv.className = 'mt-2 text-success small';
-    } else {
-        resultsDiv.innerHTML = '';
-    }
-}
+// Search results display removed - using filter-based approach instead
 
 // Update active filter count
 function updateActiveFilterCount() {
@@ -1107,11 +933,7 @@ function updateActiveFilterCount() {
     if (!countElement) return;
     
     const activeFilters = getActiveFilters();
-    const searchInput = document.getElementById('liveSearchInput');
-    const hasSearch = searchInput && searchInput.value.trim() !== '';
-    
-    let count = Object.keys(activeFilters).length;
-    if (hasSearch) count++;
+    const count = Object.keys(activeFilters).length;
     
     countElement.textContent = count;
 }
@@ -1119,17 +941,11 @@ function updateActiveFilterCount() {
 // Show active filters
 function showActiveFilters() {
     const activeFilters = getActiveFilters();
-    const searchInput = document.getElementById('liveSearchInput');
-    const searchTerm = searchInput ? searchInput.value.trim() : '';
     
     let message = 'Active Filters:\\n';
     
-    if (searchTerm) {
-        message += `• Search: "${searchTerm}"\\n`;
-    }
-    
-    if (Object.keys(activeFilters).length === 0 && !searchTerm) {
-        message = 'No active filters or search terms.';
+    if (Object.keys(activeFilters).length === 0) {
+        message = 'No active filters.';
     } else {
         Object.entries(activeFilters).forEach(([key, value]) => {
             let displayName = key.replace('_', ' ').replace(/\\b\\w/g, l => l.toUpperCase());
@@ -1198,10 +1014,8 @@ function renderScheduleTable() {
     if (schedulesToShow.length === 0) {
         // Check if filters are active
         const activeFilters = getActiveFilters();
-        const searchInput = document.getElementById('liveSearchInput');
-        const searchTerm = searchInput ? searchInput.value.toLowerCase().trim() : '';
         
-        const hasActiveFilters = Object.keys(activeFilters).length > 0 || searchTerm;
+        const hasActiveFilters = Object.keys(activeFilters).length > 0;
         
         if (hasActiveFilters) {
             // Show enhanced message when filters return no results
@@ -1253,25 +1067,8 @@ function renderScheduleTable() {
         return;
     }
 
-    tbody.innerHTML = schedulesToShow.map(schedule => {
-        // Determine unfilled positions and row styling
-        const hasPlateUmpire = schedule.plate_umpire && schedule.plate_umpire.trim() !== '';
-        const hasBaseUmpire = schedule.base_umpire && schedule.base_umpire.trim() !== '';
-        const hasConcessionStaff = schedule.concession_staff && schedule.concession_staff.trim() !== '';
-        const hasConcessionStand = schedule.concession_stand && schedule.concession_stand.trim() !== '';
-        
-        // Determine row class based on unfilled positions
-        let rowClass = '';
-        if (!hasPlateUmpire && !hasBaseUmpire && !hasConcessionStaff && !hasConcessionStand) {
-            rowClass = 'table-danger'; // All positions unfilled
-        } else if ((!hasPlateUmpire && !hasBaseUmpire) || (!hasConcessionStaff && !hasConcessionStand)) {
-            rowClass = 'table-warning'; // Multiple positions unfilled
-        } else if (!hasPlateUmpire || !hasBaseUmpire || !hasConcessionStaff || !hasConcessionStand) {
-            rowClass = 'table-info'; // Single position unfilled
-        }
-        
-        return `
-        <tr class="${rowClass}">
+    tbody.innerHTML = schedulesToShow.map(schedule => `
+        <tr>
             <td><span class="badge bg-primary">${schedule.season || 'N/A'}</span></td>
             <td><span class="badge ${schedule.event_type === 'Baseball' ? 'bg-success' : 'bg-warning'}">${schedule.event_type || 'N/A'}</span></td>
             <td><strong>${schedule.day || 'N/A'}</strong></td>
@@ -1288,34 +1085,19 @@ function renderScheduleTable() {
             </td>
             <td>${schedule.venue || 'N/A'}</td>
             <td>
-                <div>
-                    <strong>Plate:</strong> 
-                    ${hasPlateUmpire ? 
-                        schedule.plate_umpire : 
-                        '<span class="badge badge-unfilled-plate">Unfilled</span>'
-                    }
-                </div>
-                <div>
-                    <strong>Base:</strong> 
-                    ${hasBaseUmpire ? 
-                        schedule.base_umpire : 
-                        '<span class="badge badge-unfilled-base">Unfilled</span>'
-                    }
-                </div>
+                <div><strong>Plate:</strong> ${schedule.plate_umpire || 'N/A'}</div>
+                <div><strong>Base:</strong> ${schedule.base_umpire || 'N/A'}</div>
             </td>
             <td>
                 <div>
                     ${schedule.concession_stand === 'No Concession' ? 
                         '<span class="badge bg-secondary">No Concession</span>' : 
-                        hasConcessionStand ? 
+                        schedule.concession_stand ? 
                             `<span class="badge bg-success">${schedule.concession_stand}</span>` :
-                            '<span class="badge badge-unfilled-concession-stand">Unfilled</span>'
+                            '<span class="badge bg-secondary">No Info</span>'
                     }
                 </div>
-                ${hasConcessionStaff ? 
-                    `<br><small class="text-muted">${schedule.concession_staff}</small>` : 
-                    '<br><span class="badge badge-unfilled-concession-staff">Unfilled</span>'
-                }
+                ${schedule.concession_staff ? `<br><small class="text-muted">${schedule.concession_staff}</small>` : ''}
             </td>
             <td>
                 <button class="btn btn-sm btn-outline-primary me-1" onclick="showUmpireRequestForm(${schedule.id})">
@@ -1326,8 +1108,7 @@ function renderScheduleTable() {
                 </button>
             </td>
         </tr>
-    `;
-    }).join('');
+    `).join('');
 }
 
 // Load umpire requests
