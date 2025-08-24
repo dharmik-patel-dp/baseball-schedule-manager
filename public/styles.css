@@ -311,6 +311,45 @@ html.theme-dark .table-responsive {
   border-color: var(--neutral-700);
 }
 
+/* CRITICAL FIX: Ensure tables scroll horizontally on desktop */
+.table-responsive {
+  overflow-x: auto !important;
+  overflow-y: visible !important;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+}
+
+.table-responsive::-webkit-scrollbar {
+  height: 8px;
+  width: 8px;
+}
+
+.table-responsive::-webkit-scrollbar-track {
+  background: var(--neutral-200);
+  border-radius: 4px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb {
+  background: var(--neutral-400);
+  border-radius: 4px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb:hover {
+  background: var(--neutral-500);
+}
+
+/* Ensure tables can scroll horizontally */
+.table {
+  min-width: 100%;
+  width: max-content;
+}
+
+.table th,
+.table td {
+  white-space: nowrap;
+  min-width: 120px;
+}
+
 html.theme-dark .table-container {
   background: var(--neutral-800);
   border-color: var(--neutral-700);
@@ -852,6 +891,24 @@ html.theme-dark .schedule-table {
 
 .schedule-table .table {
   margin: 0;
+  min-width: 100%;
+  width: max-content;
+}
+
+/* CRITICAL FIX: Schedule table horizontal scrolling */
+.schedule-table .table-responsive {
+  overflow-x: auto !important;
+  overflow-y: visible !important;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  border: none;
+  box-shadow: none;
+}
+
+.schedule-table .table th,
+.schedule-table .table td {
+  white-space: nowrap;
+  min-width: 120px;
 }
 
 .schedule-table .table th {
@@ -1199,6 +1256,52 @@ html.theme-dark .schedule-table {
   .table td:last-child {
     text-align: center;
   }
+}
+
+/* CRITICAL FIX: Ensure proper table display on all devices */
+.table-responsive {
+  display: block;
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: visible;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Fix table header alignment */
+.table thead th {
+  position: sticky;
+  top: 0;
+  background: var(--primary-50);
+  z-index: 10;
+}
+
+/* Improve table row hover effects */
+.table tbody tr:hover {
+  background: var(--primary-50);
+  transition: background-color 0.2s ease;
+}
+
+/* Fix button spacing and alignment */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+/* Improve form controls */
+.form-control, .form-select {
+  border-radius: 8px;
+  border: 1px solid var(--neutral-300);
+  transition: all 0.2s ease;
+}
+
+.form-control:focus, .form-select:focus {
+  border-color: var(--primary-500);
+  box-shadow: 0 0 0 0.2rem rgba(14, 165, 233, 0.25);
+}
   
   /* Stack table cells on very small screens */
   @media (max-width: 575.98px) {
@@ -1283,6 +1386,52 @@ html.theme-dark .schedule-table {
       margin: 0.25rem;
     }
   }
+}
+
+/* Desktop table horizontal scrolling - CRITICAL FIX */
+.table-responsive {
+  overflow-x: auto !important;
+  overflow-y: visible !important;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  border-radius: 12px;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--neutral-200);
+}
+
+.table-responsive::-webkit-scrollbar {
+  height: 8px;
+  width: 8px;
+}
+
+.table-responsive::-webkit-scrollbar-track {
+  background: var(--neutral-200);
+  border-radius: 4px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb {
+  background: var(--neutral-400);
+  border-radius: 4px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb:hover {
+  background: var(--neutral-500);
+}
+
+.table-responsive::-webkit-scrollbar-corner {
+  background: var(--neutral-200);
+}
+
+/* Ensure tables can scroll horizontally on all devices */
+.table {
+  min-width: 100%;
+  width: max-content;
+}
+
+.table th,
+.table td {
+  white-space: nowrap;
+  min-width: 120px;
 }
 
 /* Mobile table scroll improvements */
@@ -3177,5 +3326,59 @@ html.theme-dark input[type="date"].filter-select {
   
   .input-group .btn:last-child {
     margin-bottom: 0;
+  }
+}
+
+/* CRITICAL FIX: Admin dashboard mobile responsiveness */
+@media (max-width: 1200px) {
+  .admin-dashboard .sidebar {
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+  }
+  
+  .admin-dashboard .sidebar.show {
+    transform: translateX(0);
+  }
+  
+  .admin-dashboard .main-content {
+    margin-left: 0;
+    transition: margin-left 0.3s ease;
+  }
+}
+
+/* Improve admin table responsiveness */
+.admin-dashboard .table-responsive {
+  overflow-x: auto !important;
+  overflow-y: visible !important;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+}
+
+.admin-dashboard .table {
+  min-width: 100%;
+  width: max-content;
+}
+
+.admin-dashboard .table th,
+.admin-dashboard .table td {
+  white-space: nowrap;
+  min-width: 120px;
+}
+
+/* Final mobile optimizations */
+@media (max-width: 767.98px) {
+  .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  
+  .row {
+    margin-left: -0.5rem;
+    margin-right: -0.5rem;
+  }
+  
+  .col, .col-1, .col-2, .col-3, .col-4, .col-5, .col-6, .col-7, .col-8, .col-9, .col-10, .col-11, .col-12 {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
   }
 }
