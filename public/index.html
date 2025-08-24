@@ -246,28 +246,13 @@
     </div>
     
     <div class="container">
-        <!-- Filter Toggle Button (Mobile) -->
-        <button class="btn btn-primary filter-toggle w-100" onclick="toggleFilters()">
-            <i class="fas fa-filter me-2"></i>Show/Hide Filters
-        </button>
-
         <!-- Filter Section -->
         <div class="filter-section" id="filterSection">
-            <h5 class="mb-3"><i class="fas fa-filter me-2"></i>Filter & Search Schedules</h5>
+            <h5 class="mb-3"><i class="fas fa-filter me-2"></i>Filter Schedules</h5>
             
-            <!-- Search functionality removed as requested -->
-
-            <!-- Advanced Filters -->
+            <!-- All Filters Displayed Directly -->
             <div class="filters-container">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h6 class="mb-0"><i class="fas fa-sliders-h me-2"></i>Advanced Filters</h6>
-                    <button class="btn btn-sm btn-outline-primary" onclick="toggleAdvancedFilters()">
-                        <i class="fas fa-chevron-down me-1" id="advancedToggleIcon"></i>
-                        <span id="advancedToggleText">Show Filters</span>
-                    </button>
-                </div>
-                
-                <div id="advancedFilters" style="display: none;">
+                <div class="row g-3">
                     <div class="row g-3">
                         <div class="col-lg-2 col-md-3 col-sm-6">
                             <label class="form-label">Season</label>

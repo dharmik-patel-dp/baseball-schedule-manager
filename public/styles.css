@@ -1605,44 +1605,25 @@ html.theme-dark .schedule-table {
 
 /* Mobile Search Improvements - Removed as search functionality was removed */
 
-/* Mobile Filter Toggle */
+/* Mobile Filter Toggle - Removed as filters are now always visible */
+
+/* Ensure filters are always visible */
+.filter-section {
+  display: block !important;
+}
+
+/* Mobile filter optimizations */
 @media (max-width: 767.98px) {
-  .filter-toggle {
-    display: block !important;
-    width: 100%;
-    margin-bottom: 1rem;
-    padding: 0.75rem 1rem;
-    background: var(--primary-600);
-    color: white;
-    border: none;
-    border-radius: 8px;
-    font-weight: 500;
-    transition: all 0.2s ease;
-  }
-  
-  .filter-toggle:hover {
-    background: var(--primary-700);
-    transform: translateY(-1px);
-  }
-  
   .filter-section {
-    display: none;
+    margin-bottom: 1.5rem;
   }
   
-  .filter-section.show {
-    display: block;
-    animation: slideDown 0.3s ease-out;
+  .filters-container {
+    padding: 1rem;
   }
   
-  @keyframes slideDown {
-    from {
-      opacity: 0;
-      transform: translateY(-10px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
+  .filter-select {
+    margin-bottom: 0.75rem;
   }
 }
 
