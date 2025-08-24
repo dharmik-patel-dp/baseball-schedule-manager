@@ -252,6 +252,9 @@ async function loadSchedules() {
         filteredSchedules = [...allSchedules];
         renderScheduleTable();
         
+        // Update game status counts
+        updateGameStatusCounts();
+        
         // Ensure request dropdowns are populated even if filter options fail
         setTimeout(() => {
             if (!filterOptions || !filterOptions.concession_staff || filterOptions.concession_staff.length === 0) {
@@ -773,7 +776,8 @@ function getActiveFilters() {
         'concessionStaffFilter': 'concession_staff',
         'startDateFilter': 'start_date',
         'endDateFilter': 'end_date',
-        'timeFilter': 'start_time'
+        'timeFilter': 'start_time',
+        'gameStatusFilter': 'game_status'
     };
     
     Object.entries(filterMappings).forEach(([elementId, fieldName]) => {
@@ -795,6 +799,26 @@ function getActiveFilters() {
     });
     
     return filters;
+}
+
+// Check game status for unfilled games filter
+function checkGameStatus(schedule, status) {
+    const hasPlateUmpire = schedule.plate_umpire && schedule.plate_umpire.trim() !== '';
+    const hasBaseUmpire = schedule.base_umpire && schedule.base_umpire.trim() !== '';
+    const hasConcessionStaff = schedule.concession_staff && schedule.concession_staff.trim() !== '';
+    
+    switch (status) {
+        case 'unfilled-umpires':
+            return !hasPlateUmpire || !hasBaseUmpire;
+        case 'unfilled-concession':
+            return !hasConcessionStaff;
+        case 'unfilled-both':
+            return (!hasPlateUmpire || !hasBaseUmpire) && !hasConcessionStaff;
+        case 'fully-staffed':
+            return hasPlateUmpire && hasBaseUmpire && hasConcessionStaff;
+        default:
+            return true;
+    }
 }
 
 // Check if schedule matches filters
@@ -839,6 +863,8 @@ function matchesFilters(schedule, filters) {
                     return scheduleDateEnd <= value;
             case 'start_time':
                     return schedule.start_time === value;
+                case 'game_status':
+                    return checkGameStatus(schedule, value);
                 default:
                     return true;
             }
@@ -888,12 +914,56 @@ function applyFilters() {
     updateActiveFilterCount();
     updateSearchResults(searchTerm);
     
+    // Update game status counts
+    updateGameStatusCounts();
+    
     // Show/hide "No Results" banner
     showNoResultsBanner();
 
     renderScheduleTable();
     
     console.log(`✅ Filtered ${filteredSchedules.length} schedules from ${allSchedules.length} total`);
+}
+
+// Update game status counts for the summary cards
+function updateGameStatusCounts() {
+    const schedulesToCount = filteredSchedules.length > 0 ? filteredSchedules : allSchedules;
+    
+    let fullyStaffed = 0;
+    let unfilledUmpires = 0;
+    let unfilledConcession = 0;
+    let unfilledBoth = 0;
+    
+    schedulesToCount.forEach(schedule => {
+        const hasPlateUmpire = schedule.plate_umpire && schedule.plate_umpire.trim() !== '';
+        const hasBaseUmpire = schedule.base_umpire && schedule.base_umpire.trim() !== '';
+        const hasConcessionStaff = schedule.concession_staff && schedule.concession_staff.trim() !== '';
+        
+        if (hasPlateUmpire && hasBaseUmpire && hasConcessionStaff) {
+            fullyStaffed++;
+        } else if (!hasPlateUmpire || !hasBaseUmpire) {
+            if (!hasConcessionStaff) {
+                unfilledBoth++;
+            } else {
+                unfilledUmpires++;
+            }
+        } else if (!hasConcessionStaff) {
+            unfilledConcession++;
+        }
+    });
+    
+    // Update the display
+    const fullyStaffedElement = document.getElementById('fullyStaffedCount');
+    const unfilledUmpiresElement = document.getElementById('unfilledUmpiresCount');
+    const unfilledConcessionElement = document.getElementById('unfilledConcessionCount');
+    const unfilledBothElement = document.getElementById('unfilledBothCount');
+    
+    if (fullyStaffedElement) fullyStaffedElement.textContent = fullyStaffed;
+    if (unfilledUmpiresElement) unfilledUmpiresElement.textContent = unfilledUmpires;
+    if (unfilledConcessionElement) unfilledConcessionElement.textContent = unfilledConcession;
+    if (unfilledBothElement) unfilledBothElement.textContent = unfilledBoth;
+    
+    console.log(`📊 Game Status Counts: ${fullyStaffed} fully staffed, ${unfilledUmpires} unfilled umpires, ${unfilledConcession} unfilled concession, ${unfilledBoth} unfilled both`);
 }
 
 // Show or hide the "No Results" banner
@@ -1175,8 +1245,23 @@ function renderScheduleTable() {
         return;
     }
 
-    tbody.innerHTML = schedulesToShow.map(schedule => `
-        <tr>
+    tbody.innerHTML = schedulesToShow.map(schedule => {
+        // Check if game has unfilled positions
+        const hasPlateUmpire = schedule.plate_umpire && schedule.plate_umpire.trim() !== '';
+        const hasBaseUmpire = schedule.base_umpire && schedule.base_umpire.trim() !== '';
+        const hasConcessionStaff = schedule.concession_staff && schedule.concession_staff.trim() !== '';
+        
+        // Determine row class based on unfilled positions
+        let rowClass = '';
+        if (!hasPlateUmpire || !hasBaseUmpire) {
+            rowClass = 'table-warning'; // Unfilled umpires
+        }
+        if (!hasConcessionStaff) {
+            rowClass = rowClass ? 'table-danger' : 'table-warning'; // Unfilled concession or both
+        }
+        
+        return `
+        <tr class="${rowClass}">
             <td><span class="badge bg-primary">${schedule.season || 'N/A'}</span></td>
             <td><span class="badge ${schedule.event_type === 'Baseball' ? 'bg-success' : 'bg-warning'}">${schedule.event_type || 'N/A'}</span></td>
             <td><strong>${schedule.day || 'N/A'}</strong></td>
@@ -1216,7 +1301,8 @@ function renderScheduleTable() {
                 </button>
             </td>
         </tr>
-    `).join('');
+        `;
+    }).join('');
 }
 
 // Load umpire requests
