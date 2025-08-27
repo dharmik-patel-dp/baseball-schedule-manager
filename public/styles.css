@@ -3408,6 +3408,14 @@ html.theme-dark input[type="date"].filter-select {
   font-weight: 500;
 }
 
+.submit-umpire-btn:disabled,
+.submit-concession-btn:disabled {
+  background-color: var(--neutral-300) !important;
+  color: var(--neutral-500) !important;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
 .submit-umpire-btn:hover,
 .submit-concession-btn:hover {
   transform: translateY(-1px);

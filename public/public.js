@@ -1183,7 +1183,8 @@ function renderScheduleTable() {
                         <label class="form-label small mb-1"><strong>Plate Umpire:</strong></label>
                         <select class="form-select form-select-sm plate-umpire-select"
                                 data-game-id="${schedule.id}"
-                                data-position="plate">
+                                data-position="plate"
+                                ${schedule.plate_umpire ? 'disabled' : ''}>
                             <option value="">Select Plate Umpire</option>
                             ${schedule.plate_umpire ? `<option value="${schedule.plate_umpire}" selected>${schedule.plate_umpire}</option>` : ''}
                             ${getUmpireOptions(schedule.plate_umpire)}
@@ -1193,7 +1194,8 @@ function renderScheduleTable() {
                         <label class="form-label small mb-1"><strong>Base Umpire:</strong></label>
                         <select class="form-select form-select-sm base-umpire-select"
                                 data-game-id="${schedule.id}"
-                                data-position="base">
+                                data-position="base"
+                                ${schedule.base_umpire ? 'disabled' : ''}>
                             <option value="">Select Base Umpire</option>
                             ${schedule.base_umpire ? `<option value="${schedule.base_umpire}" selected>${schedule.base_umpire}</option>` : ''}
                             ${getUmpireOptions(schedule.base_umpire)}
@@ -1202,6 +1204,7 @@ function renderScheduleTable() {
                     <button class="btn btn-sm btn-primary submit-umpire-btn" 
                              data-game-id="${schedule.id}" 
                              onclick="submitUmpireRequest(${schedule.id})" 
+                             ${schedule.plate_umpire && schedule.base_umpire ? 'disabled' : ''}
                              style="display: block;">
                         <i class="fas fa-paper-plane"></i>Submit Request
                     </button>
@@ -1870,8 +1873,18 @@ function getConcessionStaffOptions(currentStaff) {
 function showUmpireSubmitButton(gameId) {
     const submitBtn = document.querySelector(`.submit-umpire-btn[data-game-id="${gameId}"]`);
     if (submitBtn) {
-        // Always show the button if there are unfilled positions
-        submitBtn.style.display = 'block';
+        // Check if there are any unfilled positions
+        const plateUmpire = document.querySelector(`.plate-umpire-select[data-game-id="${gameId}"]`);
+        const baseUmpire = document.querySelector(`.base-umpire-select[data-game-id="${gameId}"]`);
+        
+        // Show button if any position is not disabled (unfilled)
+        if (!plateUmpire.disabled || !baseUmpire.disabled) {
+            submitBtn.style.display = 'block';
+            submitBtn.disabled = false;
+        } else {
+            // Both positions filled, disable submit button
+            submitBtn.disabled = true;
+        }
     }
 }
 
@@ -1979,8 +1992,10 @@ document.addEventListener('DOMContentLoaded', function() {
             const position = e.target.dataset.position;
             const value = e.target.value;
             
-            // Show submit button if any selection is made
-            showUmpireSubmitButton(gameId);
+            // Only show submit button if dropdown is not disabled
+            if (!e.target.disabled) {
+                showUmpireSubmitButton(gameId);
+            }
         }
         
         // Delegate events for concession staff dropdowns only
