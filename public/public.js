@@ -1183,8 +1183,7 @@ function renderScheduleTable() {
                         <label class="form-label small mb-1"><strong>Plate Umpire:</strong></label>
                         <select class="form-select form-select-sm plate-umpire-select"
                                 data-game-id="${schedule.id}"
-                                data-position="plate"
-                                ${schedule.plate_umpire ? 'disabled' : ''}>
+                                data-position="plate">
                             <option value="">${schedule.plate_umpire || 'Select Plate Umpire'}</option>
                             ${getUmpireOptions(schedule.plate_umpire)}
                         </select>
@@ -1193,17 +1192,16 @@ function renderScheduleTable() {
                         <label class="form-label small mb-1"><strong>Base Umpire:</strong></label>
                         <select class="form-select form-select-sm base-umpire-select"
                                 data-game-id="${schedule.id}"
-                                data-position="base"
-                                ${schedule.base_umpire ? 'disabled' : ''}>
+                                data-position="base">
                             <option value="">${schedule.base_umpire || 'Select Base Umpire'}</option>
                             ${getUmpireOptions(schedule.base_umpire)}
                         </select>
                     </div>
-                    ${!schedule.plate_umpire && !schedule.base_umpire ? 
+                    ${(!schedule.plate_umpire || !schedule.base_umpire) ? 
                         `<button class="btn btn-sm btn-primary submit-umpire-btn" 
                                  data-game-id="${schedule.id}" 
                                  onclick="submitUmpireRequest(${schedule.id})" 
-                                 style="display: none;">
+                                 style="display: block;">
                             <i class="fas fa-paper-plane"></i>Submit Request
                         </button>` : ''
                     }
@@ -1872,7 +1870,8 @@ function getConcessionStaffOptions(currentStaff) {
 function showUmpireSubmitButton(gameId) {
     const submitBtn = document.querySelector(`.submit-umpire-btn[data-game-id="${gameId}"]`);
     if (submitBtn) {
-        submitBtn.style.display = 'inline-block';
+        // Always show the button if there are unfilled positions
+        submitBtn.style.display = 'block';
     }
 }
 
@@ -1901,8 +1900,8 @@ async function submitUmpireRequest(gameId) {
         game_id: gameId,
         current_plate_umpire: game.plate_umpire || '',
         current_base_umpire: game.base_umpire || '',
-        requested_plate_umpire: plateUmpire,
-        requested_base_umpire: baseUmpire,
+        requested_plate_umpire: plateUmpire || game.plate_umpire || '', // Keep current if not selected
+        requested_base_umpire: baseUmpire || game.base_umpire || '', // Keep current if not selected
         reason: 'Umpire assignment request'
     };
     
