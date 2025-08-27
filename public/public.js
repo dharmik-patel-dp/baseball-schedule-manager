@@ -1138,7 +1138,7 @@ function renderScheduleTable() {
             
         tbody.innerHTML = `
             <tr>
-                    <td colspan="11" class="no-data text-center">
+                    <td colspan="12" class="no-data text-center">
                         <div class="py-5">
                             <i class="fas fa-search fa-3x text-warning mb-4"></i>
                             <h4 class="text-warning mb-3">No Results Found</h4>
@@ -1163,7 +1163,7 @@ function renderScheduleTable() {
             // Show simple message when no schedules exist in database
             tbody.innerHTML = `
                 <tr>
-                    <td colspan="11" class="no-data text-center">
+                    <td colspan="12" class="no-data text-center">
                         <div class="py-4">
                             <i class="fas fa-calendar-times fa-3x text-muted mb-3"></i>
                             <h5 class="text-muted">No schedules found in the database</h5>
@@ -1177,18 +1177,6 @@ function renderScheduleTable() {
 
     tbody.innerHTML = schedulesToShow.map(schedule => `
         <tr>
-            <td>
-                <div><strong>Plate:</strong> ${schedule.plate_umpire || 'N/A'}</div>
-                <div><strong>Base:</strong> ${schedule.base_umpire || 'N/A'}</div>
-            </td>
-            <td>
-                <button class="btn btn-sm btn-outline-primary me-1" onclick="showUmpireRequestForm(${schedule.id})">
-                    <i class="fas fa-edit"></i>Umpire
-                </button>
-                <button class="btn btn-sm btn-outline-info" onclick="showConcessionStaffRequestForm(${schedule.id})">
-                    <i class="fas fa-user-edit"></i>Staff
-                </button>
-            </td>
             <td><span class="badge bg-primary">${schedule.season || 'N/A'}</span></td>
             <td><span class="badge ${schedule.event_type === 'Baseball' ? 'bg-success' : 'bg-warning'}">${schedule.event_type || 'N/A'}</span></td>
             <td><strong>${schedule.day || 'N/A'}</strong></td>
@@ -1204,6 +1192,29 @@ function renderScheduleTable() {
                 <small class="text-muted">${schedule.visitor_coach || 'N/A'}</small>
             </td>
             <td>${schedule.venue || 'N/A'}</td>
+            <td>
+                <div><strong>Plate:</strong> ${schedule.plate_umpire || 'N/A'}</div>
+                <div><strong>Base:</strong> ${schedule.base_umpire || 'N/A'}</div>
+            </td>
+            <td>
+                <div>
+                    ${schedule.concession_stand === 'No Concession' ? 
+                        '<span class="badge bg-secondary">No Concession</span>' : 
+                        schedule.concession_stand ? 
+                            `<span class="badge bg-success">${schedule.concession_stand}</span>` :
+                            '<span class="badge bg-secondary">No Info</span>'
+                    }
+                </div>
+                ${schedule.concession_staff ? `<br><small class="text-muted">${schedule.concession_staff}</small>` : ''}
+            </td>
+            <td>
+                <button class="btn btn-sm btn-outline-primary me-1" onclick="showUmpireRequestForm(${schedule.id})">
+                    <i class="fas fa-edit"></i>Umpire
+                </button>
+                <button class="btn btn-sm btn-outline-info" onclick="showConcessionStaffRequestForm(${schedule.id})">
+                    <i class="fas fa-user-edit"></i>Staff
+                </button>
+            </td>
         </tr>
     `).join('');
 }
