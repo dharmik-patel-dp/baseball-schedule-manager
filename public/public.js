@@ -1138,7 +1138,7 @@ function renderScheduleTable() {
             
         tbody.innerHTML = `
             <tr>
-                    <td colspan="13" class="no-data text-center">
+                    <td colspan="12" class="no-data text-center">
                         <div class="py-5">
                             <i class="fas fa-search fa-3x text-warning mb-4"></i>
                             <h4 class="text-warning mb-3">No Results Found</h4>
@@ -1163,7 +1163,7 @@ function renderScheduleTable() {
             // Show simple message when no schedules exist in database
             tbody.innerHTML = `
                 <tr>
-                    <td colspan="13" class="no-data text-center">
+                    <td colspan="12" class="no-data text-center">
                         <div class="py-4">
                             <i class="fas fa-calendar-times fa-3x text-muted mb-3"></i>
                             <h5 class="text-muted">No schedules found in the database</h5>
@@ -1178,8 +1178,33 @@ function renderScheduleTable() {
     tbody.innerHTML = schedulesToShow.map(schedule => `
         <tr>
             <td>
-                <div><strong>Plate:</strong> ${schedule.plate_umpire || 'N/A'}</div>
-                <div><strong>Base:</strong> ${schedule.base_umpire || 'N/A'}</div>
+                <div class="umpire-selection">
+                    <div class="mb-2">
+                        <label class="form-label small mb-1"><strong>Plate Umpire:</strong></label>
+                        <select class="form-select form-select-sm plate-umpire-select" 
+                                data-game-id="${schedule.id}" 
+                                data-position="plate"
+                                ${schedule.plate_umpire ? 'disabled' : ''}>
+                            <option value="">${schedule.plate_umpire || 'Select Plate Umpire'}</option>
+                            ${getUmpireOptions(schedule.plate_umpire)}
+                        </select>
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label small mb-1"><strong>Base Umpire:</strong></label>
+                        <select class="form-select form-select-sm base-umpire-select" 
+                                data-game-id="${schedule.id}" 
+                                data-position="base"
+                                ${schedule.base_umpire ? 'disabled' : ''}>
+                            <option value="">${schedule.base_umpire || 'Select Base Umpire'}</option>
+                            ${getUmpireOptions(schedule.base_umpire)}
+                        </select>
+                    </div>
+                    ${(schedule.plate_umpire || schedule.base_umpire) ? 
+                        `<button class="btn btn-sm btn-outline-warning" onclick="requestUmpireChange(${schedule.id})">
+                            <i class="fas fa-edit"></i>Request Change
+                        </button>` : ''
+                    }
+                </div>
             </td>
             <td>
                 <div>
@@ -1191,14 +1216,6 @@ function renderScheduleTable() {
                     }
                 </div>
                 ${schedule.concession_staff ? `<br><small class="text-muted">${schedule.concession_staff}</small>` : ''}
-            </td>
-            <td>
-                <button class="btn btn-sm btn-outline-primary me-1" onclick="showUmpireRequestForm(${schedule.id})">
-                    <i class="fas fa-edit"></i>Umpire
-                </button>
-                <button class="btn btn-sm btn-outline-info" onclick="showConcessionStaffRequestForm(${schedule.id})">
-                    <i class="fas fa-user-edit"></i>Staff
-                </button>
             </td>
             <td><span class="badge bg-primary">${schedule.season || 'N/A'}</span></td>
             <td><span class="badge ${schedule.event_type === 'Baseball' ? 'bg-success' : 'bg-warning'}">${schedule.event_type || 'N/A'}</span></td>
@@ -1763,4 +1780,76 @@ async function rejectConcessionStaffRequest(requestId) {
         console.error('Error rejecting concession staff request:', error);
         showAlert('Error rejecting concession staff request. Please try again.', 'danger');
     }
-} 
+}
+
+// Get umpire options for dropdowns
+function getUmpireOptions(currentUmpire) {
+    // This should return available umpires from your staff data
+    // For now, returning some sample options
+    const umpires = ['Dylan LeLacheur', 'Scott Patenaude', 'Ben Durkin', 'Brady Foote', 'Connor Stevens', 'Andrey LeMay'];
+    return umpires
+        .filter(umpire => umpire !== currentUmpire)
+        .map(umpire => `<option value="${umpire}">${umpire}</option>`)
+        .join('');
+}
+
+// Handle umpire selection change
+function handleUmpireSelection(gameId, position, value) {
+    if (!value) return; // Don't submit empty selections
+    
+    // Create umpire change request
+    const game = allSchedules.find(s => s.id == gameId);
+    if (!game) return;
+    
+    const requestData = {
+        game_id: gameId,
+        current_plate_umpire: game.plate_umpire || '',
+        current_base_umpire: game.base_umpire || '',
+        requested_plate_umpire: position === 'plate' ? value : game.plate_umpire || '',
+        requested_base_umpire: position === 'base' ? value : game.base_umpire || '',
+        reason: `Umpire assignment request for ${position} position`
+    };
+    
+    submitUmpireRequest(requestData);
+}
+
+// Submit umpire change request
+async function submitUmpireRequest(requestData) {
+    try {
+        const response = await fetch('/api/umpire-requests', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(requestData)
+    });
+        
+        if (!response.ok) throw new Error('Failed to submit umpire request');
+        
+        showAlert('Umpire change request submitted successfully!', 'success');
+        
+        // Reload schedules to show updated state
+        await loadSchedules();
+    } catch (error) {
+        console.error('Error submitting umpire request:', error);
+        showAlert('Error submitting umpire request. Please try again.', 'danger');
+    }
+}
+
+// Request umpire change (for already assigned games)
+function requestUmpireChange(gameId) {
+    // Show the existing umpire request form
+    showUmpireRequestForm(gameId);
+}
+
+// Add event listeners for umpire dropdowns
+document.addEventListener('DOMContentLoaded', function() {
+    // Delegate events for umpire dropdowns
+    document.addEventListener('change', function(e) {
+        if (e.target.classList.contains('plate-umpire-select') || e.target.classList.contains('base-umpire-select')) {
+            const gameId = e.target.dataset.gameId;
+            const position = e.target.dataset.position;
+            const value = e.target.value;
+            
+            handleUmpireSelection(gameId, position, value);
+        }
+    });
+});
