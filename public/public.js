@@ -1190,6 +1190,16 @@ function renderScheduleTable() {
                             ${getUmpireOptions(schedule.plate_umpire)}
                         </select>
                     </div>
+                    
+                    <div class="mb-2">
+                        <button class="btn btn-sm btn-primary submit-plate-umpire-btn" 
+                                 data-game-id="${schedule.id}" 
+                                 onclick="submitPlateUmpireRequest(${schedule.id})" 
+                                 style="display: none;">
+                            <i class="fas fa-paper-plane"></i>Submit Plate Umpire
+                        </button>
+                    </div>
+                    
                     <div class="mb-2">
                         <label class="form-label small mb-1"><strong>Base Umpire:</strong></label>
                         <select class="form-select form-select-sm base-umpire-select"
@@ -1201,13 +1211,8 @@ function renderScheduleTable() {
                             ${getUmpireOptions(schedule.base_umpire)}
                         </select>
                     </div>
-                    <div class="umpire-submit-buttons">
-                        <button class="btn btn-sm btn-primary submit-plate-umpire-btn" 
-                                 data-game-id="${schedule.id}" 
-                                 onclick="submitPlateUmpireRequest(${schedule.id})" 
-                                 style="display: none;">
-                            <i class="fas fa-paper-plane"></i>Submit Plate Umpire
-                        </button>
+                    
+                    <div class="mb-2">
                         <button class="btn btn-sm btn-primary submit-base-umpire-btn" 
                                  data-game-id="${schedule.id}" 
                                  onclick="submitBaseUmpireRequest(${schedule.id})" 

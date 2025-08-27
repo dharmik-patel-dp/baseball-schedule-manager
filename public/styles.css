@@ -3409,12 +3409,7 @@ html.theme-dark input[type="date"].filter-select {
   font-weight: 500;
 }
 
-.umpire-submit-buttons {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  margin-top: 0.5rem;
-}
+
 
 .submit-plate-umpire-btn:disabled,
 .submit-base-umpire-btn:disabled,
