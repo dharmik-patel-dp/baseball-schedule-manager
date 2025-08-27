@@ -4126,18 +4126,43 @@ html.theme-dark input[type="date"].filter-select {
     border: 1px solid var(--neutral-200);
   }
   
-  /* Mobile card animations */
+  /* Mobile card animations and interactions */
   .mobile-game-card {
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    touch-action: manipulation;
   }
   
   .mobile-game-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
   }
   
   .mobile-game-card:active {
-    transform: translateY(0);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+    transition: all 0.1s ease;
+  }
+  
+  .mobile-game-card:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.3);
+  }
+  
+  /* Mobile scrolling improvements */
+  .mobile-cards-container {
+    scroll-behavior: smooth;
+    padding-bottom: 2rem;
+  }
+  
+  /* Mobile form improvements */
+  .mobile-select:focus {
+    transform: scale(1.02);
+    transition: all 0.2s ease;
+  }
+  
+  .mobile-btn:active {
+    transform: scale(0.98);
     transition: transform 0.1s ease;
   }
   
@@ -4160,12 +4185,135 @@ html.theme-dark input[type="date"].filter-select {
     .mobile-concession-section {
       padding: 0.75rem;
     }
+    
+    .mobile-cards-container {
+      padding: 0 0.25rem;
+    }
   }
+  
+  /* Enhanced mobile touch targets */
+  .mobile-select,
+  .mobile-btn {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* Mobile card expansion on focus */
+  .mobile-game-card:focus-within {
+    transform: scale(1.02);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+    z-index: 10;
+  }
+  
+  /* Mobile smooth scrolling */
+  html {
+    scroll-behavior: smooth;
+  }
+  
+  /* Mobile viewport height fix */
+.mobile-cards-container {
+  height: calc(100vh - 200px);
+  min-height: 400px;
+}
+
+/* Mobile scroll indicator */
+.mobile-scroll-indicator {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(30, 58, 138, 0.9);
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 25px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  transition: opacity 0.3s ease;
+  backdrop-filter: blur(10px);
+}
+
+.scroll-indicator-content {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.scroll-indicator-content i {
+  animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-5px);
+  }
+  60% {
+    transform: translateY(-3px);
+  }
+}
+
+/* Enhanced mobile card focus states */
+.mobile-game-card:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.3), 0 8px 25px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+}
+
+/* Mobile card loading states */
+.mobile-game-card.loading {
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.mobile-game-card.loading::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 20px;
+  height: 20px;
+  margin: -10px 0 0 -10px;
+  border: 2px solid var(--primary-color);
+  border-top: 2px solid transparent;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
 }
 
 /* ===== MOBILE CARD LAYOUT ===== */
 .mobile-cards-container {
   padding: 0 0.5rem;
+  max-height: 100vh;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+}
+
+.mobile-cards-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.mobile-cards-container::-webkit-scrollbar-track {
+  background: var(--neutral-200);
+  border-radius: 3px;
+}
+
+.mobile-cards-container::-webkit-scrollbar-thumb {
+  background: var(--primary-color);
+  border-radius: 3px;
+}
+
+.mobile-cards-container::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-600);
 }
 
 .mobile-game-card {
@@ -4173,8 +4321,10 @@ html.theme-dark input[type="date"].filter-select {
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   margin-bottom: 1.5rem;
-  overflow: hidden;
+  overflow: visible;
   border: 1px solid var(--neutral-200);
+  position: relative;
+  z-index: 1;
 }
 
 .mobile-card-header {

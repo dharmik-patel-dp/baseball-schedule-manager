@@ -1201,11 +1201,14 @@ function renderMobileLayout(schedules, tbody) {
         mobileContainer.className = 'mobile-cards-container';
         mobileContainer.innerHTML = '<h5 class="text-center mb-4">📅 Game Schedules</h5>';
         tableContainer.parentNode.insertBefore(mobileContainer, tableContainer.nextSibling);
+        
+        // Add mobile scrolling enhancements
+        enhanceMobileScrolling(mobileContainer);
     }
     
     // Generate mobile cards
     const mobileCards = schedules.map(schedule => `
-        <div class="mobile-game-card" data-game-id="${schedule.id}">
+        <div class="mobile-game-card" data-game-id="${schedule.id}" tabindex="0">
             <div class="mobile-card-header">
                 <div class="mobile-game-type">
                     <span class="badge ${schedule.event_type === 'Baseball' ? 'bg-success' : 'bg-warning'}">${schedule.event_type || 'Game'}</span>
@@ -1322,6 +1325,195 @@ function renderMobileLayout(schedules, tbody) {
     `).join('');
     
     mobileContainer.innerHTML = '<h5 class="text-center mb-4">📅 Game Schedules</h5>' + mobileCards;
+    
+    // Add mobile card interactions
+    addMobileCardInteractions();
+}
+
+// Enhance mobile scrolling experience
+function enhanceMobileScrolling(container) {
+    // Add smooth scrolling
+    container.style.scrollBehavior = 'smooth';
+    
+    // Add touch scrolling improvements
+    let startY = 0;
+    let startScrollTop = 0;
+    
+    container.addEventListener('touchstart', (e) => {
+        startY = e.touches[0].clientY;
+        startScrollTop = container.scrollTop;
+    }, { passive: true });
+    
+    container.addEventListener('touchmove', (e) => {
+        const deltaY = startY - e.touches[0].clientY;
+        container.scrollTop = startScrollTop + deltaY;
+    }, { passive: true });
+    
+    // Add scroll indicators
+    const scrollIndicator = document.createElement('div');
+    scrollIndicator.className = 'mobile-scroll-indicator';
+    scrollIndicator.innerHTML = `
+        <div class="scroll-indicator-content">
+            <i class="fas fa-chevron-down"></i>
+            <span>Scroll to see more games</span>
+        </div>
+    `;
+    container.parentNode.insertBefore(scrollIndicator, container);
+    
+    // Hide scroll indicator when scrolling
+    let scrollTimeout;
+    container.addEventListener('scroll', () => {
+        scrollIndicator.style.opacity = '0';
+        clearTimeout(scrollTimeout);
+        scrollTimeout = setTimeout(() => {
+            if (container.scrollTop < container.scrollHeight - container.clientHeight - 10) {
+                scrollIndicator.style.opacity = '1';
+            }
+        }, 1000);
+    });
+}
+
+// Add mobile card interactions
+function addMobileCardInteractions() {
+    const cards = document.querySelectorAll('.mobile-game-card');
+    
+    cards.forEach(card => {
+        // Add click/tap feedback
+        card.addEventListener('click', (e) => {
+            // Don't trigger on form elements
+            if (e.target.tagName === 'SELECT' || e.target.tagName === 'BUTTON' || e.target.tagName === 'LABEL') {
+                return;
+            }
+            
+            // Add visual feedback
+            card.style.transform = 'scale(0.98)';
+            setTimeout(() => {
+                card.style.transform = '';
+            }, 150);
+        });
+        
+        // Add keyboard navigation
+        card.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                card.click();
+            }
+        });
+        
+        // Add focus management
+        card.addEventListener('focus', () => {
+            // Scroll card into view smoothly
+            card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        });
+        
+        // Add mobile form enhancements
+        const selects = card.querySelectorAll('.mobile-select');
+        selects.forEach(select => {
+            select.addEventListener('focus', () => {
+                // Add loading state to card
+                card.classList.add('loading');
+                
+                // Scroll to the focused element
+                setTimeout(() => {
+                    select.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }, 100);
+            });
+            
+            select.addEventListener('blur', () => {
+                // Remove loading state
+                card.classList.remove('loading');
+            });
+            
+            select.addEventListener('change', () => {
+                // Add success feedback
+                card.style.transform = 'scale(1.02)';
+                card.style.boxShadow = '0 8px 30px rgba(30, 58, 138, 0.2)';
+                
+                setTimeout(() => {
+                    card.style.transform = '';
+                    card.style.boxShadow = '';
+                }, 500);
+            });
+        });
+        
+        // Add mobile button enhancements
+        const buttons = card.querySelectorAll('.mobile-btn');
+        buttons.forEach(button => {
+            button.addEventListener('touchstart', () => {
+                button.style.transform = 'scale(0.95)';
+            });
+            
+            button.addEventListener('touchend', () => {
+                button.style.transform = '';
+            });
+            
+            button.addEventListener('click', () => {
+                // Add success animation
+                button.innerHTML = '<i class="fas fa-check"></i> Sent!';
+                button.classList.add('btn-success');
+                
+                setTimeout(() => {
+                    button.innerHTML = button.getAttribute('data-original-text') || 'Submit Request';
+                    button.classList.remove('btn-success');
+                }, 2000);
+            });
+        });
+    });
+    
+    // Add mobile-specific event listeners
+    addMobileEventListeners();
+}
+
+// Add mobile-specific event listeners
+function addMobileEventListeners() {
+    // Handle mobile orientation changes
+    window.addEventListener('orientationchange', () => {
+        setTimeout(() => {
+            // Recalculate mobile container height
+            const mobileContainer = document.querySelector('.mobile-cards-container');
+            if (mobileContainer) {
+                mobileContainer.style.height = `calc(100vh - 200px)`;
+            }
+        }, 100);
+    });
+    
+    // Handle mobile scroll performance
+    let ticking = false;
+    const mobileContainer = document.querySelector('.mobile-cards-container');
+    
+    if (mobileContainer) {
+        mobileContainer.addEventListener('scroll', () => {
+            if (!ticking) {
+                requestAnimationFrame(() => {
+                    // Update scroll indicator
+                    updateScrollIndicator(mobileContainer);
+                    ticking = false;
+                });
+                ticking = true;
+            }
+        });
+    }
+}
+
+// Update scroll indicator based on scroll position
+function updateScrollIndicator(container) {
+    const indicator = document.querySelector('.mobile-scroll-indicator');
+    if (!indicator) return;
+    
+    const scrollTop = container.scrollTop;
+    const scrollHeight = container.scrollHeight;
+    const clientHeight = container.clientHeight;
+    
+    if (scrollTop + clientHeight >= scrollHeight - 10) {
+        // Near bottom
+        indicator.style.opacity = '0';
+    } else if (scrollTop <= 10) {
+        // Near top
+        indicator.style.opacity = '0.7';
+    } else {
+        // Middle
+        indicator.style.opacity = '1';
+    }
 }
 
 // Render desktop table layout
