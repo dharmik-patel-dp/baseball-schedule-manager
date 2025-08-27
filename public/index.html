@@ -250,13 +250,23 @@
         <div class="filter-section" id="filterSection">
             <h5 class="mb-3"><i class="fas fa-filter me-2"></i>Filter Schedules</h5>
             
-            <!-- Event Type Filter Only -->
+            <!-- Event Type and Availability Filters -->
             <div class="filters-container">
                 <div class="row g-3">
                     <div class="col-lg-3 col-md-4 col-sm-6">
                         <label class="form-label">Event Type</label>
                         <select class="form-select filter-select" id="eventTypeFilter">
                             <option value="">All Events</option>
+                        </select>
+                    </div>
+                    <div class="col-lg-3 col-md-4 col-sm-6">
+                        <label class="form-label">Available Games</label>
+                        <select class="form-select filter-select" id="availableGamesFilter">
+                            <option value="">All Games</option>
+                            <option value="available">Available Positions</option>
+                            <option value="plate_umpire">Available Plate Umpire</option>
+                            <option value="base_umpire">Available Base Umpire</option>
+                            <option value="concession_staff">Available Concession Staff</option>
                         </select>
                     </div>
                 </div>

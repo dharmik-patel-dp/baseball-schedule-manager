@@ -733,11 +733,18 @@ function handleLiveSearch() {
 function getActiveFilters() {
     const filters = {};
     
-    // Only check Event Type filter
+    // Check Event Type filter
     const eventTypeFilter = document.getElementById('eventTypeFilter');
     if (eventTypeFilter && eventTypeFilter.value) {
         filters.event_type = eventTypeFilter.value;
         console.log(`🔍 Event type filter set to: ${eventTypeFilter.value}`);
+    }
+    
+    // Check Available Games filter
+    const availableGamesFilter = document.getElementById('availableGamesFilter');
+    if (availableGamesFilter && availableGamesFilter.value) {
+        filters.available_games = availableGamesFilter.value;
+        console.log(`🔍 Available games filter set to: ${availableGamesFilter.value}`);
     }
     
     return filters;
@@ -749,10 +756,32 @@ function matchesFilters(schedule, filters) {
         switch (key) {
             case 'event_type':
                 return schedule.event_type === value;
+            case 'available_games':
+                return checkAvailabilityFilter(schedule, value);
             default:
                 return true;
         }
     });
+}
+
+// Check availability filter conditions
+function checkAvailabilityFilter(schedule, filterValue) {
+    switch (filterValue) {
+        case 'available':
+            // Show games with any unfilled position
+            return !schedule.plate_umpire || !schedule.base_umpire || !schedule.concession_staff;
+        case 'plate_umpire':
+            // Show games where plate umpire is not assigned
+            return !schedule.plate_umpire;
+        case 'base_umpire':
+            // Show games where base umpire is not assigned
+            return !schedule.base_umpire;
+        case 'concession_staff':
+            // Show games where concession staff is not assigned
+            return !schedule.concession_staff;
+        default:
+            return true;
+    }
 }
 
 // Apply filters (improved version)
@@ -878,10 +907,16 @@ function clearAllFilters() {
         searchInput.value = '';
     }
     
-    // Clear Event Type filter only
+    // Clear Event Type filter
     const eventTypeFilter = document.getElementById('eventTypeFilter');
     if (eventTypeFilter) {
         eventTypeFilter.value = '';
+    }
+    
+    // Clear Available Games filter
+    const availableGamesFilter = document.getElementById('availableGamesFilter');
+    if (availableGamesFilter) {
+        availableGamesFilter.value = '';
     }
     
     filteredSchedules = [...allSchedules];

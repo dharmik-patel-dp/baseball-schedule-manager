@@ -3444,3 +3444,14 @@ html.theme-dark input[type="date"].filter-select {
     padding: 0.25rem 0.375rem;
   }
 }
+
+/* Availability Filter Styling */
+#availableGamesFilter {
+  border-color: var(--primary-color);
+  background-color: var(--neutral-50);
+}
+
+#availableGamesFilter:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 0.2rem rgba(30, 58, 138, 0.25);
+}
