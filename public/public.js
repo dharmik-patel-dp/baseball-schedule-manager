@@ -1207,15 +1207,33 @@ function renderScheduleTable() {
                 </div>
             </td>
             <td>
-                <div>
-                    ${schedule.concession_stand === 'No Concession' ? 
-                        '<span class="badge bg-secondary">No Concession</span>' : 
-                        schedule.concession_stand ? 
-                            `<span class="badge bg-success">${schedule.concession_stand}</span>` :
-                            '<span class="badge bg-secondary">No Info</span>'
+                <div class="concession-selection">
+                    <div class="mb-2">
+                        <label class="form-label small mb-1"><strong>Concession Stand:</strong></label>
+                        <select class="form-select form-select-sm concession-stand-select" 
+                                data-game-id="${schedule.id}" 
+                                data-type="stand"
+                                ${schedule.concession_stand && schedule.concession_stand !== 'No Concession' ? 'disabled' : ''}>
+                            <option value="">${schedule.concession_stand || 'Select Concession Stand'}</option>
+                            ${getConcessionStandOptions(schedule.concession_stand)}
+                        </select>
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label small mb-1"><strong>Concession Staff:</strong></label>
+                        <select class="form-select form-select-sm concession-staff-select" 
+                                data-game-id="${schedule.id}" 
+                                data-type="staff"
+                                ${schedule.concession_staff ? 'disabled' : ''}>
+                            <option value="">${schedule.concession_staff || 'Select Concession Staff'}</option>
+                            ${getConcessionStaffOptions(schedule.concession_staff)}
+                        </select>
+                    </div>
+                    ${(schedule.concession_stand && schedule.concession_stand !== 'No Concession') || schedule.concession_staff ? 
+                        `<button class="btn btn-sm btn-outline-warning" onclick="requestConcessionChange(${schedule.id})">
+                            <i class="fas fa-edit"></i>Request Change
+                        </button>` : ''
                     }
                 </div>
-                ${schedule.concession_staff ? `<br><small class="text-muted">${schedule.concession_staff}</small>` : ''}
             </td>
             <td><span class="badge bg-primary">${schedule.season || 'N/A'}</span></td>
             <td><span class="badge ${schedule.event_type === 'Baseball' ? 'bg-success' : 'bg-warning'}">${schedule.event_type || 'N/A'}</span></td>
@@ -1840,7 +1858,92 @@ function requestUmpireChange(gameId) {
     showUmpireRequestForm(gameId);
 }
 
-// Add event listeners for umpire dropdowns
+// Get concession stand options for dropdowns
+function getConcessionStandOptions(currentStand) {
+    // This should return available concession stands from your data
+    // For now, returning some sample options based on your data
+    const stands = [
+        'Boutin Stand - LeBlanc Park',
+        'Shedd Lower Stand - Shedd Park',
+        'Mahoney Stand - Father McGuire Park',
+        'McPherson Stand - McPherson Park',
+        'Botto Stand - Page Field',
+        'No Concession'
+    ];
+    return stands
+        .filter(stand => stand !== currentStand)
+        .map(stand => `<option value="${stand}">${stand}</option>`)
+        .join('');
+}
+
+// Get concession staff options for dropdowns
+function getConcessionStaffOptions(currentStaff) {
+    // This should return available concession staff from your staff data
+    // For now, returning some sample options based on your data
+    const staff = [
+        'Dylan LeLacheur',
+        'Connor Stevens',
+        'Emily Lelacheur',
+        'Kate LeLacheur',
+        'Andrey LeMay',
+        'Ben Durkin',
+        'Danny Gallo',
+        'Brayden Shea'
+    ];
+    return staff
+        .filter(person => person !== currentStaff)
+        .map(person => `<option value="${person}">${person}</option>`)
+        .join('');
+}
+
+// Handle concession selection change
+function handleConcessionSelection(gameId, type, value) {
+    if (!value) return; // Don't submit empty selections
+    
+    // Create concession change request
+    const game = allSchedules.find(s => s.id == gameId);
+    if (!game) return;
+    
+    const requestData = {
+        game_id: gameId,
+        current_concession_stand: game.concession_stand || '',
+        current_concession_staff: game.concession_staff || '',
+        requested_concession_stand: type === 'stand' ? value : game.concession_stand || '',
+        requested_concession_staff: type === 'staff' ? value : game.concession_staff || '',
+        reason: `Concession ${type} assignment request`
+    };
+    
+    submitConcessionRequest(requestData);
+}
+
+// Submit concession change request
+async function submitConcessionRequest(requestData) {
+    try {
+        const response = await fetch('/api/concession-staff-requests', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(requestData)
+        });
+        
+        if (!response.ok) throw new Error('Failed to submit concession request');
+        
+        showAlert('Concession change request submitted successfully!', 'success');
+        
+        // Reload schedules to show updated state
+        await loadSchedules();
+    } catch (error) {
+        console.error('Error submitting concession request:', error);
+        showAlert('Error submitting concession request. Please try again.', 'danger');
+    }
+}
+
+// Request concession change (for already assigned games)
+function requestConcessionChange(gameId) {
+    // Show the existing concession staff request form
+    showConcessionStaffRequestForm(gameId);
+}
+
+// Add event listeners for umpire and concession dropdowns
 document.addEventListener('DOMContentLoaded', function() {
     // Delegate events for umpire dropdowns
     document.addEventListener('change', function(e) {
@@ -1850,6 +1953,15 @@ document.addEventListener('DOMContentLoaded', function() {
             const value = e.target.value;
             
             handleUmpireSelection(gameId, position, value);
+        }
+        
+        // Delegate events for concession dropdowns
+        if (e.target.classList.contains('concession-stand-select') || e.target.classList.contains('concession-staff-select')) {
+            const gameId = e.target.dataset.gameId;
+            const type = e.target.dataset.type;
+            const value = e.target.value;
+            
+            handleConcessionSelection(gameId, type, value);
         }
     });
 });
