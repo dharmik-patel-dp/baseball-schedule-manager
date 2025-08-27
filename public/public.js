@@ -1201,13 +1201,20 @@ function renderScheduleTable() {
                             ${getUmpireOptions(schedule.base_umpire)}
                         </select>
                     </div>
-                    <button class="btn btn-sm btn-primary submit-umpire-btn" 
-                             data-game-id="${schedule.id}" 
-                             onclick="submitUmpireRequest(${schedule.id})" 
-                             ${schedule.plate_umpire && schedule.base_umpire ? 'disabled' : ''}
-                             style="display: block;">
-                        <i class="fas fa-paper-plane"></i>Submit Request
-                    </button>
+                    <div class="umpire-submit-buttons">
+                        <button class="btn btn-sm btn-primary submit-plate-umpire-btn" 
+                                 data-game-id="${schedule.id}" 
+                                 onclick="submitPlateUmpireRequest(${schedule.id})" 
+                                 style="display: none;">
+                            <i class="fas fa-paper-plane"></i>Submit Plate Umpire
+                        </button>
+                        <button class="btn btn-sm btn-primary submit-base-umpire-btn" 
+                                 data-game-id="${schedule.id}" 
+                                 onclick="submitBaseUmpireRequest(${schedule.id})" 
+                                 style="display: none;">
+                            <i class="fas fa-paper-plane"></i>Submit Base Umpire
+                        </button>
+                    </div>
                 </div>
             </td>
             <td>
@@ -1870,20 +1877,31 @@ function getConcessionStaffOptions(currentStaff) {
 
 
 // Show umpire submit button when selections are made
-function showUmpireSubmitButton(gameId) {
-    const submitBtn = document.querySelector(`.submit-umpire-btn[data-game-id="${gameId}"]`);
-    if (submitBtn) {
-        // Check if there are any unfilled positions
-        const plateUmpire = document.querySelector(`.plate-umpire-select[data-game-id="${gameId}"]`);
-        const baseUmpire = document.querySelector(`.base-umpire-select[data-game-id="${gameId}"]`);
-        
-        // Show button if any position is not disabled (unfilled)
-        if (!plateUmpire.disabled || !baseUmpire.disabled) {
-            submitBtn.style.display = 'block';
-            submitBtn.disabled = false;
-        } else {
-            // Both positions filled, disable submit button
-            submitBtn.disabled = true;
+function showUmpireSubmitButton(gameId, position) {
+    if (position === 'plate') {
+        const submitBtn = document.querySelector(`.submit-plate-umpire-btn[data-game-id="${gameId}"]`);
+        if (submitBtn) {
+            submitBtn.style.display = 'inline-block';
+        }
+    } else if (position === 'base') {
+        const submitBtn = document.querySelector(`.submit-base-umpire-btn[data-game-id="${gameId}"]`);
+        if (submitBtn) {
+            submitBtn.style.display = 'inline-block';
+        }
+    }
+}
+
+// Hide umpire submit button when selection is cleared
+function hideUmpireSubmitButton(gameId, position) {
+    if (position === 'plate') {
+        const submitBtn = document.querySelector(`.submit-plate-umpire-btn[data-game-id="${gameId}"]`);
+        if (submitBtn) {
+            submitBtn.style.display = 'none';
+        }
+    } else if (position === 'base') {
+        const submitBtn = document.querySelector(`.submit-base-umpire-btn[data-game-id="${gameId}"]`);
+        if (submitBtn) {
+            submitBtn.style.display = 'none';
         }
     }
 }
@@ -1896,16 +1914,15 @@ function showConcessionSubmitButton(gameId) {
     }
 }
 
-// Submit umpire request when button is clicked
-async function submitUmpireRequest(gameId) {
+// Submit plate umpire request when button is clicked
+async function submitPlateUmpireRequest(gameId) {
     const game = allSchedules.find(s => s.id == gameId);
     if (!game) return;
     
     const plateUmpire = document.querySelector(`.plate-umpire-select[data-game-id="${gameId}"]`).value;
-    const baseUmpire = document.querySelector(`.base-umpire-select[data-game-id="${gameId}"]`).value;
     
-    if (!plateUmpire && !baseUmpire) {
-        showAlert('Please select at least one umpire before submitting.', 'warning');
+    if (!plateUmpire) {
+        showAlert('Please select a plate umpire before submitting.', 'warning');
         return;
     }
     
@@ -1914,8 +1931,8 @@ async function submitUmpireRequest(gameId) {
         current_plate_umpire: game.plate_umpire || '',
         current_base_umpire: game.base_umpire || '',
         requested_plate_umpire: plateUmpire,
-        requested_base_umpire: baseUmpire,
-        reason: 'Umpire assignment request'
+        requested_base_umpire: game.base_umpire || '', // Keep current base umpire
+        reason: 'Plate umpire assignment request'
     };
     
     try {
@@ -1925,18 +1942,61 @@ async function submitUmpireRequest(gameId) {
             body: JSON.stringify(requestData)
         });
         
-        if (!response.ok) throw new Error('Failed to submit umpire request');
+        if (!response.ok) throw new Error('Failed to submit plate umpire request');
         
-        showAlert('Umpire request submitted successfully!', 'success');
+        showAlert('Plate umpire request submitted successfully!', 'success');
         
-        // Hide submit button temporarily and reload schedules
-        const submitBtn = document.querySelector(`.submit-umpire-btn[data-game-id="${gameId}"]`);
+        // Hide submit button and reload schedules
+        const submitBtn = document.querySelector(`.submit-plate-umpire-btn[data-game-id="${gameId}"]`);
         if (submitBtn) submitBtn.style.display = 'none';
         
         await loadSchedules();
     } catch (error) {
-        console.error('Error submitting umpire request:', error);
-        showAlert('Error submitting umpire request. Please try again.', 'danger');
+        console.error('Error submitting plate umpire request:', error);
+        showAlert('Error submitting plate umpire request. Please try again.', 'danger');
+    }
+}
+
+// Submit base umpire request when button is clicked
+async function submitBaseUmpireRequest(gameId) {
+    const game = allSchedules.find(s => s.id == gameId);
+    if (!game) return;
+    
+    const baseUmpire = document.querySelector(`.base-umpire-select[data-game-id="${gameId}"]`).value;
+    
+    if (!baseUmpire) {
+        showAlert('Please select a base umpire before submitting.', 'warning');
+        return;
+    }
+    
+    const requestData = {
+        game_id: gameId,
+        current_plate_umpire: game.plate_umpire || '',
+        current_base_umpire: game.base_umpire || '',
+        requested_plate_umpire: game.plate_umpire || '', // Keep current plate umpire
+        requested_base_umpire: baseUmpire,
+        reason: 'Base umpire assignment request'
+    };
+    
+    try {
+        const response = await fetch('/api/umpire-requests', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(requestData)
+        });
+        
+        if (!response.ok) throw new Error('Failed to submit base umpire request');
+        
+        showAlert('Base umpire request submitted successfully!', 'success');
+        
+        // Hide submit button and reload schedules
+        const submitBtn = document.querySelector(`.submit-base-umpire-btn[data-game-id="${gameId}"]`);
+        if (submitBtn) submitBtn.style.display = 'none';
+        
+        await loadSchedules();
+    } catch (error) {
+        console.error('Error submitting base umpire request:', error);
+        showAlert('Error submitting base umpire request. Please try again.', 'danger');
     }
 }
 
@@ -1992,9 +2052,11 @@ document.addEventListener('DOMContentLoaded', function() {
             const position = e.target.dataset.position;
             const value = e.target.value;
             
-            // Only show submit button if dropdown is not disabled
-            if (!e.target.disabled) {
-                showUmpireSubmitButton(gameId);
+            // Show appropriate submit button based on selection
+            if (!e.target.disabled && value) {
+                showUmpireSubmitButton(gameId, position);
+            } else if (!e.target.disabled && !value) {
+                hideUmpireSubmitButton(gameId, position);
             }
         }
         

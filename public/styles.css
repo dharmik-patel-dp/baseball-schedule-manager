@@ -3402,13 +3402,22 @@ html.theme-dark input[type="date"].filter-select {
 }
 
 /* Submit Button Styles */
-.submit-umpire-btn,
+.submit-plate-umpire-btn,
+.submit-base-umpire-btn,
 .submit-concession-btn {
   transition: all 0.2s ease;
   font-weight: 500;
 }
 
-.submit-umpire-btn:disabled,
+.umpire-submit-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.submit-plate-umpire-btn:disabled,
+.submit-base-umpire-btn:disabled,
 .submit-concession-btn:disabled {
   background-color: var(--neutral-300) !important;
   color: var(--neutral-500) !important;
@@ -3416,13 +3425,15 @@ html.theme-dark input[type="date"].filter-select {
   opacity: 0.6;
 }
 
-.submit-umpire-btn:hover,
+.submit-plate-umpire-btn:hover,
+.submit-base-umpire-btn:hover,
 .submit-concession-btn:hover {
   transform: translateY(-1px);
   box-shadow: var(--shadow-md);
 }
 
-.submit-umpire-btn:active,
+.submit-plate-umpire-btn:active,
+.submit-base-umpire-btn:active,
 .submit-concession-btn:active {
   transform: translateY(0);
 }
