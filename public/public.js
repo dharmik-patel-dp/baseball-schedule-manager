@@ -1210,13 +1210,14 @@ function renderScheduleTable() {
                 <div class="concession-selection">
                     <div class="mb-2">
                         <label class="form-label small mb-1"><strong>Concession Stand:</strong></label>
-                        <select class="form-select form-select-sm concession-stand-select" 
-                                data-game-id="${schedule.id}" 
-                                data-type="stand"
-                                ${schedule.concession_stand && schedule.concession_stand !== 'No Concession' ? 'disabled' : ''}>
-                            <option value="">${schedule.concession_stand || 'Select Concession Stand'}</option>
-                            ${getConcessionStandOptions(schedule.concession_stand)}
-                        </select>
+                        <div class="concession-stand-display">
+                            ${schedule.concession_stand === 'No Concession' ? 
+                                '<span class="badge bg-secondary">No Concession</span>' : 
+                                schedule.concession_stand ? 
+                                    `<span class="badge bg-success">${schedule.concession_stand}</span>` :
+                                    '<span class="badge bg-secondary">No Info</span>'
+                            }
+                        </div>
                     </div>
                     <div class="mb-2">
                         <label class="form-label small mb-1"><strong>Concession Staff:</strong></label>
@@ -1228,7 +1229,7 @@ function renderScheduleTable() {
                             ${getConcessionStaffOptions(schedule.concession_staff)}
                         </select>
                     </div>
-                    ${(schedule.concession_stand && schedule.concession_stand !== 'No Concession') || schedule.concession_staff ? 
+                    ${schedule.concession_staff ? 
                         `<button class="btn btn-sm btn-outline-warning" onclick="requestConcessionChange(${schedule.id})">
                             <i class="fas fa-edit"></i>Request Change
                         </button>` : ''
@@ -1896,11 +1897,11 @@ function getConcessionStaffOptions(currentStaff) {
         .join('');
 }
 
-// Handle concession selection change
+// Handle concession staff selection change
 function handleConcessionSelection(gameId, type, value) {
-    if (!value) return; // Don't submit empty selections
+    if (!value || type !== 'staff') return; // Only handle staff changes, not stand changes
     
-    // Create concession change request
+    // Create concession staff change request
     const game = allSchedules.find(s => s.id == gameId);
     if (!game) return;
     
@@ -1908,9 +1909,9 @@ function handleConcessionSelection(gameId, type, value) {
         game_id: gameId,
         current_concession_stand: game.concession_stand || '',
         current_concession_staff: game.concession_staff || '',
-        requested_concession_stand: type === 'stand' ? value : game.concession_stand || '',
-        requested_concession_staff: type === 'staff' ? value : game.concession_staff || '',
-        reason: `Concession ${type} assignment request`
+        requested_concession_stand: game.concession_stand || '', // Keep current stand
+        requested_concession_staff: value, // Only change staff
+        reason: `Concession staff assignment request`
     };
     
     submitConcessionRequest(requestData);
@@ -1955,8 +1956,8 @@ document.addEventListener('DOMContentLoaded', function() {
             handleUmpireSelection(gameId, position, value);
         }
         
-        // Delegate events for concession dropdowns
-        if (e.target.classList.contains('concession-stand-select') || e.target.classList.contains('concession-staff-select')) {
+        // Delegate events for concession staff dropdowns only
+        if (e.target.classList.contains('concession-staff-select')) {
             const gameId = e.target.dataset.gameId;
             const type = e.target.dataset.type;
             const value = e.target.value;
