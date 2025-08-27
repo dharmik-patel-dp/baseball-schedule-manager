@@ -1123,7 +1123,7 @@ function renderScheduleTable() {
 
     tbody.innerHTML = schedulesToShow.map(schedule => `
         <tr>
-                        <td>
+            <td data-label="Umpires">
                 <div class="umpire-selection">
                     <div class="mb-2">
                         <label class="form-label small mb-1"><strong>Plate Umpire:</strong></label>
@@ -1168,7 +1168,7 @@ function renderScheduleTable() {
                     </div>
                 </div>
             </td>
-            <td>
+            <td data-label="Concession">
                 <div class="concession-selection">
                     <div class="mb-2">
                         <label class="form-label small mb-1"><strong>Concession Stand:</strong></label>
@@ -1201,18 +1201,18 @@ function renderScheduleTable() {
                     }
                 </div>
             </td>
-            <td><span class="badge bg-primary">${schedule.season || 'N/A'}</span></td>
-            <td><span class="badge ${schedule.event_type === 'Baseball' ? 'bg-success' : 'bg-warning'}">${schedule.event_type || 'N/A'}</span></td>
-            <td>${schedule.venue || 'N/A'}</td>
-            <td><strong>${schedule.day || 'N/A'}</strong></td>
-            <td>${formatDate(schedule.date)}</td>
-            <td>${schedule.start_time || 'N/A'} ${schedule.am_pm || ''}</td>
-            <td><span class="badge bg-info">${schedule.division || 'N/A'}</span></td>
-            <td>
+            <td data-label="Season"><span class="badge bg-primary">${schedule.season || 'N/A'}</span></td>
+            <td data-label="Event"><span class="badge ${schedule.event_type === 'Baseball' ? 'bg-success' : 'bg-warning'}">${schedule.event_type || 'N/A'}</span></td>
+            <td data-label="Venue">${schedule.venue || 'N/A'}</td>
+            <td data-label="Day"><strong>${schedule.day || 'N/A'}</strong></td>
+            <td data-label="Date">${formatDate(schedule.date)}</td>
+            <td data-label="Time">${schedule.start_time || 'N/A'} ${schedule.am_pm || ''}</td>
+            <td data-label="Division"><span class="badge bg-info">${schedule.division || 'N/A'}</span></td>
+            <td data-label="Home Team">
                 <div><strong>${schedule.home_team || 'N/A'}</strong></div>
                 <small class="text-muted">${schedule.home_coach || 'N/A'}</small>
             </td>
-            <td>
+            <td data-label="Visitor Team">
                 <div><strong>${schedule.visitor_team || 'N/A'}</strong></div>
                 <small class="text-muted">${schedule.visitor_coach || 'N/A'}</small>
             </td>
