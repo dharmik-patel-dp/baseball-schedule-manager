@@ -302,48 +302,21 @@ function populateFilterDropdowns() {
         return;
     }
 
-    const filterMappings = {
-        'seasonFilter': 'season',
-        'eventTypeFilter': 'event_type',
-        'dayFilter': 'day',
-        'divisionFilter': 'division',
-        'teamFilter': 'home_team',
-        'venueFilter': 'venue',
-        'coachFilter': 'home_coach',
-        'plateUmpireFilter': 'plate_umpire',
-        'baseUmpireFilter': 'base_umpire',
-        'concessionFilter': 'concession_stand',
-        'concessionStaffFilter': 'concession_staff'
-    };
-
-    Object.entries(filterMappings).forEach(([elementId, filterKey]) => {
-        const element = document.getElementById(elementId);
-        if (element && filterOptions[filterKey]) {
-            // Clear existing options except the first one
-            const firstOption = element.querySelector('option');
-            element.innerHTML = firstOption ? firstOption.outerHTML : '<option value="">All</option>';
-            
-            // Add new options
-            filterOptions[filterKey].forEach(option => {
-                if (option && option.trim() !== '') {
+    // Only populate Event Type filter
+    const eventTypeFilter = document.getElementById('eventTypeFilter');
+    if (eventTypeFilter && filterOptions.event_type) {
+        // Clear existing options except the first one
+        const firstOption = eventTypeFilter.querySelector('option');
+        eventTypeFilter.innerHTML = firstOption ? firstOption.outerHTML : '<option value="">All Events</option>';
+        
+        // Add new options
+        filterOptions.event_type.forEach(option => {
+            if (option && option.trim() !== '') {
                 const optionElement = document.createElement('option');
                 optionElement.value = option;
                 optionElement.textContent = option;
-                element.appendChild(optionElement);
-                }
-            });
-        }
-    });
-
-    // Populate time filter with common times
-    const timeFilter = document.getElementById('timeFilter');
-    if (timeFilter) {
-        const commonTimes = ['6:00', '6:30', '7:00', '7:30', '8:00', '8:30', '9:00', '9:30', '10:00', '10:30'];
-        commonTimes.forEach(time => {
-            const optionElement = document.createElement('option');
-            optionElement.value = time;
-            optionElement.textContent = time;
-            timeFilter.appendChild(optionElement);
+                eventTypeFilter.appendChild(optionElement);
+            }
         });
     }
 }
@@ -759,40 +732,13 @@ function handleLiveSearch() {
 // Get active filters from dropdowns
 function getActiveFilters() {
     const filters = {};
-    const filterMappings = {
-        'seasonFilter': 'season',
-        'eventTypeFilter': 'event_type',
-        'dayFilter': 'day',
-        'divisionFilter': 'division',
-        'teamFilter': 'team',
-        'venueFilter': 'venue',
-        'coachFilter': 'coach',
-        'plateUmpireFilter': 'plate_umpire',
-        'baseUmpireFilter': 'base_umpire',
-        'concessionFilter': 'concession_stand',
-        'concessionStaffFilter': 'concession_staff',
-        'startDateFilter': 'start_date',
-        'endDateFilter': 'end_date',
-        'timeFilter': 'start_time'
-    };
     
-    Object.entries(filterMappings).forEach(([elementId, fieldName]) => {
-        const element = document.getElementById(elementId);
-        if (element && element.value) {
-            if (fieldName === 'start_date' || fieldName === 'end_date') {
-                // Handle date range filters separately
-                if (fieldName === 'start_date') {
-                    filters.start_date = element.value;
-                    console.log(`📅 Start date filter set to: ${element.value}`);
-                } else if (fieldName === 'end_date') {
-                    filters.end_date = element.value;
-                    console.log(`📅 End date filter set to: ${element.value}`);
-                }
-            } else {
-                filters[fieldName] = element.value;
-            }
-        }
-    });
+    // Only check Event Type filter
+    const eventTypeFilter = document.getElementById('eventTypeFilter');
+    if (eventTypeFilter && eventTypeFilter.value) {
+        filters.event_type = eventTypeFilter.value;
+        console.log(`🔍 Event type filter set to: ${eventTypeFilter.value}`);
+    }
     
     return filters;
 }
@@ -800,49 +746,13 @@ function getActiveFilters() {
 // Check if schedule matches filters
 function matchesFilters(schedule, filters) {
     return Object.entries(filters).every(([key, value]) => {
-            switch (key) {
-                case 'season':
-                    return schedule.season === value;
+        switch (key) {
             case 'event_type':
-                    return schedule.event_type === value;
-                case 'day':
-                    return schedule.day === value;
-                case 'division':
-                    return schedule.division === value;
-                case 'team':
-                    return schedule.home_team === value || schedule.visitor_team === value;
-                case 'venue':
-                    return schedule.venue === value;
-                case 'coach':
-                    return schedule.home_coach === value || schedule.visitor_coach === value;
-            case 'plate_umpire':
-                return schedule.plate_umpire === value;
-            case 'base_umpire':
-                return schedule.base_umpire === value;
-            case 'concession_stand':
-                    return schedule.concession_stand === value;
-            case 'concession_staff':
-                return schedule.concession_staff === value;
-                case 'start_date':
-                    // Check if schedule date is on or after start date
-                    if (!value) return true; // No start date filter
-                    // Convert schedule date to YYYY-MM-DD format for comparison
-                    const scheduleDate = new Date(schedule.date).toISOString().split('T')[0];
-                    console.log(`🔍 Date filter: schedule.date (${schedule.date}) -> normalized (${scheduleDate}) >= start_date (${value}) = ${scheduleDate >= value}`);
-                    return scheduleDate >= value;
-                case 'end_date':
-                    // Check if schedule date is on or before end date
-                    if (!value) return true; // No end date filter
-                    // Convert schedule date to YYYY-MM-DD format for comparison
-                    const scheduleDateEnd = new Date(schedule.date).toISOString().split('T')[0];
-                    console.log(`🔍 Date filter: schedule.date (${schedule.date}) -> normalized (${scheduleDateEnd}) <= end_date (${value}) = ${scheduleDateEnd <= value}`);
-                    return scheduleDateEnd <= value;
-            case 'start_time':
-                    return schedule.start_time === value;
-                default:
-                    return true;
-            }
-        });
+                return schedule.event_type === value;
+            default:
+                return true;
+        }
+    });
 }
 
 // Apply filters (improved version)
@@ -968,19 +878,11 @@ function clearAllFilters() {
         searchInput.value = '';
     }
     
-    // Clear all filter dropdowns
-    const filterElements = [
-        'seasonFilter', 'eventTypeFilter', 'dayFilter', 'divisionFilter',
-        'teamFilter', 'venueFilter', 'coachFilter', 'plateUmpireFilter', 'baseUmpireFilter',
-        'concessionFilter', 'concessionStaffFilter', 'startDateFilter', 'endDateFilter', 'timeFilter'
-    ];
-    
-    filterElements.forEach(id => {
-        const element = document.getElementById(id);
-        if (element) {
-            element.value = '';
-        }
-    });
+    // Clear Event Type filter only
+    const eventTypeFilter = document.getElementById('eventTypeFilter');
+    if (eventTypeFilter) {
+        eventTypeFilter.value = '';
+    }
     
     filteredSchedules = [...allSchedules];
     updateActiveFilterCount();
