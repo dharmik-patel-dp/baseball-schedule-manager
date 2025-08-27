@@ -248,6 +248,17 @@ async function loadSchedules() {
         
         allSchedules = await response.json();
         filteredSchedules = [...allSchedules];
+        
+        // Debug: Log the first few schedules to check data integrity
+        console.log('🔍 Debug: First 3 schedules loaded:', allSchedules.slice(0, 3).map(s => ({
+            id: s.id,
+            home_team: s.home_team,
+            home_coach: s.home_coach,
+            visitor_team: s.visitor_team,
+            visitor_coach: s.visitor_coach,
+            venue: s.venue
+        })));
+        
         renderScheduleTable();
         
         // Ensure request dropdowns are populated even if filter options fail
