@@ -1177,12 +1177,12 @@ function renderScheduleTable() {
 
     tbody.innerHTML = schedulesToShow.map(schedule => `
         <tr>
-            <td>
+                        <td>
                 <div class="umpire-selection">
                     <div class="mb-2">
                         <label class="form-label small mb-1"><strong>Plate Umpire:</strong></label>
-                        <select class="form-select form-select-sm plate-umpire-select" 
-                                data-game-id="${schedule.id}" 
+                        <select class="form-select form-select-sm plate-umpire-select"
+                                data-game-id="${schedule.id}"
                                 data-position="plate"
                                 ${schedule.plate_umpire ? 'disabled' : ''}>
                             <option value="">${schedule.plate_umpire || 'Select Plate Umpire'}</option>
@@ -1191,18 +1191,24 @@ function renderScheduleTable() {
                     </div>
                     <div class="mb-2">
                         <label class="form-label small mb-1"><strong>Base Umpire:</strong></label>
-                        <select class="form-select form-select-sm base-umpire-select" 
-                                data-game-id="${schedule.id}" 
+                        <select class="form-select form-select-sm base-umpire-select"
+                                data-game-id="${schedule.id}"
                                 data-position="base"
                                 ${schedule.base_umpire ? 'disabled' : ''}>
                             <option value="">${schedule.base_umpire || 'Select Base Umpire'}</option>
                             ${getUmpireOptions(schedule.base_umpire)}
                         </select>
                     </div>
-                    ${(schedule.plate_umpire || schedule.base_umpire) ? 
+                    ${!schedule.plate_umpire && !schedule.base_umpire ? 
+                        `<button class="btn btn-sm btn-primary submit-umpire-btn" 
+                                 data-game-id="${schedule.id}" 
+                                 onclick="submitUmpireRequest(${schedule.id})" 
+                                 style="display: none;">
+                            <i class="fas fa-paper-plane"></i>Submit Request
+                        </button>` : 
                         `<button class="btn btn-sm btn-outline-warning" onclick="requestUmpireChange(${schedule.id})">
                             <i class="fas fa-edit"></i>Request Change
-                        </button>` : ''
+                        </button>`
                     }
                 </div>
             </td>
@@ -1229,10 +1235,16 @@ function renderScheduleTable() {
                             ${getConcessionStaffOptions(schedule.concession_staff)}
                         </select>
                     </div>
-                    ${schedule.concession_staff ? 
+                    ${!schedule.concession_staff ? 
+                        `<button class="btn btn-sm btn-primary submit-concession-btn" 
+                                 data-game-id="${schedule.id}" 
+                                 onclick="submitConcessionRequest(${schedule.id})" 
+                                 style="display: none;">
+                            <i class="fas fa-paper-plane"></i>Submit Request
+                        </button>` : 
                         `<button class="btn btn-sm btn-outline-warning" onclick="requestConcessionChange(${schedule.id})">
                             <i class="fas fa-edit"></i>Request Change
-                        </button>` : ''
+                        </button>`
                     }
                 </div>
             </td>
@@ -1812,46 +1824,9 @@ function getUmpireOptions(currentUmpire) {
         .join('');
 }
 
-// Handle umpire selection change
-function handleUmpireSelection(gameId, position, value) {
-    if (!value) return; // Don't submit empty selections
-    
-    // Create umpire change request
-    const game = allSchedules.find(s => s.id == gameId);
-    if (!game) return;
-    
-    const requestData = {
-        game_id: gameId,
-        current_plate_umpire: game.plate_umpire || '',
-        current_base_umpire: game.base_umpire || '',
-        requested_plate_umpire: position === 'plate' ? value : game.plate_umpire || '',
-        requested_base_umpire: position === 'base' ? value : game.base_umpire || '',
-        reason: `Umpire assignment request for ${position} position`
-    };
-    
-    submitUmpireRequest(requestData);
-}
 
-// Submit umpire change request
-async function submitUmpireRequest(requestData) {
-    try {
-        const response = await fetch('/api/umpire-requests', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(requestData)
-    });
-        
-        if (!response.ok) throw new Error('Failed to submit umpire request');
-        
-        showAlert('Umpire change request submitted successfully!', 'success');
-        
-        // Reload schedules to show updated state
-        await loadSchedules();
-    } catch (error) {
-        console.error('Error submitting umpire request:', error);
-        showAlert('Error submitting umpire request. Please try again.', 'danger');
-    }
-}
+
+
 
 // Request umpire change (for already assigned games)
 function requestUmpireChange(gameId) {
@@ -1897,28 +1872,97 @@ function getConcessionStaffOptions(currentStaff) {
         .join('');
 }
 
-// Handle concession staff selection change
-function handleConcessionSelection(gameId, type, value) {
-    if (!value || type !== 'staff') return; // Only handle staff changes, not stand changes
-    
-    // Create concession staff change request
+
+
+
+
+// Request concession change (for already assigned games)
+function requestConcessionChange(gameId) {
+    // Show the existing concession staff request form
+    showConcessionStaffRequestForm(gameId);
+}
+
+// Show umpire submit button when selections are made
+function showUmpireSubmitButton(gameId) {
+    const submitBtn = document.querySelector(`.submit-umpire-btn[data-game-id="${gameId}"]`);
+    if (submitBtn) {
+        submitBtn.style.display = 'inline-block';
+    }
+}
+
+// Show concession submit button when selection is made
+function showConcessionSubmitButton(gameId) {
+    const submitBtn = document.querySelector(`.submit-concession-btn[data-game-id="${gameId}"]`);
+    if (submitBtn) {
+        submitBtn.style.display = 'inline-block';
+    }
+}
+
+// Submit umpire request when button is clicked
+async function submitUmpireRequest(gameId) {
     const game = allSchedules.find(s => s.id == gameId);
     if (!game) return;
+    
+    const plateUmpire = document.querySelector(`.plate-umpire-select[data-game-id="${gameId}"]`).value;
+    const baseUmpire = document.querySelector(`.base-umpire-select[data-game-id="${gameId}"]`).value;
+    
+    if (!plateUmpire && !baseUmpire) {
+        showAlert('Please select at least one umpire before submitting.', 'warning');
+        return;
+    }
+    
+    const requestData = {
+        game_id: gameId,
+        current_plate_umpire: game.plate_umpire || '',
+        current_base_umpire: game.base_umpire || '',
+        requested_plate_umpire: plateUmpire,
+        requested_base_umpire: baseUmpire,
+        reason: 'Umpire assignment request'
+    };
+    
+    try {
+        const response = await fetch('/api/umpire-requests', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(requestData)
+        });
+        
+        if (!response.ok) throw new Error('Failed to submit umpire request');
+        
+        showAlert('Umpire request submitted successfully!', 'success');
+        
+        // Hide submit button and reload schedules
+        const submitBtn = document.querySelector(`.submit-umpire-btn[data-game-id="${gameId}"]`);
+        if (submitBtn) submitBtn.style.display = 'none';
+        
+        await loadSchedules();
+    } catch (error) {
+        console.error('Error submitting umpire request:', error);
+        showAlert('Error submitting umpire request. Please try again.', 'danger');
+    }
+}
+
+// Submit concession request when button is clicked
+async function submitConcessionRequest(gameId) {
+    const game = allSchedules.find(s => s.id == gameId);
+    if (!game) return;
+    
+    const concessionStaff = document.querySelector(`.concession-staff-select[data-game-id="${gameId}"]`).value;
+    
+    if (!concessionStaff) {
+        showAlert('Please select concession staff before submitting.', 'warning');
+        return;
+    }
     
     const requestData = {
         game_id: gameId,
         current_concession_stand: game.concession_stand || '',
         current_concession_staff: game.concession_staff || '',
         requested_concession_stand: game.concession_stand || '', // Keep current stand
-        requested_concession_staff: value, // Only change staff
-        reason: `Concession staff assignment request`
+        requested_concession_staff: concessionStaff, // Only change staff
+        reason: 'Concession staff assignment request'
     };
     
-    submitConcessionRequest(requestData);
-}
-
-// Submit concession change request
-async function submitConcessionRequest(requestData) {
     try {
         const response = await fetch('/api/concession-staff-requests', {
             method: 'POST',
@@ -1928,20 +1972,17 @@ async function submitConcessionRequest(requestData) {
         
         if (!response.ok) throw new Error('Failed to submit concession request');
         
-        showAlert('Concession change request submitted successfully!', 'success');
+        showAlert('Concession request submitted successfully!', 'success');
         
-        // Reload schedules to show updated state
+        // Hide submit button and reload schedules
+        const submitBtn = document.querySelector(`.submit-concession-btn[data-game-id="${gameId}"]`);
+        if (submitBtn) submitBtn.style.display = 'none';
+        
         await loadSchedules();
     } catch (error) {
         console.error('Error submitting concession request:', error);
         showAlert('Error submitting concession request. Please try again.', 'danger');
     }
-}
-
-// Request concession change (for already assigned games)
-function requestConcessionChange(gameId) {
-    // Show the existing concession staff request form
-    showConcessionStaffRequestForm(gameId);
 }
 
 // Add event listeners for umpire and concession dropdowns
@@ -1953,7 +1994,8 @@ document.addEventListener('DOMContentLoaded', function() {
             const position = e.target.dataset.position;
             const value = e.target.value;
             
-            handleUmpireSelection(gameId, position, value);
+            // Show submit button if any selection is made
+            showUmpireSubmitButton(gameId);
         }
         
         // Delegate events for concession staff dropdowns only
@@ -1962,7 +2004,8 @@ document.addEventListener('DOMContentLoaded', function() {
             const type = e.target.dataset.type;
             const value = e.target.value;
             
-            handleConcessionSelection(gameId, type, value);
+            // Show submit button if selection is made
+            showConcessionSubmitButton(gameId);
         }
     });
 });

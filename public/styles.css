@@ -3401,6 +3401,24 @@ html.theme-dark input[type="date"].filter-select {
   padding: 0.25rem 0.5rem;
 }
 
+/* Submit Button Styles */
+.submit-umpire-btn,
+.submit-concession-btn {
+  transition: all 0.2s ease;
+  font-weight: 500;
+}
+
+.submit-umpire-btn:hover,
+.submit-concession-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.submit-umpire-btn:active,
+.submit-concession-btn:active {
+  transform: translateY(0);
+}
+
 /* Mobile concession selection */
 @media (max-width: 767.98px) {
   .concession-selection {
