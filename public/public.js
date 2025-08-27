@@ -1205,10 +1205,7 @@ function renderScheduleTable() {
                                  onclick="submitUmpireRequest(${schedule.id})" 
                                  style="display: none;">
                             <i class="fas fa-paper-plane"></i>Submit Request
-                        </button>` : 
-                        `<button class="btn btn-sm btn-outline-warning" onclick="requestUmpireChange(${schedule.id})">
-                            <i class="fas fa-edit"></i>Request Change
-                        </button>`
+                        </button>` : ''
                     }
                 </div>
             </td>
@@ -1241,10 +1238,7 @@ function renderScheduleTable() {
                                  onclick="submitConcessionRequest(${schedule.id})" 
                                  style="display: none;">
                             <i class="fas fa-paper-plane"></i>Submit Request
-                        </button>` : 
-                        `<button class="btn btn-sm btn-outline-warning" onclick="requestConcessionChange(${schedule.id})">
-                            <i class="fas fa-edit"></i>Request Change
-                        </button>`
+                        </button>` : ''
                     }
                 </div>
             </td>
@@ -1828,11 +1822,7 @@ function getUmpireOptions(currentUmpire) {
 
 
 
-// Request umpire change (for already assigned games)
-function requestUmpireChange(gameId) {
-    // Show the existing umpire request form
-    showUmpireRequestForm(gameId);
-}
+
 
 // Get concession stand options for dropdowns
 function getConcessionStandOptions(currentStand) {
@@ -1876,11 +1866,7 @@ function getConcessionStaffOptions(currentStaff) {
 
 
 
-// Request concession change (for already assigned games)
-function requestConcessionChange(gameId) {
-    // Show the existing concession staff request form
-    showConcessionStaffRequestForm(gameId);
-}
+
 
 // Show umpire submit button when selections are made
 function showUmpireSubmitButton(gameId) {
