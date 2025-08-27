@@ -1073,7 +1073,7 @@ function renderScheduleTable() {
             
         tbody.innerHTML = `
             <tr>
-                    <td colspan="12" class="no-data text-center">
+                    <td colspan="11" class="no-data text-center">
                         <div class="py-5">
                             <i class="fas fa-search fa-3x text-warning mb-4"></i>
                             <h4 class="text-warning mb-3">No Results Found</h4>
@@ -1098,7 +1098,7 @@ function renderScheduleTable() {
             // Show simple message when no schedules exist in database
             tbody.innerHTML = `
                 <tr>
-                    <td colspan="12" class="no-data text-center">
+                    <td colspan="11" class="no-data text-center">
                         <div class="py-4">
                             <i class="fas fa-calendar-times fa-3x text-muted mb-3"></i>
                             <h5 class="text-muted">No schedules found in the database</h5>
@@ -1192,6 +1192,7 @@ function renderScheduleTable() {
             </td>
             <td><span class="badge bg-primary">${schedule.season || 'N/A'}</span></td>
             <td><span class="badge ${schedule.event_type === 'Baseball' ? 'bg-success' : 'bg-warning'}">${schedule.event_type || 'N/A'}</span></td>
+            <td>${schedule.venue || 'N/A'}</td>
             <td><strong>${schedule.day || 'N/A'}</strong></td>
             <td>${formatDate(schedule.date)}</td>
             <td>${schedule.start_time || 'N/A'} ${schedule.am_pm || ''}</td>
@@ -1204,7 +1205,6 @@ function renderScheduleTable() {
                 <div><strong>${schedule.visitor_team || 'N/A'}</strong></div>
                 <small class="text-muted">${schedule.visitor_coach || 'N/A'}</small>
             </td>
-            <td>${schedule.venue || 'N/A'}</td>
         </tr>
     `).join('');
 }
