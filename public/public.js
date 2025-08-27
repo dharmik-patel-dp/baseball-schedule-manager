@@ -366,13 +366,13 @@ function populateFilterDropdowns() {
     // Only populate Event Type filter
     const eventTypeFilter = document.getElementById('eventTypeFilter');
     if (eventTypeFilter && filterOptions.event_type) {
-        // Clear existing options except the first one
+            // Clear existing options except the first one
         const firstOption = eventTypeFilter.querySelector('option');
         eventTypeFilter.innerHTML = firstOption ? firstOption.outerHTML : '<option value="">All Events</option>';
-        
-        // Add new options
+            
+            // Add new options
         filterOptions.event_type.forEach(option => {
-            if (option && option.trim() !== '') {
+                if (option && option.trim() !== '') {
                 const optionElement = document.createElement('option');
                 optionElement.value = option;
                 optionElement.textContent = option;
@@ -814,9 +814,9 @@ function getActiveFilters() {
 // Check if schedule matches filters
 function matchesFilters(schedule, filters) {
     return Object.entries(filters).every(([key, value]) => {
-        switch (key) {
+            switch (key) {
             case 'event_type':
-                return schedule.event_type === value;
+                    return schedule.event_type === value;
             case 'available_games':
                 return checkAvailabilityFilter(schedule, value);
             default:
@@ -831,18 +831,18 @@ function checkAvailabilityFilter(schedule, filterValue) {
         case 'available':
             // Show games with any unfilled position
             return !schedule.plate_umpire || !schedule.base_umpire || !schedule.concession_staff;
-        case 'plate_umpire':
+            case 'plate_umpire':
             // Show games where plate umpire is not assigned
             return !schedule.plate_umpire;
-        case 'base_umpire':
+            case 'base_umpire':
             // Show games where base umpire is not assigned
             return !schedule.base_umpire;
-        case 'concession_staff':
+            case 'concession_staff':
             // Show games where concession staff is not assigned
             return !schedule.concession_staff;
-        default:
-            return true;
-    }
+                default:
+                    return true;
+            }
 }
 
 // Apply filters (improved version)
@@ -1152,7 +1152,7 @@ function renderScheduleTable() {
                                 <button class="btn btn-outline-secondary btn-lg" onclick="showAllSchedules()">
                                     <i class="fas fa-eye me-2"></i>View All Schedules
                                 </button>
-                                </div>
+                            </div>
                         </div>
                 </td>
             </tr>
@@ -1201,14 +1201,11 @@ function renderMobileLayout(schedules, tbody) {
         mobileContainer.className = 'mobile-cards-container';
         mobileContainer.innerHTML = '<h5 class="text-center mb-4">📅 Game Schedules</h5>';
         tableContainer.parentNode.insertBefore(mobileContainer, tableContainer.nextSibling);
-        
-        // Add mobile scrolling enhancements
-        enhanceMobileScrolling(mobileContainer);
     }
     
     // Generate mobile cards
     const mobileCards = schedules.map(schedule => `
-        <div class="mobile-game-card" data-game-id="${schedule.id}" tabindex="0">
+        <div class="mobile-game-card" data-game-id="${schedule.id}">
             <div class="mobile-card-header">
                 <div class="mobile-game-type">
                     <span class="badge ${schedule.event_type === 'Baseball' ? 'bg-success' : 'bg-warning'}">${schedule.event_type || 'Game'}</span>
@@ -1267,7 +1264,7 @@ function renderMobileLayout(schedules, tbody) {
                                          data-game-id="${schedule.id}" 
                                          onclick="submitPlateUmpireRequest(${schedule.id})" 
                                          style="display: none;">
-                                    Submit Plate Umpire
+                                    <i class="fas fa-paper-plane me-1"></i>Submit Plate Umpire
                                 </button>` : ''
                             }
                         </div>
@@ -1287,7 +1284,7 @@ function renderMobileLayout(schedules, tbody) {
                                          data-game-id="${schedule.id}" 
                                          onclick="submitBaseUmpireRequest(${schedule.id})" 
                                          style="display: none;">
-                                    Submit Base Umpire
+                                    <i class="fas fa-paper-plane me-1"></i>Submit Base Umpire
                                 </button>` : ''
                             }
                         </div>
@@ -1315,7 +1312,7 @@ function renderMobileLayout(schedules, tbody) {
                                      data-game-id="${schedule.id}" 
                                      onclick="submitConcessionRequest(${schedule.id})" 
                                      style="display: none;">
-                                Submit Request
+                                <i class="fas fa-paper-plane me-1"></i>Submit Request
                             </button>` : ''
                         }
                     </div>
@@ -1326,193 +1323,87 @@ function renderMobileLayout(schedules, tbody) {
     
     mobileContainer.innerHTML = '<h5 class="text-center mb-4">📅 Game Schedules</h5>' + mobileCards;
     
-    // Add mobile card interactions
-    addMobileCardInteractions();
+    // Add event listeners for mobile cards
+    setupMobileEventListeners();
 }
 
-// Enhance mobile scrolling experience
-function enhanceMobileScrolling(container) {
-    // Add smooth scrolling
-    container.style.scrollBehavior = 'smooth';
+// Setup mobile-specific event listeners
+function setupMobileEventListeners() {
+    console.log('📱 Setting up mobile event listeners...');
     
-    // Add touch scrolling improvements
-    let startY = 0;
-    let startScrollTop = 0;
+    // Add event listeners for umpire dropdowns
+    document.querySelectorAll('.mobile-select.plate-umpire-select').forEach(select => {
+        select.addEventListener('change', (e) => {
+            const gameId = e.target.dataset.gameId;
+            const position = e.target.dataset.position;
+            showUmpireSubmitButton(gameId, position);
+        });
+    });
     
-    container.addEventListener('touchstart', (e) => {
-        startY = e.touches[0].clientY;
-        startScrollTop = container.scrollTop;
-    }, { passive: true });
+    document.querySelectorAll('.mobile-select.base-umpire-select').forEach(select => {
+        select.addEventListener('change', (e) => {
+            const gameId = e.target.dataset.gameId;
+            const position = e.target.dataset.position;
+            showUmpireSubmitButton(gameId, position);
+        });
+    });
     
-    container.addEventListener('touchmove', (e) => {
-        const deltaY = startY - e.touches[0].clientY;
-        container.scrollTop = startScrollTop + deltaY;
-    }, { passive: true });
+    // Add event listeners for concession staff dropdowns
+    document.querySelectorAll('.mobile-select.concession-staff-select').forEach(select => {
+        select.addEventListener('change', (e) => {
+            const gameId = e.target.dataset.gameId;
+            showConcessionSubmitButton(gameId);
+        });
+    });
     
-    // Add scroll indicators
+    console.log('✅ Mobile event listeners setup complete');
+    
+    // Add mobile scroll indicator
+    addMobileScrollIndicator();
+}
+
+// Add mobile scroll indicator for better UX
+function addMobileScrollIndicator() {
+    // Remove existing indicator if any
+    const existingIndicator = document.querySelector('.mobile-scroll-indicator');
+    if (existingIndicator) {
+        existingIndicator.remove();
+    }
+    
+    // Create scroll indicator
     const scrollIndicator = document.createElement('div');
     scrollIndicator.className = 'mobile-scroll-indicator';
     scrollIndicator.innerHTML = `
         <div class="scroll-indicator-content">
-            <i class="fas fa-chevron-down"></i>
+            <i class="fas fa-chevron-up"></i>
             <span>Scroll to see more games</span>
         </div>
     `;
-    container.parentNode.insertBefore(scrollIndicator, container);
     
-    // Hide scroll indicator when scrolling
-    let scrollTimeout;
-    container.addEventListener('scroll', () => {
-        scrollIndicator.style.opacity = '0';
-        clearTimeout(scrollTimeout);
-        scrollTimeout = setTimeout(() => {
-            if (container.scrollTop < container.scrollHeight - container.clientHeight - 10) {
-                scrollIndicator.style.opacity = '1';
-            }
-        }, 1000);
-    });
-}
-
-// Add mobile card interactions
-function addMobileCardInteractions() {
-    const cards = document.querySelectorAll('.mobile-game-card');
+    document.body.appendChild(scrollIndicator);
     
-    cards.forEach(card => {
-        // Add click/tap feedback
-        card.addEventListener('click', (e) => {
-            // Don't trigger on form elements
-            if (e.target.tagName === 'SELECT' || e.target.tagName === 'BUTTON' || e.target.tagName === 'LABEL') {
-                return;
-            }
-            
-            // Add visual feedback
-            card.style.transform = 'scale(0.98)';
-            setTimeout(() => {
-                card.style.transform = '';
-            }, 150);
-        });
-        
-        // Add keyboard navigation
-        card.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
-                card.click();
-            }
-        });
-        
-        // Add focus management
-        card.addEventListener('focus', () => {
-            // Scroll card into view smoothly
-            card.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        });
-        
-        // Add mobile form enhancements
-        const selects = card.querySelectorAll('.mobile-select');
-        selects.forEach(select => {
-            select.addEventListener('focus', () => {
-                // Add loading state to card
-                card.classList.add('loading');
-                
-                // Scroll to the focused element
-                setTimeout(() => {
-                    select.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }, 100);
-            });
-            
-            select.addEventListener('blur', () => {
-                // Remove loading state
-                card.classList.remove('loading');
-            });
-            
-            select.addEventListener('change', () => {
-                // Add success feedback
-                card.style.transform = 'scale(1.02)';
-                card.style.boxShadow = '0 8px 30px rgba(30, 58, 138, 0.2)';
-                
-                setTimeout(() => {
-                    card.style.transform = '';
-                    card.style.boxShadow = '';
-                }, 500);
-            });
-        });
-        
-        // Add mobile button enhancements
-        const buttons = card.querySelectorAll('.mobile-btn');
-        buttons.forEach(button => {
-            button.addEventListener('touchstart', () => {
-                button.style.transform = 'scale(0.95)';
-            });
-            
-            button.addEventListener('touchend', () => {
-                button.style.transform = '';
-            });
-            
-            button.addEventListener('click', () => {
-                // Add success animation
-                button.innerHTML = '<i class="fas fa-check"></i> Sent!';
-                button.classList.add('btn-success');
-                
-                setTimeout(() => {
-                    button.innerHTML = button.getAttribute('data-original-text') || 'Submit Request';
-                    button.classList.remove('btn-success');
-                }, 2000);
-            });
-        });
-    });
-    
-    // Add mobile-specific event listeners
-    addMobileEventListeners();
-}
-
-// Add mobile-specific event listeners
-function addMobileEventListeners() {
-    // Handle mobile orientation changes
-    window.addEventListener('orientationchange', () => {
-        setTimeout(() => {
-            // Recalculate mobile container height
-            const mobileContainer = document.querySelector('.mobile-cards-container');
-            if (mobileContainer) {
-                mobileContainer.style.height = `calc(100vh - 200px)`;
-            }
-        }, 100);
-    });
-    
-    // Handle mobile scroll performance
-    let ticking = false;
+    // Show/hide indicator based on scroll position
     const mobileContainer = document.querySelector('.mobile-cards-container');
-    
     if (mobileContainer) {
         mobileContainer.addEventListener('scroll', () => {
-            if (!ticking) {
-                requestAnimationFrame(() => {
-                    // Update scroll indicator
-                    updateScrollIndicator(mobileContainer);
-                    ticking = false;
-                });
-                ticking = true;
+            const scrollTop = mobileContainer.scrollTop;
+            const scrollHeight = mobileContainer.scrollHeight;
+            const clientHeight = mobileContainer.clientHeight;
+            
+            if (scrollTop > 100) {
+                scrollIndicator.style.opacity = '0';
+                scrollIndicator.style.pointerEvents = 'none';
+            } else {
+                scrollIndicator.style.opacity = '1';
+                scrollIndicator.style.pointerEvents = 'auto';
             }
         });
-    }
-}
-
-// Update scroll indicator based on scroll position
-function updateScrollIndicator(container) {
-    const indicator = document.querySelector('.mobile-scroll-indicator');
-    if (!indicator) return;
-    
-    const scrollTop = container.scrollTop;
-    const scrollHeight = container.scrollHeight;
-    const clientHeight = container.clientHeight;
-    
-    if (scrollTop + clientHeight >= scrollHeight - 10) {
-        // Near bottom
-        indicator.style.opacity = '0';
-    } else if (scrollTop <= 10) {
-        // Near top
-        indicator.style.opacity = '0.7';
-    } else {
-        // Middle
-        indicator.style.opacity = '1';
+        
+        // Auto-hide indicator after 3 seconds
+        setTimeout(() => {
+            scrollIndicator.style.opacity = '0';
+            scrollIndicator.style.pointerEvents = 'none';
+        }, 3000);
     }
 }
 
@@ -1585,13 +1476,13 @@ function renderDesktopLayout(schedules, tbody) {
                     <div class="mb-2">
                         <label class="form-label small mb-1"><strong>Concession Stand:</strong></label>
                         <div class="concession-stand-display">
-                            ${schedule.concession_stand === 'No Concession' ? 
-                                '<span class="badge bg-secondary">No Concession</span>' : 
-                                schedule.concession_stand ? 
-                                    `<span class="badge bg-success">${schedule.concession_stand}</span>` :
-                                    '<span class="badge bg-secondary">No Info</span>'
-                            }
-                        </div>
+                    ${schedule.concession_stand === 'No Concession' ? 
+                        '<span class="badge bg-secondary">No Concession</span>' : 
+                        schedule.concession_stand ? 
+                            `<span class="badge bg-success">${schedule.concession_stand}</span>` :
+                            '<span class="badge bg-secondary">No Info</span>'
+                    }
+                </div>
                     </div>
                     <div class="mb-2">
                         <label class="form-label small mb-1"><strong>Concession Staff:</strong></label>
@@ -2176,7 +2067,7 @@ async function rejectConcessionStaffRequest(requestId) {
         console.error('Error rejecting concession staff request:', error);
         showAlert('Error rejecting concession staff request. Please try again.', 'danger');
     }
-}
+} 
 
 // Get umpire options for dropdowns
 function getUmpireOptions(currentUmpire) {
