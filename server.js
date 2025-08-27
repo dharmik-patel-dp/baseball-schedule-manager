@@ -1018,8 +1018,8 @@ app.post('/api/upload-csv', upload.single('csv'), (req, res) => {
 
         db.run(query, [
           row.season, row.event_type, row.day, row.date, row.start_time, row.am_pm, row.division,
-          row.home_coach, row.visitor_team, row.venue, row.home_team,
-          row.visitor_coach, row.plate_umpire, row.base_umpire, row.concession_stand, row.concession_staff || ''
+          row.home_team, row.home_coach, row.visitor_team, row.visitor_coach,
+          row.venue, row.plate_umpire, row.base_umpire, row.concession_stand, row.concession_staff || ''
         ], function(err) {
           processedCount++;
           
