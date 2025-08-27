@@ -6,6 +6,58 @@ let filterOptions = {};
 let currentFilters = {};
 let filteredSchedules = [];
 
+// Device detection variables
+let isMobile = false;
+let isTablet = false;
+let isDesktop = false;
+let currentDeviceType = 'desktop';
+
+// Device detection function
+function detectDevice() {
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+    const userAgent = navigator.userAgent.toLowerCase();
+    
+    // Check for mobile devices
+    const isMobileDevice = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent);
+    
+    if (width <= 767) {
+        isMobile = true;
+        isTablet = false;
+        isDesktop = false;
+        currentDeviceType = 'mobile';
+    } else if (width <= 1023) {
+        isMobile = false;
+        isTablet = true;
+        isDesktop = false;
+        currentDeviceType = 'tablet';
+    } else {
+        isMobile = false;
+        isTablet = false;
+        isDesktop = true;
+        currentDeviceType = 'desktop';
+    }
+    
+    console.log(`📱 Device detected: ${currentDeviceType} (${width}x${height})`);
+    console.log(`📱 Mobile: ${isMobile}, Tablet: ${isTablet}, Desktop: ${isDesktop}`);
+    
+    return currentDeviceType;
+}
+
+// Initialize device detection
+detectDevice();
+
+// Listen for window resize to update device detection
+window.addEventListener('resize', () => {
+    const previousDevice = currentDeviceType;
+    const newDevice = detectDevice();
+    
+    if (previousDevice !== newDevice) {
+        console.log(`🔄 Device changed from ${previousDevice} to ${newDevice}`);
+        renderScheduleTable(); // Re-render with new layout
+    }
+});
+
 // Add custom CSS for current assignments display
 function addCustomStyles() {
     const style = document.createElement('style');
@@ -1100,7 +1152,7 @@ function renderScheduleTable() {
                                 <button class="btn btn-outline-secondary btn-lg" onclick="showAllSchedules()">
                                     <i class="fas fa-eye me-2"></i>View All Schedules
                                 </button>
-                            </div>
+                                </div>
                         </div>
                 </td>
             </tr>
@@ -1121,8 +1173,175 @@ function renderScheduleTable() {
         return;
     }
 
-    // Create both desktop table and mobile cards
-    const desktopTable = schedulesToShow.map(schedule => `
+    // Render based on device type
+    if (isMobile) {
+        renderMobileLayout(schedulesToShow, tbody);
+    } else {
+        renderDesktopLayout(schedulesToShow, tbody);
+    }
+
+    // Add event listeners for all dropdowns
+    setupEventListeners();
+}
+
+// Render mobile-friendly card layout
+function renderMobileLayout(schedules, tbody) {
+    console.log('📱 Rendering mobile layout...');
+    
+    // Hide desktop table, show mobile cards
+    const tableContainer = document.querySelector('.table-responsive');
+    if (tableContainer) {
+        tableContainer.style.display = 'none';
+    }
+    
+    // Create or update mobile cards container
+    let mobileContainer = document.querySelector('.mobile-cards-container');
+    if (!mobileContainer) {
+        mobileContainer = document.createElement('div');
+        mobileContainer.className = 'mobile-cards-container';
+        mobileContainer.innerHTML = '<h5 class="text-center mb-4">📅 Game Schedules</h5>';
+        tableContainer.parentNode.insertBefore(mobileContainer, tableContainer.nextSibling);
+    }
+    
+    // Generate mobile cards
+    const mobileCards = schedules.map(schedule => `
+        <div class="mobile-game-card" data-game-id="${schedule.id}">
+            <div class="mobile-card-header">
+                <div class="mobile-game-type">
+                    <span class="badge ${schedule.event_type === 'Baseball' ? 'bg-success' : 'bg-warning'}">${schedule.event_type || 'Game'}</span>
+                    <span class="badge bg-info">${schedule.division || 'Division'}</span>
+                </div>
+                <div class="mobile-game-date">
+                    <i class="fas fa-calendar-alt"></i> ${formatDate(schedule.date)}
+                    <i class="fas fa-clock ms-2"></i> ${schedule.start_time || 'N/A'} ${schedule.am_pm || ''}
+                </div>
+            </div>
+            
+            <div class="mobile-card-body">
+                <div class="mobile-teams-section">
+                    <div class="mobile-team home-team">
+                        <div class="team-label">🏠 Home</div>
+                        <div class="team-name">${schedule.home_team || 'N/A'}</div>
+                        <div class="team-coach">${schedule.home_coach || 'N/A'}</div>
+                    </div>
+                    <div class="mobile-team visitor-team">
+                        <div class="team-label">✈️ Visitor</div>
+                        <div class="team-name">${schedule.visitor_team || 'N/A'}</div>
+                        <div class="team-coach">${schedule.visitor_coach || 'N/A'}</div>
+                    </div>
+                </div>
+                
+                <div class="mobile-game-details">
+                    <div class="detail-item">
+                        <span class="detail-label">📅 Season:</span>
+                        <span class="detail-value">${schedule.season || 'N/A'}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">🏟️ Venue:</span>
+                        <span class="detail-value">${schedule.venue || 'N/A'}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">📆 Day:</span>
+                        <span class="detail-value">${schedule.day || 'N/A'}</span>
+                    </div>
+                </div>
+                
+                <div class="mobile-umpire-section">
+                    <div class="section-title">👨‍⚖️ Umpires</div>
+                    <div class="umpire-controls">
+                        <div class="umpire-control">
+                            <label class="control-label">Plate Umpire:</label>
+                            <select class="form-select mobile-select plate-umpire-select"
+                                    data-game-id="${schedule.id}"
+                                    data-position="plate"
+                                    ${schedule.plate_umpire ? 'disabled' : ''}>
+                                <option value="">Select Plate Umpire</option>
+                                ${schedule.plate_umpire ? `<option value="${schedule.plate_umpire}" selected>${schedule.plate_umpire}</option>` : ''}
+                                ${getUmpireOptions(schedule.plate_umpire)}
+                            </select>
+                            ${!schedule.plate_umpire ? 
+                                `<button class="btn btn-primary btn-sm mobile-btn submit-plate-umpire-btn" 
+                                         data-game-id="${schedule.id}" 
+                                         onclick="submitPlateUmpireRequest(${schedule.id})" 
+                                         style="display: none;">
+                                    Submit Plate Umpire
+                                </button>` : ''
+                            }
+                        </div>
+                        
+                        <div class="umpire-control">
+                            <label class="control-label">Base Umpire:</label>
+                            <select class="form-select mobile-select base-umpire-select"
+                                    data-game-id="${schedule.id}"
+                                    data-position="base"
+                                    ${schedule.base_umpire ? 'disabled' : ''}>
+                                <option value="">Select Base Umpire</option>
+                                ${schedule.base_umpire ? `<option value="${schedule.base_umpire}" selected>${schedule.base_umpire}</option>` : ''}
+                                ${getUmpireOptions(schedule.base_umpire)}
+                            </select>
+                            ${!schedule.base_umpire ? 
+                                `<button class="btn btn-primary btn-sm mobile-btn submit-base-umpire-btn" 
+                                         data-game-id="${schedule.id}" 
+                                         onclick="submitBaseUmpireRequest(${schedule.id})" 
+                                         style="display: none;">
+                                    Submit Base Umpire
+                                </button>` : ''
+                            }
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mobile-concession-section">
+                    <div class="section-title">🍔 Concession</div>
+                    <div class="concession-stand-display">
+                        <span class="badge ${schedule.concession_stand === 'No Concession' ? 'bg-secondary' : 'bg-success'}">
+                            ${schedule.concession_stand === 'No Concession' ? 'No Concession' : schedule.concession_stand || 'No Info'}
+                        </span>
+                    </div>
+                    <div class="concession-staff-control">
+                        <label class="control-label">Concession Staff:</label>
+                        <select class="form-select mobile-select concession-staff-select" 
+                                data-game-id="${schedule.id}" 
+                                data-type="staff"
+                                ${schedule.concession_staff ? 'disabled' : ''}>
+                            <option value="">${schedule.concession_staff || 'Select Concession Staff'}</option>
+                            ${getConcessionStaffOptions(schedule.concession_staff)}
+                        </select>
+                        ${!schedule.concession_staff ? 
+                            `<button class="btn btn-primary btn-sm mobile-btn submit-concession-btn" 
+                                     data-game-id="${schedule.id}" 
+                                     onclick="submitConcessionRequest(${schedule.id})" 
+                                     style="display: none;">
+                                Submit Request
+                            </button>` : ''
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    `).join('');
+    
+    mobileContainer.innerHTML = '<h5 class="text-center mb-4">📅 Game Schedules</h5>' + mobileCards;
+}
+
+// Render desktop table layout
+function renderDesktopLayout(schedules, tbody) {
+    console.log('💻 Rendering desktop layout...');
+    
+    // Show desktop table, hide mobile cards
+    const tableContainer = document.querySelector('.table-responsive');
+    if (tableContainer) {
+        tableContainer.style.display = 'block';
+    }
+    
+    // Hide mobile cards container
+    const mobileContainer = document.querySelector('.mobile-cards-container');
+    if (mobileContainer) {
+        mobileContainer.style.display = 'none';
+    }
+    
+    // Generate desktop table
+    tbody.innerHTML = schedules.map(schedule => `
         <tr>
             <td data-label="Umpires">
                 <div class="umpire-selection">
@@ -1198,7 +1417,7 @@ function renderScheduleTable() {
                                  onclick="submitConcessionRequest(${schedule.id})" 
                                  style="display: none;">
                             <i class="fas fa-paper-plane"></i>Submit Request
-                        </button>` : ''
+                            </button>` : ''
                     }
                 </div>
             </td>
@@ -1219,198 +1438,6 @@ function renderScheduleTable() {
             </td>
         </tr>
     `).join('');
-
-    // Create mobile cards
-    const mobileCards = schedulesToShow.map(schedule => `
-        <div class="mobile-game-card">
-            <div class="mobile-game-header">
-                <h6 class="mobile-game-title">${schedule.event_type || 'Game'} - ${schedule.division || 'Division'}</h6>
-                <span class="mobile-game-badge badge ${schedule.event_type === 'Baseball' ? 'bg-success' : 'bg-warning'}">${schedule.event_type || 'N/A'}</span>
-            </div>
-            
-            <div class="mobile-game-info">
-                <div class="mobile-info-item">
-                    <span class="mobile-info-label">Season</span>
-                    <span class="mobile-info-value">${schedule.season || 'N/A'}</span>
-                </div>
-                <div class="mobile-info-item">
-                    <span class="mobile-info-label">Date</span>
-                    <span class="mobile-info-value">${formatDate(schedule.date)}</span>
-                </div>
-                <div class="mobile-info-item">
-                    <span class="mobile-info-label">Time</span>
-                    <span class="mobile-info-value">${schedule.start_time || 'N/A'} ${schedule.am_pm || ''}</span>
-                </div>
-                <div class="mobile-info-item">
-                    <span class="mobile-info-label">Day</span>
-                    <span class="mobile-info-value">${schedule.day || 'N/A'}</span>
-                </div>
-                <div class="mobile-info-item">
-                    <span class="mobile-info-label">Venue</span>
-                    <span class="mobile-info-value">${schedule.venue || 'N/A'}</span>
-                </div>
-                <div class="mobile-info-item">
-                    <span class="mobile-info-label">Division</span>
-                    <span class="mobile-info-value">${schedule.division || 'N/A'}</span>
-                </div>
-            </div>
-            
-            <div class="mobile-teams-section">
-                <div class="mobile-teams-header">Teams</div>
-                <div class="mobile-teams-grid">
-                    <div class="mobile-team">
-                        <div class="mobile-team-name">${schedule.home_team || 'N/A'}</div>
-                        <div class="mobile-team-coach">${schedule.home_coach || 'N/A'}</div>
-                    </div>
-                    <div class="mobile-team">
-                        <div class="mobile-team-name">${schedule.visitor_team || 'N/A'}</div>
-                        <div class="mobile-team-coach">${schedule.visitor_coach || 'N/A'}</div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="mobile-umpire-section">
-                <div class="mobile-umpire-header">Umpires</div>
-                <div class="mobile-umpire-grid">
-                    <div class="mobile-umpire-item">
-                        <label class="mobile-umpire-label">Plate Umpire</label>
-                        <select class="mobile-umpire-select plate-umpire-select"
-                                data-game-id="${schedule.id}"
-                                data-position="plate"
-                                ${schedule.plate_umpire ? 'disabled' : ''}>
-                            <option value="">Select Plate Umpire</option>
-                            ${schedule.plate_umpire ? `<option value="${schedule.plate_umpire}" selected>${schedule.plate_umpire}</option>` : ''}
-                            ${getUmpireOptions(schedule.plate_umpire)}
-                        </select>
-                        ${!schedule.plate_umpire ? 
-                            `<button class="btn btn-sm btn-primary mobile-umpire-btn submit-plate-umpire-btn" 
-                                     data-game-id="${schedule.id}" 
-                                     onclick="submitPlateUmpireRequest(${schedule.id})" 
-                                     style="display: none;">
-                                Submit Plate Umpire
-                            </button>` : ''
-                        }
-                    </div>
-                    <div class="mobile-umpire-item">
-                        <label class="mobile-umpire-label">Base Umpire</label>
-                        <select class="mobile-umpire-select base-umpire-select"
-                                data-game-id="${schedule.id}"
-                                data-position="base"
-                                ${schedule.base_umpire ? 'disabled' : ''}>
-                            <option value="">Select Base Umpire</option>
-                            ${schedule.base_umpire ? `<option value="${schedule.base_umpire}" selected>${schedule.base_umpire}</option>` : ''}
-                            ${getUmpireOptions(schedule.base_umpire)}
-                        </select>
-                        ${!schedule.base_umpire ? 
-                            `<button class="btn btn-sm btn-primary mobile-umpire-btn submit-base-umpire-btn" 
-                                     data-game-id="${schedule.id}" 
-                                     onclick="submitBaseUmpireRequest(${schedule.id})" 
-                                     style="display: none;">
-                                Submit Base Umpire
-                            </button>` : ''
-                        }
-                    </div>
-                </div>
-            </div>
-            
-            <div class="mobile-concession-section">
-                <div class="mobile-concession-header">Concession</div>
-                <div class="mobile-concession-stand">
-                    <span class="mobile-concession-stand-badge badge ${schedule.concession_stand === 'No Concession' ? 'bg-secondary' : 'bg-success'}">
-                        ${schedule.concession_stand === 'No Concession' ? 'No Concession' : schedule.concession_stand || 'No Info'}
-                    </span>
-                </div>
-                <div class="mobile-concession-staff">
-                    <label class="mobile-concession-staff-label">Concession Staff</label>
-                    <select class="mobile-concession-staff-select concession-staff-select" 
-                            data-game-id="${schedule.id}" 
-                            data-type="staff"
-                            ${schedule.concession_staff ? 'disabled' : ''}>
-                        <option value="">${schedule.concession_staff || 'Select Concession Staff'}</option>
-                        ${getConcessionStaffOptions(schedule.concession_staff)}
-                    </select>
-                    ${!schedule.concession_staff ? 
-                        `<button class="btn btn-sm btn-primary mobile-concession-btn submit-concession-btn" 
-                                 data-game-id="${schedule.id}" 
-                                 onclick="submitConcessionRequest(${schedule.id})" 
-                                 style="display: none;">
-                            Submit Request
-                        </button>` : ''
-                    }
-                </div>
-            </div>
-        </div>
-    `).join('');
-
-    // Update both desktop table and mobile cards
-    tbody.innerHTML = desktopTable;
-    
-    // Add mobile cards container after the table
-    const tableContainer = document.querySelector('.table-responsive');
-    if (tableContainer) {
-        // Remove existing mobile cards if they exist
-        const existingMobileCards = document.querySelector('.mobile-game-cards');
-        if (existingMobileCards) {
-            existingMobileCards.remove();
-        }
-        
-        // Create mobile cards container
-        const mobileCardsContainer = document.createElement('div');
-        mobileCardsContainer.className = 'mobile-game-cards';
-        mobileCardsContainer.innerHTML = mobileCards;
-        
-        // Insert mobile cards after the table
-        tableContainer.parentNode.insertBefore(mobileCardsContainer, tableContainer.nextSibling);
-    }
-    
-    // Add event listeners for all dropdowns (both desktop and mobile)
-    setupEventListeners();
-}
-
-// Setup event listeners for all interactive elements
-function setupEventListeners() {
-    // Add event listeners for umpire dropdowns (both desktop and mobile)
-    document.querySelectorAll('.plate-umpire-select').forEach(select => {
-        select.addEventListener('change', (e) => {
-            const gameId = e.target.dataset.gameId;
-            const position = e.target.dataset.position;
-            showUmpireSubmitButton(gameId, position);
-        });
-    });
-    
-    document.querySelectorAll('.base-umpire-select').forEach(select => {
-        select.addEventListener('change', (e) => {
-            const gameId = e.target.dataset.gameId;
-            const position = e.target.dataset.position;
-            showUmpireSubmitButton(gameId, position);
-        });
-    });
-    
-    // Add event listeners for concession staff dropdowns (both desktop and mobile)
-    document.querySelectorAll('.concession-staff-select').forEach(select => {
-        select.addEventListener('change', (e) => {
-            const gameId = e.target.dataset.gameId;
-            showConcessionSubmitButton(gameId);
-        });
-    });
-    
-    // Add event listeners for mobile-specific elements
-    document.querySelectorAll('.mobile-umpire-select').forEach(select => {
-        select.addEventListener('change', (e) => {
-            const gameId = e.target.dataset.gameId;
-            const position = e.target.dataset.position;
-            showUmpireSubmitButton(gameId, position);
-        });
-    });
-    
-    document.querySelectorAll('.mobile-concession-staff-select').forEach(select => {
-        select.addEventListener('change', (e) => {
-            const gameId = e.target.dataset.gameId;
-            showConcessionSubmitButton(gameId);
-        });
-    });
-    
-    console.log('✅ Event listeners setup complete');
 }
 
 // Load umpire requests
