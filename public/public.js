@@ -1138,7 +1138,7 @@ function renderScheduleTable() {
             
         tbody.innerHTML = `
             <tr>
-                    <td colspan="12" class="no-data text-center">
+                    <td colspan="13" class="no-data text-center">
                         <div class="py-5">
                             <i class="fas fa-search fa-3x text-warning mb-4"></i>
                             <h4 class="text-warning mb-3">No Results Found</h4>
@@ -1163,7 +1163,7 @@ function renderScheduleTable() {
             // Show simple message when no schedules exist in database
             tbody.innerHTML = `
                 <tr>
-                    <td colspan="12" class="no-data text-center">
+                    <td colspan="13" class="no-data text-center">
                         <div class="py-4">
                             <i class="fas fa-calendar-times fa-3x text-muted mb-3"></i>
                             <h5 class="text-muted">No schedules found in the database</h5>

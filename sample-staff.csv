@@ -1,5 +1,5 @@
 name,email,phone,parent_name,parent_email,parent_phone,role
 John Doe,john.doe@email.com,555-0101,John Doe Sr.,john.sr@email.com,555-0102,Coach
 Jane Smith,jane.smith@email.com,555-0103,Jane Smith Sr.,jane.sr@email.com,555-0104,Umpire
-Mike Johnson,mike.j@email.com,555-0105,Mike Johnson Sr.,mike.sr@email.com,555-0106,Concessions
+Mike Johnson,mike.j@email.com,555-0105,Mike Johnson Sr.,mike.sr@email.com,555-0106,Concession Staff
 Sarah Wilson,sarah.w@email.com,555-0107,Sarah Wilson Sr.,sarah.sr@email.com,555-0108,Manager

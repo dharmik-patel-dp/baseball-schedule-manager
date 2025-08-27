@@ -391,13 +391,13 @@
                             <th>Visitor Team</th>
                             <th>Venue</th>
                             <th>Umpires</th>
-
+                            <th>Concession</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody id="scheduleTableBody">
                         <tr>
-                            <td colspan="12" class="loading">
+                            <td colspan="13" class="loading">
                                 <i class="fas fa-spinner fa-spin me-2"></i>Loading schedules...
                             </td>
                         </tr>
@@ -450,9 +450,9 @@
             </form>
         </div>
 
-        <!-- Concessions Request Form -->
+        <!-- Concession Staff Request Form -->
         <div class="umpire-request-form" id="concessionStaffRequestForm" style="display: none;">
-            <h5 class="mb-3"><i class="fas fa-edit me-2"></i>Request Concessions Change</h5>
+            <h5 class="mb-3"><i class="fas fa-edit me-2"></i>Request Concession Staff Change</h5>
             <form id="concessionStaffRequestFormElement">
                 <input type="hidden" id="concessionRequestGameId">
                 <div class="row g-3">
@@ -461,11 +461,11 @@
                         <div id="concessionGameDetails" class="form-control-plaintext"></div>
                     </div>
                     <div class="col-md-6">
-                        <label class="form-label">Current Concessions</label>
+                        <label class="form-label">Current Concession Staff</label>
                         <div id="currentConcessionStaff" class="form-control-plaintext"></div>
                     </div>
                     <div class="col-md-6">
-                        <label class="form-label">Requested Concessions</label>
+                        <label class="form-label">Requested Concession Staff</label>
                         <select class="form-select" id="requestedConcessionStaff">
                             <option value="">No change</option>
                         </select>
@@ -473,7 +473,7 @@
                     </div>
                     <div class="col-12">
                         <label class="form-label">Reason for Change</label>
-                        <textarea class="form-control" id="concessionChangeReason" rows="3" required placeholder="Please provide a reason for the concessions change request"></textarea>
+                        <textarea class="form-control" id="concessionChangeReason" rows="3" required placeholder="Please provide a reason for the concession staff change request"></textarea>
                     </div>
                     <div class="col-12">
                         <button type="submit" class="btn btn-primary me-2">
