@@ -1184,7 +1184,8 @@ function renderScheduleTable() {
                         <select class="form-select form-select-sm plate-umpire-select"
                                 data-game-id="${schedule.id}"
                                 data-position="plate">
-                            <option value="">${schedule.plate_umpire || 'Select Plate Umpire'}</option>
+                            <option value="">Select Plate Umpire</option>
+                            ${schedule.plate_umpire ? `<option value="${schedule.plate_umpire}" selected>${schedule.plate_umpire}</option>` : ''}
                             ${getUmpireOptions(schedule.plate_umpire)}
                         </select>
                     </div>
@@ -1193,18 +1194,17 @@ function renderScheduleTable() {
                         <select class="form-select form-select-sm base-umpire-select"
                                 data-game-id="${schedule.id}"
                                 data-position="base">
-                            <option value="">${schedule.base_umpire || 'Select Base Umpire'}</option>
+                            <option value="">Select Base Umpire</option>
+                            ${schedule.base_umpire ? `<option value="${schedule.base_umpire}" selected>${schedule.base_umpire}</option>` : ''}
                             ${getUmpireOptions(schedule.base_umpire)}
                         </select>
                     </div>
-                    ${(!schedule.plate_umpire || !schedule.base_umpire) ? 
-                        `<button class="btn btn-sm btn-primary submit-umpire-btn" 
-                                 data-game-id="${schedule.id}" 
-                                 onclick="submitUmpireRequest(${schedule.id})" 
-                                 style="display: block;">
-                            <i class="fas fa-paper-plane"></i>Submit Request
-                        </button>` : ''
-                    }
+                    <button class="btn btn-sm btn-primary submit-umpire-btn" 
+                             data-game-id="${schedule.id}" 
+                             onclick="submitUmpireRequest(${schedule.id})" 
+                             style="display: block;">
+                        <i class="fas fa-paper-plane"></i>Submit Request
+                    </button>
                 </div>
             </td>
             <td>
@@ -1900,8 +1900,8 @@ async function submitUmpireRequest(gameId) {
         game_id: gameId,
         current_plate_umpire: game.plate_umpire || '',
         current_base_umpire: game.base_umpire || '',
-        requested_plate_umpire: plateUmpire || game.plate_umpire || '', // Keep current if not selected
-        requested_base_umpire: baseUmpire || game.base_umpire || '', // Keep current if not selected
+        requested_plate_umpire: plateUmpire,
+        requested_base_umpire: baseUmpire,
         reason: 'Umpire assignment request'
     };
     
@@ -1916,7 +1916,7 @@ async function submitUmpireRequest(gameId) {
         
         showAlert('Umpire request submitted successfully!', 'success');
         
-        // Hide submit button and reload schedules
+        // Hide submit button temporarily and reload schedules
         const submitBtn = document.querySelector(`.submit-umpire-btn[data-game-id="${gameId}"]`);
         if (submitBtn) submitBtn.style.display = 'none';
         
