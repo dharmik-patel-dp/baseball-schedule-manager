@@ -1177,21 +1177,6 @@ function renderScheduleTable() {
 
     tbody.innerHTML = schedulesToShow.map(schedule => `
         <tr>
-            <td><span class="badge bg-primary">${schedule.season || 'N/A'}</span></td>
-            <td><span class="badge ${schedule.event_type === 'Baseball' ? 'bg-success' : 'bg-warning'}">${schedule.event_type || 'N/A'}</span></td>
-            <td><strong>${schedule.day || 'N/A'}</strong></td>
-            <td>${formatDate(schedule.date)}</td>
-            <td>${schedule.start_time || 'N/A'} ${schedule.am_pm || ''}</td>
-            <td><span class="badge bg-info">${schedule.division || 'N/A'}</span></td>
-            <td>
-                <div><strong>${schedule.home_team || 'N/A'}</strong></div>
-                <small class="text-muted">${schedule.home_coach || 'N/A'}</small>
-            </td>
-            <td>
-                <div><strong>${schedule.visitor_team || 'N/A'}</strong></div>
-                <small class="text-muted">${schedule.visitor_coach || 'N/A'}</small>
-            </td>
-            <td>${schedule.venue || 'N/A'}</td>
             <td>
                 <div><strong>Plate:</strong> ${schedule.plate_umpire || 'N/A'}</div>
                 <div><strong>Base:</strong> ${schedule.base_umpire || 'N/A'}</div>
@@ -1215,6 +1200,21 @@ function renderScheduleTable() {
                     <i class="fas fa-user-edit"></i>Staff
                 </button>
             </td>
+            <td><span class="badge bg-primary">${schedule.season || 'N/A'}</span></td>
+            <td><span class="badge ${schedule.event_type === 'Baseball' ? 'bg-success' : 'bg-warning'}">${schedule.event_type || 'N/A'}</span></td>
+            <td><strong>${schedule.day || 'N/A'}</strong></td>
+            <td>${formatDate(schedule.date)}</td>
+            <td>${schedule.start_time || 'N/A'} ${schedule.am_pm || ''}</td>
+            <td><span class="badge bg-info">${schedule.division || 'N/A'}</span></td>
+            <td>
+                <div><strong>${schedule.home_team || 'N/A'}</strong></div>
+                <small class="text-muted">${schedule.home_coach || 'N/A'}</small>
+            </td>
+            <td>
+                <div><strong>${schedule.visitor_team || 'N/A'}</strong></div>
+                <small class="text-muted">${schedule.visitor_coach || 'N/A'}</small>
+            </td>
+            <td>${schedule.venue || 'N/A'}</td>
         </tr>
     `).join('');
 }
