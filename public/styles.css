@@ -3455,3 +3455,24 @@ html.theme-dark input[type="date"].filter-select {
   border-color: var(--primary-color);
   box-shadow: 0 0 0 0.2rem rgba(30, 58, 138, 0.25);
 }
+
+/* Auto-Filtering Styles */
+.filter-select {
+  transition: all 0.3s ease;
+}
+
+.filter-select:focus {
+  transform: scale(1.02);
+  box-shadow: 0 0 0 0.2rem rgba(30, 58, 138, 0.15);
+}
+
+/* Auto-filtering info text */
+.text-muted .fas {
+  color: var(--primary-color);
+}
+
+/* Filter section enhancements */
+.filter-section h5 {
+  color: var(--primary-color);
+  font-weight: 600;
+}

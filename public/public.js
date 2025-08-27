@@ -226,9 +226,7 @@ function setupEventListeners() {
     
     // Filter change events for immediate filtering
     const filterElements = [
-        'seasonFilter', 'eventTypeFilter', 'dayFilter', 'divisionFilter',
-        'teamFilter', 'venueFilter', 'coachFilter', 'plateUmpireFilter', 'baseUmpireFilter',
-        'concessionFilter', 'concessionStaffFilter', 'startDateFilter', 'endDateFilter', 'timeFilter'
+        'eventTypeFilter', 'availableGamesFilter'
     ];
     
     filterElements.forEach(id => {

@@ -248,7 +248,7 @@
     <div class="container">
         <!-- Filter Section -->
         <div class="filter-section" id="filterSection">
-            <h5 class="mb-3"><i class="fas fa-filter me-2"></i>Filter Schedules</h5>
+            <h5 class="mb-3"><i class="fas fa-filter me-2"></i>Filter Schedules (Auto-Filtering)</h5>
             
             <!-- Event Type and Availability Filters -->
             <div class="filters-container">
@@ -268,24 +268,27 @@
                             <option value="base_umpire">Available Base Umpire</option>
                             <option value="concession_staff">Available Concession Staff</option>
                         </select>
+                                        </div>
+                </div>
+                
+                <div class="row mt-2">
+                    <div class="col-12">
+                        <small class="text-muted">
+                            <i class="fas fa-info-circle me-1"></i>
+                            Filters are applied automatically when you make a selection
+                        </small>
                     </div>
                 </div>
                     
                     <div class="row mt-3">
-                        <div class="col-12">
-                            <div class="d-flex gap-2 flex-wrap">
-                                <button class="btn btn-primary" onclick="applyFilters()">
-                                    <i class="fas fa-search me-2"></i>Apply Filters
-                                </button>
-                                <button class="btn btn-outline-secondary" onclick="clearAllFilters()">
-                                    <i class="fas fa-times me-2"></i>Clear All
-                                </button>
-                                <button class="btn btn-outline-info" onclick="showActiveFilters()">
-                                    <i class="fas fa-list me-2"></i>Active Filters (<span id="activeFilterCount">0</span>)
-                                </button>
-                            </div>
+                    <div class="col-12">
+                        <div class="d-flex gap-2 flex-wrap">
+                            <button class="btn btn-outline-secondary" onclick="clearAllFilters()">
+                                <i class="fas fa-times me-2"></i>Clear All
+                            </button>
                         </div>
                     </div>
+                </div>
                 </div>
             </div>
         </div>
