@@ -290,6 +290,43 @@ function setupEventListeners() {
             });
         }
     });
+    
+    // Add mobile-specific event listeners after a short delay to ensure DOM is ready
+    setTimeout(() => {
+        setupMobileEventListeners();
+    }, 500);
+}
+
+// Setup mobile-specific event listeners
+function setupMobileEventListeners() {
+    console.log('📱 Setting up mobile event listeners...');
+    
+    // Add event listeners for mobile umpire dropdowns
+    document.querySelectorAll('.mobile-select.plate-umpire-select').forEach(select => {
+        select.addEventListener('change', (e) => {
+            const gameId = e.target.dataset.gameId;
+            const position = e.target.dataset.position;
+            showUmpireSubmitButton(gameId, position);
+        });
+    });
+    
+    document.querySelectorAll('.mobile-select.base-umpire-select').forEach(select => {
+        select.addEventListener('change', (e) => {
+            const gameId = e.target.dataset.gameId;
+            const position = e.target.dataset.position;
+            showUmpireSubmitButton(gameId, position);
+        });
+    });
+    
+    // Add event listeners for mobile concession staff dropdowns
+    document.querySelectorAll('.mobile-select.concession-staff-select').forEach(select => {
+        select.addEventListener('change', (e) => {
+            const gameId = e.target.dataset.gameId;
+            showConcessionSubmitButton(gameId);
+        });
+    });
+    
+    console.log('✅ Mobile event listeners setup complete');
 }
 
 // Load all schedules
@@ -1264,7 +1301,7 @@ function renderMobileLayout(schedules, tbody) {
                                          data-game-id="${schedule.id}" 
                                          onclick="submitPlateUmpireRequest(${schedule.id})" 
                                          style="display: none;">
-                                    <i class="fas fa-paper-plane me-1"></i>Submit Plate Umpire
+                                    Submit Plate Umpire
                                 </button>` : ''
                             }
                         </div>
@@ -1284,7 +1321,7 @@ function renderMobileLayout(schedules, tbody) {
                                          data-game-id="${schedule.id}" 
                                          onclick="submitBaseUmpireRequest(${schedule.id})" 
                                          style="display: none;">
-                                    <i class="fas fa-paper-plane me-1"></i>Submit Base Umpire
+                                    Submit Base Umpire
                                 </button>` : ''
                             }
                         </div>
@@ -1312,7 +1349,7 @@ function renderMobileLayout(schedules, tbody) {
                                      data-game-id="${schedule.id}" 
                                      onclick="submitConcessionRequest(${schedule.id})" 
                                      style="display: none;">
-                                <i class="fas fa-paper-plane me-1"></i>Submit Request
+                                Submit Request
                             </button>` : ''
                         }
                     </div>
@@ -1323,88 +1360,10 @@ function renderMobileLayout(schedules, tbody) {
     
     mobileContainer.innerHTML = '<h5 class="text-center mb-4">📅 Game Schedules</h5>' + mobileCards;
     
-    // Add event listeners for mobile cards
-    setupMobileEventListeners();
-}
-
-// Setup mobile-specific event listeners
-function setupMobileEventListeners() {
-    console.log('📱 Setting up mobile event listeners...');
-    
-    // Add event listeners for umpire dropdowns
-    document.querySelectorAll('.mobile-select.plate-umpire-select').forEach(select => {
-        select.addEventListener('change', (e) => {
-            const gameId = e.target.dataset.gameId;
-            const position = e.target.dataset.position;
-            showUmpireSubmitButton(gameId, position);
-        });
-    });
-    
-    document.querySelectorAll('.mobile-select.base-umpire-select').forEach(select => {
-        select.addEventListener('change', (e) => {
-            const gameId = e.target.dataset.gameId;
-            const position = e.target.dataset.position;
-            showUmpireSubmitButton(gameId, position);
-        });
-    });
-    
-    // Add event listeners for concession staff dropdowns
-    document.querySelectorAll('.mobile-select.concession-staff-select').forEach(select => {
-        select.addEventListener('change', (e) => {
-            const gameId = e.target.dataset.gameId;
-            showConcessionSubmitButton(gameId);
-        });
-    });
-    
-    console.log('✅ Mobile event listeners setup complete');
-    
-    // Add mobile scroll indicator
-    addMobileScrollIndicator();
-}
-
-// Add mobile scroll indicator for better UX
-function addMobileScrollIndicator() {
-    // Remove existing indicator if any
-    const existingIndicator = document.querySelector('.mobile-scroll-indicator');
-    if (existingIndicator) {
-        existingIndicator.remove();
-    }
-    
-    // Create scroll indicator
-    const scrollIndicator = document.createElement('div');
-    scrollIndicator.className = 'mobile-scroll-indicator';
-    scrollIndicator.innerHTML = `
-        <div class="scroll-indicator-content">
-            <i class="fas fa-chevron-up"></i>
-            <span>Scroll to see more games</span>
-        </div>
-    `;
-    
-    document.body.appendChild(scrollIndicator);
-    
-    // Show/hide indicator based on scroll position
-    const mobileContainer = document.querySelector('.mobile-cards-container');
-    if (mobileContainer) {
-        mobileContainer.addEventListener('scroll', () => {
-            const scrollTop = mobileContainer.scrollTop;
-            const scrollHeight = mobileContainer.scrollHeight;
-            const clientHeight = mobileContainer.clientHeight;
-            
-            if (scrollTop > 100) {
-                scrollIndicator.style.opacity = '0';
-                scrollIndicator.style.pointerEvents = 'none';
-            } else {
-                scrollIndicator.style.opacity = '1';
-                scrollIndicator.style.pointerEvents = 'auto';
-            }
-        });
-        
-        // Auto-hide indicator after 3 seconds
-        setTimeout(() => {
-            scrollIndicator.style.opacity = '0';
-            scrollIndicator.style.pointerEvents = 'none';
-        }, 3000);
-    }
+    // Setup mobile event listeners after cards are rendered
+    setTimeout(() => {
+        setupMobileEventListeners();
+    }, 100);
 }
 
 // Render desktop table layout
