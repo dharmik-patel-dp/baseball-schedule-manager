@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
         <title>Admin Dashboard - Baseball/Softball Schedule Manager</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" integrity="sha384-iw3OoTErCYJJB9mCa8LNS2hbsQ7M3C0EpIsO/H5+EGAkPGc6rk+V8i04oW/K5xq0" crossorigin="anonymous">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -1020,9 +1020,12 @@
     <header class="top-header">
         <h1 class="header-title" id="pageTitle">Dashboard Overview</h1>
         <div class="header-actions">
-            <span class="text-muted">
+            <span class="text-muted me-3">
                 <i class="fas fa-shield-alt me-2"></i>Admin Control Panel
             </span>
+            <button class="btn btn-outline-danger btn-sm" onclick="logout()">
+                <i class="fas fa-sign-out-alt me-2"></i>Logout
+            </button>
         </div>
     </header>
 
@@ -2257,7 +2260,7 @@
     </div>
 
     <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
     <script src="/admin.js"></script>
     
     <!-- Mobile Sidebar Toggle -->
@@ -2550,6 +2553,43 @@
                 console.error('Error refreshing admin schedules display:', error);
             }
         }
+        
+        // Logout function
+        async function logout() {
+            try {
+                const response = await fetch('/api/admin/logout', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+                
+                if (response.ok) {
+                    showAlert('Logout successful! Redirecting to login...', 'success');
+                    setTimeout(() => {
+                        window.location.href = '/admin-login';
+                    }, 1000);
+                } else {
+                    showAlert('Logout failed. Please try again.', 'danger');
+                }
+            } catch (error) {
+                showAlert('Network error during logout.', 'danger');
+            }
+        }
+        
+        // Check authentication status on page load
+        document.addEventListener('DOMContentLoaded', async function() {
+            try {
+                const response = await fetch('/api/admin/me');
+                if (!response.ok) {
+                    // Not authenticated, redirect to login
+                    window.location.href = '/admin-login';
+                }
+            } catch (error) {
+                // Network error, redirect to login
+                window.location.href = '/admin-login';
+            }
+        });
     </script>
 </body>
 </html> 

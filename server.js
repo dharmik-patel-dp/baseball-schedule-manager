@@ -6,9 +6,52 @@ const fs = require('fs');
 const path = require('path');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const bcrypt = require('bcryptjs');
+const session = require('express-session');
+const rateLimit = require('express-rate-limit');
+const helmet = require('helmet');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+// Security middleware with CSP configuration
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      styleSrc: ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net", "https://cdnjs.cloudflare.com", "https://fonts.googleapis.com"],
+      scriptSrc: ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net"],
+      scriptSrcAttr: ["'unsafe-inline'"], // Allow inline event handlers
+      fontSrc: ["'self'", "https://fonts.gstatic.com", "https://cdnjs.cloudflare.com"],
+      imgSrc: ["'self'", "data:", "https:"],
+      connectSrc: ["'self'"],
+      frameSrc: ["'self'"],
+      objectSrc: ["'none'"],
+      upgradeInsecureRequests: []
+    }
+  }
+}));
+
+// Rate limiting for login attempts
+const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 5, // limit each IP to 5 requests per windowMs
+  message: 'Too many login attempts, please try again later.',
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+// Session configuration
+app.use(session({
+  secret: process.env.SESSION_SECRET || 'your-secret-key-change-in-production',
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    secure: process.env.NODE_ENV === 'production',
+    httpOnly: true,
+    maxAge: 24 * 60 * 60 * 1000 // 24 hours
+  }
+}));
 
 // Middleware
 app.use(cors());
@@ -19,6 +62,105 @@ app.use(express.static('public'));
 // Database setup
 const db = new sqlite3.Database('schedules.db');
 
+// Admin authentication middleware
+function requireAuth(req, res, next) {
+  if (req.session && req.session.adminId) {
+    return next();
+  }
+  res.status(401).json({ error: 'Authentication required' });
+}
+
+// Create default admin user if none exists
+function createDefaultAdmin() {
+  const defaultUsername = 'admin';
+  const defaultPassword = 'admin123'; // Change this in production!
+  
+  db.get("SELECT id FROM admin_users WHERE username = ?", [defaultUsername], (err, row) => {
+    if (err) {
+      console.error('Error checking admin user:', err);
+      return;
+    }
+    
+    if (!row) {
+      const passwordHash = bcrypt.hashSync(defaultPassword, 10);
+      db.run("INSERT INTO admin_users (username, password_hash, email, role) VALUES (?, ?, ?, ?)", 
+        [defaultUsername, passwordHash, 'admin@baseball.com', 'admin'], (err) => {
+        if (err) {
+          console.error('Error creating default admin:', err);
+        } else {
+          console.log('✅ Default admin user created');
+          console.log('⚠️  Username: admin, Password: admin123 - CHANGE THESE IN PRODUCTION!');
+        }
+      });
+    } else {
+      console.log('✅ Admin user already exists');
+    }
+  });
+}
+
+// Admin authentication routes
+app.post('/api/admin/login', loginLimiter, (req, res) => {
+  const { username, password } = req.body;
+  
+  if (!username || !password) {
+    return res.status(400).json({ error: 'Username and password required' });
+  }
+  
+  db.get("SELECT * FROM admin_users WHERE username = ?", [username], (err, user) => {
+    if (err) {
+      console.error('Database error:', err);
+      return res.status(500).json({ error: 'Internal server error' });
+    }
+    
+    if (!user) {
+      return res.status(401).json({ error: 'Invalid credentials' });
+    }
+    
+    const isValidPassword = bcrypt.compareSync(password, user.password_hash);
+    if (!isValidPassword) {
+      return res.status(401).json({ error: 'Invalid credentials' });
+    }
+    
+    // Update last login
+    db.run("UPDATE admin_users SET last_login = CURRENT_TIMESTAMP WHERE id = ?", [user.id]);
+    
+    // Create session
+    req.session.adminId = user.id;
+    req.session.adminUsername = user.username;
+    req.session.adminRole = user.role;
+    
+    res.json({ 
+      success: true, 
+      message: 'Login successful',
+      user: {
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        role: user.role
+      }
+    });
+  });
+});
+
+app.post('/api/admin/logout', (req, res) => {
+  req.session.destroy((err) => {
+    if (err) {
+      return res.status(500).json({ error: 'Error logging out' });
+    }
+    res.json({ success: true, message: 'Logout successful' });
+  });
+});
+
+app.get('/api/admin/me', requireAuth, (req, res) => {
+  db.get("SELECT id, username, email, role, last_login FROM admin_users WHERE id = ?", 
+    [req.session.adminId], (err, user) => {
+    if (err) {
+      return res.status(500).json({ error: 'Database error' });
+    }
+    res.json({ user });
+  });
+});
+
 // Database migration function
 function migrateDatabase() {
   console.log('🔧 Checking database schema...');
@@ -27,7 +169,6 @@ function migrateDatabase() {
   db.all("PRAGMA table_info(schedules)", [], (err, rows) => {
     if (err) {
       console.error('Error checking table schema:', err);
-      return;
     }
 
     const hasConcessionStaff = rows.some(row => row.name === 'concession_staff');
@@ -49,6 +190,17 @@ function migrateDatabase() {
 
 // Create tables
 db.serialize(() => {
+  // Admin users table
+  db.run(`CREATE TABLE IF NOT EXISTS admin_users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    username TEXT UNIQUE NOT NULL,
+    password_hash TEXT NOT NULL,
+    email TEXT,
+    role TEXT DEFAULT 'admin',
+    last_login DATETIME,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  )`);
+
   // Staff directory table
   db.run(`CREATE TABLE IF NOT EXISTS staff_directory (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -61,7 +213,13 @@ db.serialize(() => {
     role TEXT DEFAULT 'Staff',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
   )`);
+  
+  // Create default admin user
+  createDefaultAdmin();
+});
 
+// Create additional tables
+db.serialize(() => {
   // Enhanced Schedule table with concession stand staff
   db.run(`CREATE TABLE IF NOT EXISTS schedules (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -262,9 +420,19 @@ db.serialize(() => {
 
 // Routes
 
-// Serve admin panel
-app.get('/admin', (req, res) => {
+// Serve admin login page
+app.get('/admin-login', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'admin-login.html'));
+});
+
+// Serve admin panel (protected)
+app.get('/admin', requireAuth, (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'admin.html'));
+});
+
+// Serve favicon
+app.get('/favicon.ico', (req, res) => {
+  res.redirect(301, 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">⚾</text></svg>');
 });
 
 // Serve public interface

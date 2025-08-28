@@ -1259,7 +1259,6 @@ h6 { font-size: 1.125rem; font-weight: 500; }
     }
     
     /* Dark theme table tr rules removed - always uses light theme */
-    
     .table td {
       border: none;
       position: relative;
