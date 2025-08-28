@@ -2352,6 +2352,13 @@
             console.log('🚀 Admin panel loaded, initializing...');
             enhanceMobileExperience();
             console.log('📱 Mobile enhancements loaded, loading season visibility...');
+            
+            // Add a visible indicator that the script is running
+            const header = document.querySelector('.header-title');
+            if (header) {
+                header.innerHTML += ' <span class="badge bg-success">Script Loaded</span>';
+            }
+            
             loadSeasonVisibilityControls();
             console.log('📊 Refreshing admin schedules display...');
             refreshAdminSchedulesDisplay();
@@ -2372,16 +2379,42 @@
                 console.log('🎯 Container element:', container);
                 if (!container) {
                     console.error('❌ Season visibility container not found!');
-                    return;
+                    console.log('🔍 Available elements with similar names:');
+                    document.querySelectorAll('[id*="season"]').forEach(el => {
+                        console.log('  -', el.id, el.tagName);
+                    });
+                    
+                    // Try to find the dashboard section and create the container
+                    const dashboardSection = document.getElementById('dashboard');
+                    if (dashboardSection) {
+                        console.log('🔧 Creating season visibility container in dashboard...');
+                        const newContainer = document.createElement('div');
+                        newContainer.id = 'seasonVisibilityControls';
+                        newContainer.className = 'row g-3';
+                        dashboardSection.appendChild(newContainer);
+                        container = newContainer;
+                        console.log('✅ Created new container:', container);
+                    } else {
+                        console.error('❌ Dashboard section not found either!');
+                        return;
+                    }
                 }
                 
                 // Get unique seasons from schedules
                 console.log('📅 Fetching schedules to get unique seasons...');
-                const schedulesResponse = await fetch('/api/admin/schedules');
-                const schedules = await schedulesResponse.json();
-                console.log('📋 Schedules data:', schedules);
-                const uniqueSeasons = [...new Set(schedules.map(s => s.season))].sort();
-                console.log('🎯 Unique seasons found:', uniqueSeasons);
+                let uniqueSeasons = [];
+                try {
+                    const schedulesResponse = await fetch('/api/admin/schedules');
+                    const schedules = await schedulesResponse.json();
+                    console.log('📋 Schedules data:', schedules);
+                    uniqueSeasons = [...new Set(schedules.map(s => s.season))].sort();
+                    console.log('🎯 Unique seasons found:', uniqueSeasons);
+                } catch (error) {
+                    console.error('❌ Error fetching schedules:', error);
+                    // Fallback: use seasons from visibility data
+                    uniqueSeasons = seasons.map(s => s.season).sort();
+                    console.log('🔄 Using fallback seasons:', uniqueSeasons);
+                }
                 
                 let html = '';
                 uniqueSeasons.forEach(season => {
@@ -2419,11 +2452,54 @@
                     `;
                 });
                 
+                // If no seasons were found, show a test card
+                if (uniqueSeasons.length === 0) {
+                    console.log('⚠️ No seasons found, showing test card...');
+                    html = `
+                        <div class="col-lg-4 col-md-6">
+                            <div class="card border-0 shadow-sm h-100 season-visibility-card">
+                                <div class="card-body text-center">
+                                    <h6 class="card-title text-primary mb-3">
+                                        <i class="fas fa-exclamation-triangle me-2"></i>Test Season
+                                    </h6>
+                                    <div class="mb-3">
+                                        <span class="badge bg-warning fs-6">Test Mode</span>
+                                    </div>
+                                    <div class="mb-3">
+                                        <small class="text-muted">Debug: No seasons loaded</small>
+                                    </div>
+                                    <div class="d-grid">
+                                        <button class="btn btn-outline-info btn-sm" onclick="console.log('Test button clicked')">
+                                            <i class="fas fa-bug me-2"></i>Debug
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+                
                 console.log('🎨 Generated HTML:', html);
                 container.innerHTML = html;
                 console.log('✅ Season visibility controls loaded successfully!');
             } catch (error) {
                 console.error('❌ Error loading season visibility controls:', error);
+                
+                // Show error card
+                const container = document.getElementById('seasonVisibilityControls');
+                if (container) {
+                    container.innerHTML = `
+                        <div class="col-12">
+                            <div class="alert alert-danger">
+                                <h6><i class="fas fa-exclamation-triangle me-2"></i>Error Loading Seasons</h6>
+                                <p class="mb-0">${error.message}</p>
+                                <button class="btn btn-sm btn-outline-danger mt-2" onclick="loadSeasonVisibilityControls()">
+                                    <i class="fas fa-redo me-2"></i>Retry
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                }
             }
         }
         
