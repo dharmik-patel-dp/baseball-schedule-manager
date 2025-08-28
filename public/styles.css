@@ -1106,10 +1106,7 @@ h6 { font-size: 1.125rem; font-weight: 500; }
     border: 1px solid var(--neutral-200);
   }
   
-  html.theme-dark .navbar-collapse {
-    background: rgba(23, 23, 23, 0.98);
-    border-color: var(--neutral-700);
-  }
+  /* Dark theme navbar-collapse rules removed - always uses light theme */
   
   .navbar-nav .nav-link {
     text-align: center;
@@ -1124,9 +1121,7 @@ h6 { font-size: 1.125rem; font-weight: 500; }
     transform: translateY(-1px);
   }
   
-  html.theme-dark .navbar-nav .nav-link:hover {
-    background: var(--primary-900);
-  }
+  /* Dark theme navbar-nav nav-link hover rules removed - always uses light theme */
   
   .navbar-nav .nav-link.active {
     background: var(--primary-50);
@@ -1134,10 +1129,7 @@ h6 { font-size: 1.125rem; font-weight: 500; }
     font-weight: 600;
   }
   
-  html.theme-dark .navbar-nav .nav-link.active {
-    background: var(--primary-900);
-    color: var(--primary-300) !important;
-  }
+  /* Dark theme navbar-nav nav-link active rules removed - always uses light theme */
 }
 
 /* Mobile navbar brand improvements */
