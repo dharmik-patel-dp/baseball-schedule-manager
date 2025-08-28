@@ -1894,39 +1894,7 @@ function add3DEffects() {
     });
 }
 
-// Enhanced theme toggle with 3D effects
-function initEnhancedTheme() {
-    try {
-        const saved = localStorage.getItem('theme') || 'light';
-        if (saved === 'dark') document.documentElement.classList.add('theme-dark');
-        
-        const nav = document.querySelector('.navbar .container');
-        if (nav) {
-            const btn = document.createElement('button');
-            btn.className = 'btn btn-outline-primary btn-sm shadow-3d';
-            btn.type = 'button';
-            btn.style.marginLeft = 'auto';
-            btn.innerHTML = '<i class="fas fa-moon me-1"></i>Theme';
-            btn.onclick = () => {
-                document.documentElement.classList.toggle('theme-dark');
-                const dark = document.documentElement.classList.contains('theme-dark');
-                localStorage.setItem('theme', dark ? 'dark' : 'light');
-                
-                // Add 3D effect to button
-                btn.style.transform = 'scale(1.1) rotateY(180deg)';
-                setTimeout(() => {
-                    btn.style.transform = 'scale(1) rotateY(0deg)';
-                }, 300);
-            };
-            nav.appendChild(btn);
-        }
-    } catch (e) { 
-        console.warn('Enhanced theme init failed', e); 
-    }
-}
-
-// Initialize enhanced theme
-initEnhancedTheme(); 
+// Dark theme functionality removed - always uses light theme 
 
 // Helper function to get status badge
 function getStatusBadge(status) {

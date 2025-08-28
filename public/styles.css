@@ -57,6 +57,13 @@
 /* Light Theme Only - Deep Red & Maroon */
 /* Dark theme functionality removed - always uses light theme */
 
+/* Force light theme regardless of device settings */
+html, html[data-theme="dark"], html.theme-dark {
+  /* Override any dark theme classes or attributes */
+  color-scheme: light !important;
+  forced-color-adjust: none;
+}
+
 /* Base Styles */
 * {
   box-sizing: border-box;
@@ -1251,10 +1258,7 @@ h6 { font-size: 1.125rem; font-weight: 500; }
       padding: 0.5rem;
     }
     
-    html.theme-dark .table tr {
-      background: var(--neutral-800);
-      border-color: var(--neutral-700);
-    }
+    /* Dark theme table tr rules removed - always uses light theme */
     
     .table td {
       border: none;
@@ -1701,9 +1705,7 @@ h6 { font-size: 1.125rem; font-weight: 500; }
     color: var(--neutral-800);
   }
   
-  html.theme-dark .form-label {
-    color: var(--neutral-200);
-  }
+  /* Dark theme form-label rules removed - always uses light theme */
 }
 
 /* Mobile performance improvements */
@@ -3205,11 +3207,7 @@ input[type="date"].filter-select:focus {
   outline: none;
 }
 
-html.theme-dark input[type="date"].filter-select {
-  background: var(--neutral-800);
-  color: var(--neutral-100);
-  border-color: var(--neutral-600);
-}
+/* Dark theme input[type="date"].filter-select rules removed - always uses light theme */
 
 /* Date range filter responsive styling */
 @media (max-width: 768px) {
