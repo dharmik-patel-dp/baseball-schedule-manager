@@ -2353,6 +2353,8 @@
             enhanceMobileExperience();
             console.log('📱 Mobile enhancements loaded, loading season visibility...');
             loadSeasonVisibilityControls();
+            console.log('📊 Refreshing admin schedules display...');
+            refreshAdminSchedulesDisplay();
         });
 
         // ===== SEASON VISIBILITY CONTROL FUNCTIONS =====
@@ -2375,7 +2377,7 @@
                 
                 // Get unique seasons from schedules
                 console.log('📅 Fetching schedules to get unique seasons...');
-                const schedulesResponse = await fetch('/api/schedules?admin=true');
+                const schedulesResponse = await fetch('/api/admin/schedules');
                 const schedules = await schedulesResponse.json();
                 console.log('📋 Schedules data:', schedules);
                 const uniqueSeasons = [...new Set(schedules.map(s => s.season))].sort();
@@ -2444,6 +2446,9 @@
                 // Reload the controls
                 await loadSeasonVisibilityControls();
                 
+                // Refresh admin schedules display to show visibility changes
+                await refreshAdminSchedulesDisplay();
+                
             } catch (error) {
                 console.error('Error toggling season visibility:', error);
                 showAlert('Error updating season visibility. Please try again.', 'danger');
@@ -2468,6 +2473,77 @@
                     alertDiv.remove();
                 }
             }, 5000);
+        }
+        
+        // Refresh admin schedules display to show visibility changes
+        async function refreshAdminSchedulesDisplay() {
+            try {
+                console.log('🔄 Refreshing admin schedules display...');
+                
+                // Get all schedules (including unpublished)
+                const response = await fetch('/api/admin/schedules');
+                const schedules = await response.json();
+                
+                // Get season visibility status
+                const visibilityResponse = await fetch('/api/season-visibility');
+                const visibilityData = await visibilityResponse.json();
+                
+                // Create a map of season visibility
+                const seasonVisibility = {};
+                visibilityData.forEach(item => {
+                    seasonVisibility[item.season] = item.is_visible;
+                });
+                
+                // Update the admin schedules table if it exists
+                const scheduleTable = document.getElementById('scheduleTable');
+                if (scheduleTable && schedules.length > 0) {
+                    console.log('📊 Updating admin schedules table with visibility info...');
+                    
+                    // Add visibility indicators to the table
+                    const tbody = scheduleTable.querySelector('tbody');
+                    if (tbody) {
+                        tbody.innerHTML = '';
+                        
+                        schedules.forEach(schedule => {
+                            const isVisible = seasonVisibility[schedule.season] || false;
+                            const visibilityBadge = isVisible 
+                                ? '<span class="badge bg-success">Published</span>'
+                                : '<span class="badge bg-secondary">Unpublished</span>';
+                            
+                            const row = document.createElement('tr');
+                            row.innerHTML = `
+                                <td><input type="checkbox" value="${schedule.id}"></td>
+                                <td>${schedule.season} ${visibilityBadge}</td>
+                                <td>${schedule.event_type}</td>
+                                <td>${schedule.date}</td>
+                                <td>${schedule.start_time} ${schedule.am_pm}</td>
+                                <td>${schedule.division}</td>
+                                <td>${schedule.home_team} vs ${schedule.visitor_team}</td>
+                                <td>${schedule.venue}</td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary" onclick="editSchedule(${schedule.id})">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-danger" onclick="deleteSchedule(${schedule.id})">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            `;
+                            tbody.appendChild(row);
+                        });
+                        
+                        // Update filter counts
+                        const totalCount = document.getElementById('totalCount');
+                        const filteredCount = document.getElementById('filteredCount');
+                        if (totalCount) totalCount.textContent = schedules.length;
+                        if (filteredCount) filteredCount.textContent = schedules.length;
+                    }
+                }
+                
+                console.log('✅ Admin schedules display refreshed successfully!');
+            } catch (error) {
+                console.error('❌ Error refreshing admin schedules display:', error);
+            }
         }
     </script>
 </body>

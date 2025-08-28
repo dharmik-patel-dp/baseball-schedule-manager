@@ -492,34 +492,33 @@ app.post('/api/base-umpires/bulk-delete', (req, res) => {
 
 // Get all schedules (only visible seasons for public, all for admin)
 app.get('/api/schedules', (req, res) => {
-  const { admin } = req.query;
-  
-  if (admin === 'true') {
-    // Admin can see all schedules
-    const query = 'SELECT * FROM schedules ORDER BY date, start_time';
-    db.all(query, [], (err, rows) => {
-      if (err) {
-        res.status(500).json({ error: err.message });
-        return;
-      }
-      res.json(rows);
-    });
-  } else {
-    // Public only sees visible seasons
-    const query = `
-      SELECT s.* FROM schedules s
-      INNER JOIN season_visibility sv ON s.season = sv.season
-      WHERE sv.is_visible = 1
-      ORDER BY s.date, s.start_time
-    `;
-    db.all(query, [], (err, rows) => {
-      if (err) {
-        res.status(500).json({ error: err.message });
-        return;
-      }
-      res.json(rows);
-    });
-  }
+  // Public always sees only visible seasons
+  const query = `
+    SELECT s.* FROM schedules s
+    INNER JOIN season_visibility sv ON s.season = sv.season
+    WHERE sv.is_visible = 1
+    ORDER BY s.date, start_time
+  `;
+  db.all(query, [], (err, rows) => {
+    if (err) {
+      res.status(500).json({ error: err.message });
+      return;
+    }
+    res.json(rows);
+  });
+});
+
+// Admin-specific endpoint to get ALL schedules (including unpublished seasons)
+app.get('/api/admin/schedules', (req, res) => {
+  // Admin can see all schedules regardless of visibility
+  const query = 'SELECT * FROM schedules ORDER BY date, start_time';
+  db.all(query, [], (err, rows) => {
+    if (err) {
+      res.status(500).json({ error: err.message });
+      return;
+    }
+    res.json(rows);
+  });
 });
 
 // Create new schedule
