@@ -1087,15 +1087,7 @@
                         </h5>
                         <p class="text-muted mb-4">Control which seasons are visible to the public. Only published seasons will be shown on the public website.</p>
                         
-                        <!-- Debug Controls -->
-                        <div class="mb-3">
-                            <button class="btn btn-sm btn-outline-info me-2" onclick="loadSeasonVisibilityControls()">
-                                <i class="fas fa-sync me-2"></i>Reload Seasons
-                            </button>
-                            <button class="btn btn-sm btn-outline-warning" onclick="console.log('Container:', document.getElementById('seasonVisibilityControls'))">
-                                <i class="fas fa-bug me-2"></i>Debug Container
-                            </button>
-                        </div>
+
                         
                         <div id="seasonVisibilityControls" class="row g-3">
                             <!-- Season visibility controls will be loaded here -->
@@ -2360,21 +2352,11 @@
         
         // Initialize mobile enhancements
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('🚀 Admin panel loaded, initializing...');
             enhanceMobileExperience();
-            console.log('📱 Mobile enhancements loaded, loading season visibility...');
             
-            // Add a visible indicator that the script is running
-            const header = document.querySelector('.header-title');
-            if (header) {
-                header.innerHTML += ' <span class="badge bg-success">Script Loaded</span>';
-            }
-            
-            // Add a delay to ensure everything is loaded
+            // Initialize season visibility controls and admin schedules
             setTimeout(() => {
-                console.log('⏰ Delayed execution starting...');
                 loadSeasonVisibilityControls();
-                console.log('📊 Refreshing admin schedules display...');
                 refreshAdminSchedulesDisplay();
             }, 1000);
         });
@@ -2383,52 +2365,34 @@
         
         // Load season visibility controls
         async function loadSeasonVisibilityControls() {
-            console.log('🔍 Starting to load season visibility controls...');
             try {
-                console.log('📡 Fetching season visibility data...');
                 const response = await fetch('/api/season-visibility');
                 const seasons = await response.json();
-                console.log('📊 Season visibility data:', seasons);
                 
                 const container = document.getElementById('seasonVisibilityControls');
-                console.log('🎯 Container element:', container);
                 if (!container) {
-                    console.error('❌ Season visibility container not found!');
-                    console.log('🔍 Available elements with similar names:');
-                    document.querySelectorAll('[id*="season"]').forEach(el => {
-                        console.log('  -', el.id, el.tagName);
-                    });
-                    
                     // Try to find the dashboard section and create the container
                     const dashboardSection = document.getElementById('dashboard');
                     if (dashboardSection) {
-                        console.log('🔧 Creating season visibility container in dashboard...');
                         const newContainer = document.createElement('div');
                         newContainer.id = 'seasonVisibilityControls';
                         newContainer.className = 'row g-3';
                         dashboardSection.appendChild(newContainer);
                         container = newContainer;
-                        console.log('✅ Created new container:', container);
                     } else {
-                        console.error('❌ Dashboard section not found either!');
                         return;
                     }
                 }
                 
                 // Get unique seasons from schedules
-                console.log('📅 Fetching schedules to get unique seasons...');
                 let uniqueSeasons = [];
                 try {
                     const schedulesResponse = await fetch('/api/admin/schedules');
                     const schedules = await schedulesResponse.json();
-                    console.log('📋 Schedules data:', schedules);
                     uniqueSeasons = [...new Set(schedules.map(s => s.season))].sort();
-                    console.log('🎯 Unique seasons found:', uniqueSeasons);
                 } catch (error) {
-                    console.error('❌ Error fetching schedules:', error);
                     // Fallback: use seasons from visibility data
                     uniqueSeasons = seasons.map(s => s.season).sort();
-                    console.log('🔄 Using fallback seasons:', uniqueSeasons);
                 }
                 
                 let html = '';
@@ -2467,54 +2431,10 @@
                     `;
                 });
                 
-                // If no seasons were found, show a test card
-                if (uniqueSeasons.length === 0) {
-                    console.log('⚠️ No seasons found, showing test card...');
-                    html = `
-                        <div class="col-lg-4 col-md-6">
-                            <div class="card border-0 shadow-sm h-100 season-visibility-card">
-                                <div class="card-body text-center">
-                                    <h6 class="card-title text-primary mb-3">
-                                        <i class="fas fa-exclamation-triangle me-2"></i>Test Season
-                                    </h6>
-                                    <div class="mb-3">
-                                        <span class="badge bg-warning fs-6">Test Mode</span>
-                                    </div>
-                                    <div class="mb-3">
-                                        <small class="text-muted">Debug: No seasons loaded</small>
-                                    </div>
-                                    <div class="d-grid">
-                                        <button class="btn btn-outline-info btn-sm" onclick="console.log('Test button clicked')">
-                                            <i class="fas fa-bug me-2"></i>Debug
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                }
-                
-                console.log('🎨 Generated HTML:', html);
                 container.innerHTML = html;
-                console.log('✅ Season visibility controls loaded successfully!');
             } catch (error) {
-                console.error('❌ Error loading season visibility controls:', error);
-                
-                // Show error card
-                const container = document.getElementById('seasonVisibilityControls');
-                if (container) {
-                    container.innerHTML = `
-                        <div class="col-12">
-                            <div class="alert alert-danger">
-                                <h6><i class="fas fa-exclamation-triangle me-2"></i>Error Loading Seasons</h6>
-                                <p class="mb-0">${error.message}</p>
-                                <button class="btn btn-sm btn-outline-danger mt-2" onclick="loadSeasonVisibilityControls()">
-                                    <i class="fas fa-redo me-2"></i>Retry
-                                </button>
-                            </div>
-                        </div>
-                    `;
-                }
+                // Handle errors silently in production
+                console.error('Error loading season visibility controls:', error);
             }
         }
         
@@ -2569,8 +2489,6 @@
         // Refresh admin schedules display to show visibility changes
         async function refreshAdminSchedulesDisplay() {
             try {
-                console.log('🔄 Refreshing admin schedules display...');
-                
                 // Get all schedules (including unpublished)
                 const response = await fetch('/api/admin/schedules');
                 const schedules = await response.json();
@@ -2588,8 +2506,6 @@
                 // Update the admin schedules table if it exists
                 const scheduleTable = document.getElementById('scheduleTable');
                 if (scheduleTable && schedules.length > 0) {
-                    console.log('📊 Updating admin schedules table with visibility info...');
-                    
                     // Add visibility indicators to the table
                     const tbody = scheduleTable.querySelector('tbody');
                     if (tbody) {
@@ -2630,10 +2546,8 @@
                         if (filteredCount) filteredCount.textContent = schedules.length;
                     }
                 }
-                
-                console.log('✅ Admin schedules display refreshed successfully!');
             } catch (error) {
-                console.error('❌ Error refreshing admin schedules display:', error);
+                console.error('Error refreshing admin schedules display:', error);
             }
         }
     </script>
