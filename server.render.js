@@ -53,20 +53,24 @@ const loginLimiter = rateLimit({
 // Render-specific session configuration
 app.use(session({
   secret: process.env.SESSION_SECRET || 'your-super-secure-session-secret-change-this-in-production',
-  resave: false,
-  saveUninitialized: false,
+  resave: true, // Changed to true for Render
+  saveUninitialized: true, // Changed to true for Render
   cookie: {
-    secure: process.env.NODE_ENV === 'production', // HTTPS only in production
+    secure: false, // Changed to false for Render (they handle HTTPS)
     httpOnly: true,
     maxAge: 24 * 60 * 60 * 1000, // 24 hours
-    sameSite: 'lax' // Changed from 'strict' for Render compatibility
-  }
+    sameSite: 'lax', // Render compatible
+    path: '/' // Ensure cookie is available everywhere
+  },
+  name: 'baseball-session' // Custom session name
 }));
 
 // Middleware
 app.use(cors({
-  origin: process.env.CORS_ORIGIN || '*', // Allow all origins for Render
-  credentials: true
+  origin: true, // Allow all origins for Render
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
 }));
 app.use(bodyParser.json({ limit: '10mb' }));
 app.use(bodyParser.urlencoded({ extended: true, limit: '10mb' }));
@@ -78,10 +82,24 @@ const db = new sqlite3.Database(dbPath);
 
 // Admin authentication middleware
 function requireAuth(req, res, next) {
+  console.log('Auth check - Session:', {
+    sessionId: req.sessionID,
+    adminId: req.session?.adminId,
+    adminUsername: req.session?.adminUsername,
+    hasSession: !!req.session
+  });
+  
   if (req.session && req.session.adminId) {
+    console.log('✅ Authentication successful');
     return next();
   }
-  res.status(401).json({ error: 'Authentication required' });
+  
+  console.log('❌ Authentication failed');
+  res.status(401).json({ 
+    error: 'Authentication required',
+    sessionId: req.sessionID,
+    hasSession: !!req.session
+  });
 }
 
 // Create default admin user if none exists
@@ -157,7 +175,8 @@ app.get('/', (req, res) => {
 
 // Favicon route
 app.get('/favicon.ico', (req, res) => {
-  res.redirect(301, 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">⚾</text></svg>');
+  res.setHeader('Content-Type', 'image/svg+xml');
+  res.send('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">⚾</text></svg>');
 });
 
 // Admin authentication routes
@@ -191,15 +210,31 @@ app.post('/api/admin/login', loginLimiter, (req, res) => {
     req.session.adminUsername = user.username;
     req.session.adminRole = user.role;
     
-    res.json({ 
-      success: true, 
-      message: 'Login successful',
-      user: {
-        id: user.id,
-        username: user.username,
-        email: user.email,
-        role: user.role
+    // Debug session creation
+    console.log('Session created:', {
+      sessionId: req.sessionID,
+      adminId: req.session.adminId,
+      adminUsername: req.session.adminUsername
+    });
+    
+    // Save session explicitly
+    req.session.save((err) => {
+      if (err) {
+        console.error('Session save error:', err);
+        return res.status(500).json({ error: 'Session creation failed' });
       }
+      
+      res.json({ 
+        success: true, 
+        message: 'Login successful',
+        user: {
+          id: user.id,
+          username: user.username,
+          email: user.email,
+          role: user.role
+        },
+        sessionId: req.sessionID
+      });
     });
   });
 });
@@ -228,6 +263,12 @@ app.listen(PORT, () => {
   console.log(`Admin panel: http://localhost:${PORT}/admin`);
   console.log(`Public interface: http://localhost:${PORT}`);
   console.log(`✅ Database schema is up to date`);
+  console.log(`🔧 Session configuration:`, {
+    secret: process.env.SESSION_SECRET ? 'Set' : 'Not set',
+    secure: false,
+    sameSite: 'lax',
+    httpOnly: true
+  });
 });
 
 // Graceful shutdown
