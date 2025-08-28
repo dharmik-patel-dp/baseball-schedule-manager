@@ -2349,7 +2349,9 @@
         
         // Initialize mobile enhancements
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 Admin panel loaded, initializing...');
             enhanceMobileExperience();
+            console.log('📱 Mobile enhancements loaded, loading season visibility...');
             loadSeasonVisibilityControls();
         });
 
@@ -2357,17 +2359,27 @@
         
         // Load season visibility controls
         async function loadSeasonVisibilityControls() {
+            console.log('🔍 Starting to load season visibility controls...');
             try {
+                console.log('📡 Fetching season visibility data...');
                 const response = await fetch('/api/season-visibility');
                 const seasons = await response.json();
+                console.log('📊 Season visibility data:', seasons);
                 
                 const container = document.getElementById('seasonVisibilityControls');
-                if (!container) return;
+                console.log('🎯 Container element:', container);
+                if (!container) {
+                    console.error('❌ Season visibility container not found!');
+                    return;
+                }
                 
                 // Get unique seasons from schedules
+                console.log('📅 Fetching schedules to get unique seasons...');
                 const schedulesResponse = await fetch('/api/schedules?admin=true');
                 const schedules = await schedulesResponse.json();
+                console.log('📋 Schedules data:', schedules);
                 const uniqueSeasons = [...new Set(schedules.map(s => s.season))].sort();
+                console.log('🎯 Unique seasons found:', uniqueSeasons);
                 
                 let html = '';
                 uniqueSeasons.forEach(season => {
@@ -2405,9 +2417,11 @@
                     `;
                 });
                 
+                console.log('🎨 Generated HTML:', html);
                 container.innerHTML = html;
+                console.log('✅ Season visibility controls loaded successfully!');
             } catch (error) {
-                console.error('Error loading season visibility controls:', error);
+                console.error('❌ Error loading season visibility controls:', error);
             }
         }
         
@@ -2429,9 +2443,6 @@
                 
                 // Reload the controls
                 await loadSeasonVisibilityControls();
-                
-                // Update dashboard stats
-                await loadDashboardData();
                 
             } catch (error) {
                 console.error('Error toggling season visibility:', error);
