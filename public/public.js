@@ -329,9 +329,10 @@ function setupMobileEventListeners() {
     console.log('✅ Mobile event listeners setup complete');
 }
 
-// Load all schedules
+// Load all schedules (only visible seasons for public)
 async function loadSchedules() {
     try {
+        // Public interface only loads visible seasons
         const response = await fetch('/api/schedules');
         if (!response.ok) throw new Error('Failed to fetch schedules');
         

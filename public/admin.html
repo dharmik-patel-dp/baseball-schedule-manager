@@ -919,6 +919,53 @@
         .dark-theme .filter-counts .fw-bold {
             color: #6ea8fe;
         }
+
+        /* Season Visibility Control Styles */
+        .season-visibility-card {
+            transition: all 0.3s ease;
+            border: 1px solid rgba(220, 38, 38, 0.1);
+        }
+
+        .season-visibility-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+            border-color: rgba(220, 38, 38, 0.2);
+        }
+
+        .season-visibility-card .card-title {
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .season-visibility-card .badge {
+            font-size: 0.875rem;
+            padding: 0.5rem 1rem;
+            border-radius: 0.75rem;
+        }
+
+        .season-visibility-card .btn {
+            font-size: 0.875rem;
+            padding: 0.5rem 1rem;
+            border-radius: 0.75rem;
+            font-weight: 600;
+        }
+
+        .season-visibility-card .btn-success {
+            background: var(--gradient-success);
+            border: none;
+            color: white;
+        }
+
+        .season-visibility-card .btn-outline-danger {
+            border: 2px solid var(--gradient-danger);
+            color: var(--primary-color);
+            background: transparent;
+        }
+
+        .season-visibility-card .btn-outline-danger:hover {
+            background: var(--gradient-danger);
+            color: white;
+        }
     </style>
 </head>
 <body>
@@ -973,9 +1020,9 @@
     <header class="top-header">
         <h1 class="header-title" id="pageTitle">Dashboard Overview</h1>
         <div class="header-actions">
-            <button class="btn btn-outline-primary btn-sm" onclick="toggleTheme()">
-                <i class="fas fa-moon"></i>
-            </button>
+            <span class="text-muted">
+                <i class="fas fa-shield-alt me-2"></i>Admin Control Panel
+            </span>
         </div>
     </header>
 
@@ -1030,6 +1077,22 @@
                 </div>
             </div>
 
+            <!-- Season Visibility Control -->
+            <div class="row g-4 mb-5">
+                <div class="col-12">
+                    <div class="dashboard-card">
+                        <h5 class="mb-4">
+                            <i class="fas fa-eye-slash me-2 text-primary"></i>
+                            Season Visibility Control
+                        </h5>
+                        <p class="text-muted mb-4">Control which seasons are visible to the public. Only published seasons will be shown on the public website.</p>
+                        <div id="seasonVisibilityControls" class="row g-3">
+                            <!-- Season visibility controls will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Quick Actions & Recent Activity -->
             <div class="row g-4">
                 <div class="col-lg-6">
@@ -1048,9 +1111,9 @@
                             <button class="btn btn-outline-success" onclick="showAddStaffModal()">
                                 <i class="fas fa-user-plus me-2"></i>Add Staff Member
                             </button>
-            </div>
                         </div>
-                        </div>
+                    </div>
+                </div>
                 <div class="col-lg-6">
                     <div class="dashboard-card">
                         <h5 class="mb-4">
@@ -2287,7 +2350,114 @@
         // Initialize mobile enhancements
         document.addEventListener('DOMContentLoaded', function() {
             enhanceMobileExperience();
+            loadSeasonVisibilityControls();
         });
+
+        // ===== SEASON VISIBILITY CONTROL FUNCTIONS =====
+        
+        // Load season visibility controls
+        async function loadSeasonVisibilityControls() {
+            try {
+                const response = await fetch('/api/season-visibility');
+                const seasons = await response.json();
+                
+                const container = document.getElementById('seasonVisibilityControls');
+                if (!container) return;
+                
+                // Get unique seasons from schedules
+                const schedulesResponse = await fetch('/api/schedules?admin=true');
+                const schedules = await schedulesResponse.json();
+                const uniqueSeasons = [...new Set(schedules.map(s => s.season))].sort();
+                
+                let html = '';
+                uniqueSeasons.forEach(season => {
+                    const seasonData = seasons.find(s => s.season === season);
+                    const isVisible = seasonData ? seasonData.is_visible : false;
+                    const publishedAt = seasonData ? new Date(seasonData.published_at).toLocaleDateString() : 'Never';
+                    
+                    html += `
+                        <div class="col-lg-4 col-md-6">
+                            <div class="card border-0 shadow-sm h-100 season-visibility-card">
+                                <div class="card-body text-center">
+                                    <h6 class="card-title text-primary mb-3">
+                                        <i class="fas fa-calendar-alt me-2"></i>${season} Season
+                                    </h6>
+                                    <div class="mb-3">
+                                        <span class="badge ${isVisible ? 'bg-success' : 'bg-secondary'} fs-6">
+                                            ${isVisible ? 'Published' : 'Unpublished'}
+                                        </span>
+                                    </div>
+                                    <div class="mb-3">
+                                        <small class="text-muted">
+                                            ${isVisible ? `Published on ${publishedAt}` : 'Not visible to public'}
+                                        </small>
+                                    </div>
+                                    <div class="d-grid">
+                                        <button class="btn ${isVisible ? 'btn-outline-danger' : 'btn-success'} btn-sm" 
+                                                onclick="toggleSeasonVisibility('${season}', ${!isVisible})">
+                                            <i class="fas fa-${isVisible ? 'eye-slash' : 'eye'} me-2"></i>
+                                            ${isVisible ? 'Unpublish' : 'Publish'}
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                container.innerHTML = html;
+            } catch (error) {
+                console.error('Error loading season visibility controls:', error);
+            }
+        }
+        
+        // Toggle season visibility
+        async function toggleSeasonVisibility(season, isVisible) {
+            try {
+                const response = await fetch(`/api/season-visibility/${season}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ is_visible: isVisible })
+                });
+                
+                if (!response.ok) throw new Error('Failed to update season visibility');
+                
+                const result = await response.json();
+                
+                // Show success message
+                showAlert(result.message, 'success');
+                
+                // Reload the controls
+                await loadSeasonVisibilityControls();
+                
+                // Update dashboard stats
+                await loadDashboardData();
+                
+            } catch (error) {
+                console.error('Error toggling season visibility:', error);
+                showAlert('Error updating season visibility. Please try again.', 'danger');
+            }
+        }
+        
+        // Show alert function
+        function showAlert(message, type = 'info') {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+            alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+            alertDiv.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            
+            document.body.appendChild(alertDiv);
+            
+            // Auto-remove after 5 seconds
+            setTimeout(() => {
+                if (alertDiv.parentNode) {
+                    alertDiv.remove();
+                }
+            }, 5000);
+        }
     </script>
 </body>
 </html> 

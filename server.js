@@ -129,6 +129,16 @@ db.serialize(() => {
     FOREIGN KEY (game_id) REFERENCES schedules (id)
   )`);
 
+  // Season visibility control table - Admin only
+  db.run(`CREATE TABLE IF NOT EXISTS season_visibility (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    season TEXT NOT NULL UNIQUE,
+    is_visible BOOLEAN DEFAULT 0,
+    published_by TEXT DEFAULT 'Admin',
+    published_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  )`);
+
   // Plate Umpires table
   db.run(`CREATE TABLE IF NOT EXISTS plate_umpires (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -480,16 +490,36 @@ app.post('/api/base-umpires/bulk-delete', (req, res) => {
   });
 });
 
-// Get all schedules
+// Get all schedules (only visible seasons for public, all for admin)
 app.get('/api/schedules', (req, res) => {
-  const query = 'SELECT * FROM schedules ORDER BY date, start_time';
-  db.all(query, [], (err, rows) => {
-    if (err) {
-      res.status(500).json({ error: err.message });
-      return;
-    }
-    res.json(rows);
-  });
+  const { admin } = req.query;
+  
+  if (admin === 'true') {
+    // Admin can see all schedules
+    const query = 'SELECT * FROM schedules ORDER BY date, start_time';
+    db.all(query, [], (err, rows) => {
+      if (err) {
+        res.status(500).json({ error: err.message });
+        return;
+      }
+      res.json(rows);
+    });
+  } else {
+    // Public only sees visible seasons
+    const query = `
+      SELECT s.* FROM schedules s
+      INNER JOIN season_visibility sv ON s.season = sv.season
+      WHERE sv.is_visible = 1
+      ORDER BY s.date, s.start_time
+    `;
+    db.all(query, [], (err, rows) => {
+      if (err) {
+        res.status(500).json({ error: err.message });
+        return;
+      }
+      res.json(rows);
+    });
+  }
 });
 
 // Create new schedule
@@ -1761,6 +1791,76 @@ app.get('/api/staff-names', (req, res) => {
       return;
     }
     res.json(rows);
+  });
+});
+
+// ===== SEASON VISIBILITY CONTROL API =====
+// Get all season visibility status
+app.get('/api/season-visibility', (req, res) => {
+  const query = 'SELECT * FROM season_visibility ORDER BY season';
+  db.all(query, [], (err, rows) => {
+    if (err) {
+      res.status(500).json({ error: err.message });
+      return;
+    }
+    res.json(rows);
+  });
+});
+
+// Toggle season visibility (Admin only)
+app.put('/api/season-visibility/:season', (req, res) => {
+  const { season } = req.params;
+  const { is_visible } = req.body;
+  
+  // Check if season exists in visibility table
+  db.get('SELECT * FROM season_visibility WHERE season = ?', [season], (err, row) => {
+    if (err) {
+      res.status(500).json({ error: err.message });
+      return;
+    }
+    
+    if (row) {
+      // Update existing season visibility
+      db.run('UPDATE season_visibility SET is_visible = ?, updated_at = CURRENT_TIMESTAMP WHERE season = ?', 
+        [is_visible ? 1 : 0, season], (err) => {
+        if (err) {
+          res.status(500).json({ error: err.message });
+          return;
+        }
+        res.json({ 
+          message: `${season} season ${is_visible ? 'published' : 'unpublished'} successfully`,
+          season,
+          is_visible: is_visible ? 1 : 0
+        });
+      });
+    } else {
+      // Insert new season visibility
+      db.run('INSERT INTO season_visibility (season, is_visible) VALUES (?, ?)', 
+        [season, is_visible ? 1 : 0], (err) => {
+        if (err) {
+          res.status(500).json({ error: err.message });
+          return;
+        }
+        res.json({ 
+          message: `${season} season ${is_visible ? 'published' : 'unpublished'} successfully`,
+          season,
+          is_visible: is_visible ? 1 : 0
+        });
+      });
+    }
+  });
+});
+
+// Get visible seasons for public interface
+app.get('/api/visible-seasons', (req, res) => {
+  const query = 'SELECT season FROM season_visibility WHERE is_visible = 1';
+  db.all(query, [], (err, rows) => {
+    if (err) {
+      res.status(500).json({ error: err.message });
+      return;
+    }
+    const visibleSeasons = rows.map(row => row.season);
+    res.json({ visibleSeasons });
   });
 });
 
