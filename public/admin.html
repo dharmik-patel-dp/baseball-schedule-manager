@@ -1086,6 +1086,17 @@
                             Season Visibility Control
                         </h5>
                         <p class="text-muted mb-4">Control which seasons are visible to the public. Only published seasons will be shown on the public website.</p>
+                        
+                        <!-- Debug Controls -->
+                        <div class="mb-3">
+                            <button class="btn btn-sm btn-outline-info me-2" onclick="loadSeasonVisibilityControls()">
+                                <i class="fas fa-sync me-2"></i>Reload Seasons
+                            </button>
+                            <button class="btn btn-sm btn-outline-warning" onclick="console.log('Container:', document.getElementById('seasonVisibilityControls'))">
+                                <i class="fas fa-bug me-2"></i>Debug Container
+                            </button>
+                        </div>
+                        
                         <div id="seasonVisibilityControls" class="row g-3">
                             <!-- Season visibility controls will be loaded here -->
                         </div>
@@ -2359,9 +2370,13 @@
                 header.innerHTML += ' <span class="badge bg-success">Script Loaded</span>';
             }
             
-            loadSeasonVisibilityControls();
-            console.log('📊 Refreshing admin schedules display...');
-            refreshAdminSchedulesDisplay();
+            // Add a delay to ensure everything is loaded
+            setTimeout(() => {
+                console.log('⏰ Delayed execution starting...');
+                loadSeasonVisibilityControls();
+                console.log('📊 Refreshing admin schedules display...');
+                refreshAdminSchedulesDisplay();
+            }, 1000);
         });
 
         // ===== SEASON VISIBILITY CONTROL FUNCTIONS =====
