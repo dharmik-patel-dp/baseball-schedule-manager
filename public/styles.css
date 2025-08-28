@@ -564,12 +564,7 @@ h6 { font-size: 1.125rem; font-weight: 500; }
   }
 }
 
-html.theme-dark .form-control,
-html.theme-dark .form-select {
-  background: var(--neutral-800);
-  color: var(--neutral-100);
-  border-color: var(--neutral-600);
-}
+/* Dark theme form-control rules removed - always uses light theme */
 
 .form-control:focus, .form-select:focus {
   outline: none;
@@ -589,9 +584,7 @@ html.theme-dark .form-select {
   font-family: 'Plus Jakarta Sans', sans-serif;
 }
 
-html.theme-dark .form-label {
-  color: var(--neutral-300);
-}
+/* Dark theme form-label rules removed - always uses light theme */
 
 /* Clean Alerts */
 .alert {
@@ -689,10 +682,7 @@ html.theme-dark .form-label {
   }
 }
 
-html.theme-dark .csv-upload-area {
-  background: var(--neutral-800);
-  border-color: var(--neutral-600);
-}
+/* Dark theme csv-upload-area rules removed - always uses light theme */
 
 .csv-upload-area:hover {
   border-color: var(--primary-500);
@@ -700,9 +690,7 @@ html.theme-dark .csv-upload-area {
   transform: translateY(-2px);
 }
 
-html.theme-dark .csv-upload-area:hover {
-  background: var(--primary-900);
-}
+/* Dark theme csv-upload-area hover rules removed - always uses light theme */
 
 /* Concession Info */
 .concession-info {
@@ -735,10 +723,7 @@ html.theme-dark .csv-upload-area:hover {
   }
 }
 
-html.theme-dark .concession-info {
-  background: var(--neutral-800);
-  border-color: var(--neutral-700);
-}
+/* Dark theme concession-info rules removed - always uses light theme */
 
 .concession-info:hover {
   transform: translateY(-2px);
@@ -755,10 +740,7 @@ html.theme-dark .concession-info {
   color: #065f46;
 }
 
-html.theme-dark .concession-info .staff-info {
-  background: var(--accent-emerald);
-  color: white;
-}
+/* Dark theme concession-info staff-info rules removed - always uses light theme */
 
 /* Status Indicators */
 .status-pending {
