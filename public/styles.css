@@ -1,55 +1,96 @@
-/* Clean, Neat & Modern UI Design */
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+/* ⚾ BASEBALL & SOFTBALL PREMIUM UI/UX DESIGN */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
 
-/* Clean Color Palette */
+/* 🎨 BASEBALL THEME COLOR SYSTEM */
 :root {
-  /* Primary Colors */
+  /* ⚾ Baseball Field Colors */
+  --baseball-green: #2d5016;
+  --baseball-green-light: #4a7c59;
+  --baseball-green-dark: #1a3d0f;
+  --baseball-dirt: #d4a574;
+  --baseball-dirt-light: #e6c79a;
+  --baseball-dirt-dark: #b8945a;
+  
+  /* 🥎 Softball Accent Colors */
+  --softball-pink: #ec4899;
+  --softball-pink-light: #f472b6;
+  --softball-pink-dark: #be185d;
+  --softball-purple: #8b5cf6;
+  --softball-purple-light: #a78bfa;
+  --softball-purple-dark: #7c3aed;
+  
+  /* 🏟️ Stadium Colors */
+  --stadium-blue: #1e40af;
+  --stadium-blue-light: #3b82f6;
+  --stadium-blue-dark: #1e3a8a;
+  --stadium-gray: #374151;
+  --stadium-gray-light: #6b7280;
+  --stadium-gray-dark: #111827;
+  
+  /* 🎯 Primary Brand Colors */
+  --primary-color: var(--baseball-green);
   --primary-50: #f0f9ff;
   --primary-100: #e0f2fe;
   --primary-200: #bae6fd;
   --primary-300: #7dd3fc;
   --primary-400: #38bdf8;
-  --primary-500: #0ea5e9;
-  --primary-600: #0284c7;
-  --primary-700: #0369a1;
-  --primary-800: #075985;
-  --primary-900: #0c4a6e;
+  --primary-500: var(--stadium-blue);
+  --primary-600: var(--stadium-blue-dark);
+  --primary-700: #1e3a8a;
+  --primary-800: #1e40af;
+  --primary-900: #1e3a8a;
   
-  /* Neutral Colors */
-  --neutral-50: #fafafa;
-  --neutral-100: #f5f5f5;
-  --neutral-200: #e5e5e5;
-  --neutral-300: #d4d4d4;
-  --neutral-400: #a3a3a3;
-  --neutral-500: #737373;
-  --neutral-600: #525252;
-  --neutral-700: #404040;
-  --neutral-800: #262626;
-  --neutral-900: #171717;
+  /* 🌟 Accent Colors */
+  --accent-baseball: var(--baseball-dirt);
+  --accent-softball: var(--softball-pink);
+  --accent-success: #10b981;
+  --accent-warning: #f59e0b;
+  --accent-danger: #ef4444;
+  --accent-info: #06b6d4;
   
-  /* Accent Colors */
-  --accent-emerald: #10b981;
-  --accent-amber: #f59e0b;
-  --accent-rose: #f43f5e;
-  --accent-indigo: #6366f1;
-  --accent-purple: #8b5cf6;
-  --accent-cyan: #06b6d4;
+  /* 🎨 Neutral Colors */
+  --neutral-50: #f9fafb;
+  --neutral-100: #f3f4f6;
+  --neutral-200: #e5e7eb;
+  --neutral-300: #d1d5db;
+  --neutral-400: #9ca3af;
+  --neutral-500: #6b7280;
+  --neutral-600: #4b5563;
+  --neutral-700: #374151;
+  --neutral-800: #1f2937;
+  --neutral-900: #111827;
   
-  /* Clean Gradients */
-  --gradient-primary: linear-gradient(135deg, #0ea5e9 0%, #3b82f6 100%);
-  --gradient-secondary: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);
+  /* 🌈 Premium Gradients */
+  --gradient-baseball: linear-gradient(135deg, var(--baseball-green) 0%, var(--baseball-green-light) 100%);
+  --gradient-softball: linear-gradient(135deg, var(--softball-pink) 0%, var(--softball-purple) 100%);
+  --gradient-stadium: linear-gradient(135deg, var(--stadium-blue) 0%, var(--baseball-green) 100%);
+  --gradient-field: linear-gradient(135deg, var(--baseball-green-light) 0%, var(--baseball-dirt-light) 100%);
   --gradient-success: linear-gradient(135deg, #10b981 0%, #059669 100%);
   --gradient-warning: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
   --gradient-danger: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-  --gradient-info: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
   
-  /* Clean Shadows */
+  /* 🎭 Premium Shadows */
   --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.05);
   --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
   --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
   --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
   --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
   --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+  --shadow-inner: inset 0 2px 4px 0 rgb(0 0 0 / 0.06);
+  
+  /* 🎨 Border Radius System */
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-2xl: 24px;
+  --radius-full: 9999px;
+  
+  /* ⚡ Transition System */
+  --transition-fast: all 0.15s ease;
+  --transition-normal: all 0.3s ease;
+  --transition-slow: all 0.5s ease;
+  --transition-bounce: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 }
 
 /* Dark Theme */
@@ -77,7 +118,7 @@ html.theme-dark {
   --neutral-900: #fafafa;
 }
 
-/* Base Styles */
+/* 🎯 PREMIUM BASE STYLES */
 * {
   box-sizing: border-box;
   margin: 0;
@@ -85,16 +126,18 @@ html.theme-dark {
 }
 
 html, body {
-  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  background: var(--neutral-50);
+  font-family: 'Inter', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: linear-gradient(135deg, var(--neutral-50) 0%, var(--neutral-100) 100%);
   color: var(--neutral-900);
-  line-height: 1.6;
+  line-height: 1.7;
   overflow-x: hidden;
   scroll-behavior: smooth;
   -webkit-text-size-adjust: 100%;
   -ms-text-size-adjust: 100%;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+  text-rendering: optimizeLegibility;
 }
 
 /* Mobile-first container */
@@ -161,18 +204,29 @@ h4 { font-size: 1.5rem; font-weight: 600; }
 h5 { font-size: 1.25rem; font-weight: 500; }
 h6 { font-size: 1.125rem; font-weight: 500; }
 
-/* Clean Navigation */
+/* ⚾ PREMIUM BASEBALL NAVIGATION */
 .navbar {
-  background: rgba(255, 255, 255, 0.98) !important;
+  background: var(--gradient-stadium) !important;
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border-bottom: 1px solid var(--neutral-200);
-  box-shadow: var(--shadow-sm);
+  border-bottom: 3px solid var(--baseball-dirt);
+  box-shadow: var(--shadow-xl);
   position: sticky;
   top: 0;
   z-index: 1000;
-  padding: 1rem 0;
-  transition: all 0.3s ease;
+  padding: 1.5rem 0;
+  transition: var(--transition-normal);
+}
+
+.navbar::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--gradient-baseball);
+  z-index: 1;
 }
 
 .navbar-toggler {
@@ -198,19 +252,67 @@ html.theme-dark .navbar {
 }
 
 .navbar-brand {
-  font-weight: 700;
-  font-size: 1.5rem;
-  color: var(--primary-600);
+  font-weight: 800;
+  font-size: 1.75rem;
+  color: white !important;
   text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  transition: var(--transition-bounce);
+  position: relative;
+}
+
+.navbar-brand::after {
+  content: '🥎';
+  position: absolute;
+  top: -5px;
+  right: -25px;
+  font-size: 1.2rem;
+  opacity: 0.9;
+}
+
+.navbar-brand:hover {
+  transform: scale(1.05);
+  text-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
 }
 
 .navbar-nav .nav-link {
-  font-weight: 500;
-  color: var(--neutral-600) !important;
-  transition: all 0.2s ease;
-  padding: 0.75rem 1rem;
-  border-radius: 8px;
-  margin: 0 0.25rem;
+  font-weight: 600;
+  color: white !important;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: var(--transition-bounce);
+  padding: 1rem 1.5rem;
+  border-radius: var(--radius-lg);
+  margin: 0 0.5rem;
+  position: relative;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.navbar-nav .nav-link::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s ease;
+}
+
+.navbar-nav .nav-link:hover::before {
+  left: 100%;
+}
+
+.navbar-nav .nav-link:hover {
+  color: white !important;
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lg);
+  border-color: rgba(255, 255, 255, 0.4);
 }
 
 html.theme-dark .navbar-nav .nav-link {
@@ -239,15 +341,67 @@ html.theme-dark .navbar-nav .nav-link.active {
 
 
 
-/* Website Header */
+/* ⚾ STUNNING BASEBALL WEBSITE HEADER */
 .website-title {
-  font-size: 3.5rem;
-  font-weight: 800;
-  color: var(--primary-color);
-  margin-bottom: 0.5rem;
+  font-size: 4.5rem;
+  font-weight: 900;
+  background: var(--gradient-stadium);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-align: center;
+  margin-bottom: 1rem;
   text-transform: uppercase;
-  letter-spacing: 0.1em;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  position: relative;
+  text-shadow: none;
+}
+
+.website-title::after {
+  content: '⚾';
+  position: absolute;
+  top: -20px;
+  right: 20px;
+  font-size: 3rem;
+  opacity: 0.8;
+  animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+  40% { transform: translateY(-10px); }
+  60% { transform: translateY(-5px); }
+}
+
+.website-subtitle {
+  font-size: 1.5rem;
+  color: var(--neutral-600);
+  text-align: center;
+  margin-bottom: 3rem;
+  font-weight: 500;
+  line-height: 1.6;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 1.5rem 2rem;
+  border-radius: var(--radius-xl);
+  border: 2px solid var(--baseball-dirt-light);
+  box-shadow: var(--shadow-lg);
+  backdrop-filter: blur(10px);
+  position: relative;
+}
+
+.website-subtitle::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--gradient-baseball);
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
 }
 
 .website-subtitle {
@@ -265,15 +419,35 @@ html.theme-dark .website-subtitle {
   color: var(--neutral-400);
 }
 
-/* Clean Cards */
+/* ⚾ PREMIUM BASEBALL CARDS */
 .filter-section, .schedule-table, .umpire-request-form {
-  background: white;
-  border: 1px solid var(--neutral-200);
-  border-radius: 16px;
-  box-shadow: var(--shadow-sm);
-  padding: 2rem;
-  margin-bottom: 2rem;
-  transition: all 0.2s ease;
+  background: rgba(255, 255, 255, 0.95);
+  border: 2px solid var(--baseball-dirt-light);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg);
+  padding: 2.5rem;
+  margin-bottom: 2.5rem;
+  transition: var(--transition-normal);
+  backdrop-filter: blur(10px);
+  position: relative;
+  overflow: hidden;
+}
+
+.filter-section::before, .schedule-table::before, .umpire-request-form::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--gradient-baseball);
+  z-index: 1;
+}
+
+.filter-section:hover, .schedule-table:hover, .umpire-request-form:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-2xl);
+  border-color: var(--baseball-dirt);
 }
 
 html.theme-dark .filter-section,
@@ -289,14 +463,53 @@ html.theme-dark .umpire-request-form {
   border-color: var(--primary-300);
 }
 
-/* Clean Tables */
+/* ⚾ PREMIUM BASEBALL TABLES */
 .table-container {
-  background: white;
-  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: var(--radius-xl);
   overflow: hidden;
+  box-shadow: var(--shadow-xl);
+  border: 2px solid var(--baseball-dirt-light);
+  margin-bottom: 2rem;
+  backdrop-filter: blur(10px);
+}
+
+.table th {
+  background: var(--gradient-stadium);
+  color: white;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 1.5rem 1rem;
+  border: none;
+  position: sticky;
+  top: 0;
+  z-index: 10;
   box-shadow: var(--shadow-sm);
-  border: 1px solid var(--neutral-200);
-  margin-bottom: 1rem;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.table th:first-child {
+  border-top-left-radius: var(--radius-lg);
+}
+
+.table th:last-child {
+  border-top-right-radius: var(--radius-lg);
+}
+
+.table tbody tr:hover td {
+  background: var(--baseball-dirt-light);
+  transform: scale(1.01);
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition-normal);
+}
+
+.table tbody tr:last-child td:first-child {
+  border-bottom-left-radius: var(--radius-lg);
+}
+
+.table tbody tr:last-child td:last-child {
+  border-bottom-right-radius: var(--radius-lg);
 }
 
 /* Mobile table improvements */
@@ -3437,12 +3650,58 @@ html.theme-dark input[type="date"].filter-select {
   padding: 0.25rem 0.5rem;
 }
 
-/* Submit Button Styles */
+/* ⚾ PREMIUM BASEBALL BUTTONS */
 .submit-plate-umpire-btn,
 .submit-base-umpire-btn,
 .submit-concession-btn {
-  transition: all 0.2s ease;
-  font-weight: 500;
+  transition: var(--transition-bounce);
+  font-weight: 600;
+  background: var(--gradient-baseball);
+  color: white;
+  border: none;
+  border-radius: var(--radius-lg);
+  padding: 0.75rem 1.5rem;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  box-shadow: var(--shadow-md);
+  position: relative;
+  overflow: hidden;
+  border: 2px solid var(--baseball-dirt-light);
+}
+
+.submit-plate-umpire-btn::before,
+.submit-base-umpire-btn::before,
+.submit-concession-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.6s ease;
+}
+
+.submit-plate-umpire-btn:hover::before,
+.submit-base-umpire-btn:hover::before,
+.submit-concession-btn:hover::before {
+  left: 100%;
+}
+
+.submit-plate-umpire-btn:hover,
+.submit-base-umpire-btn:hover,
+.submit-concession-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-xl);
+  border-color: var(--baseball-dirt);
+}
+
+.submit-plate-umpire-btn:active,
+.submit-base-umpire-btn:active,
+.submit-concession-btn:active {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-lg);
 }
 
 
