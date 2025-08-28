@@ -795,9 +795,7 @@ h6 { font-size: 1.125rem; font-weight: 500; }
   background: white;
 }
 
-html.theme-dark .filter-section {
-  background: var(--neutral-800);
-}
+/* Dark theme filter-section rules removed - always uses light theme */
 
 .filter-section h5 {
   color: var(--neutral-900);
@@ -808,9 +806,7 @@ html.theme-dark .filter-section {
   font-size: 1.25rem;
 }
 
-html.theme-dark .filter-section h5 {
-  color: var(--neutral-100);
-}
+/* Dark theme filter-section h5 rules removed - always uses light theme */
 
 .filter-section h5 i {
   color: var(--primary-500);
@@ -826,10 +822,7 @@ html.theme-dark .filter-section h5 {
   overflow: hidden;
 }
 
-html.theme-dark .schedule-table {
-  background: var(--neutral-800);
-  border-color: var(--neutral-700);
-}
+/* Dark theme schedule-table rules removed - always uses light theme */
 
 .schedule-table .table {
   margin: 0;
