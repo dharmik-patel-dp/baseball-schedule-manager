@@ -168,46 +168,52 @@ document.addEventListener('DOMContentLoaded', function() {
     // Add custom CSS for current assignments
     addCustomStyles();
     
-    loadSchedules();
-    loadUmpireRequests();
-    loadConcessionStaffRequests();
-    loadFilterOptions();
-    loadPlateUmpires();
-    loadBaseUmpires();
-    loadConcessionStaff();
-    setupEventListeners();
-    
-    // Set initial last updated time
-    updateLastUpdatedTime();
-    
-    // Add 3D effects after DOM loads
-    setTimeout(add3DEffects, 1000);
-    
-    // Update stats after schedules load
-    if (typeof loadSchedules === 'function') {
-        const originalLoadSchedules = loadSchedules;
-        loadSchedules = function() {
-            originalLoadSchedules.apply(this, arguments);
-            setTimeout(updateStats, 500);
-        };
+    // Load all data first, then populate dropdowns
+    async function initializeApp() {
+        try {
+            console.log('🔄 Loading all data...');
+            
+            // Load all data in parallel
+            await Promise.all([
+                loadSchedules(),
+                loadUmpireRequests(),
+                loadConcessionStaffRequests(),
+                loadFilterOptions(),
+                loadPlateUmpires(),
+                loadBaseUmpires(),
+                loadConcessionStaff()
+            ]);
+            
+            console.log('✅ All data loaded successfully');
+            
+            // Now populate dropdowns with loaded data
+            await populateRequestDropdowns();
+            
+            // Set initial last updated time
+            updateLastUpdatedTime();
+            
+            // Add 3D effects after DOM loads
+            setTimeout(add3DEffects, 1000);
+            
+            // Update stats after schedules load
+            if (typeof loadSchedules === 'function') {
+                const originalLoadSchedules = loadSchedules;
+                loadSchedules = function() {
+                    originalLoadSchedules.apply(this, arguments);
+                    setTimeout(updateStats, 500);
+                };
+            }
+            
+        } catch (error) {
+            console.error('❌ Error during initialization:', error);
+        }
     }
     
-    // Ensure request dropdowns are populated after everything loads
-    setTimeout(() => {
-        console.log('🔍 First check - populating request dropdowns...');
-        populateRequestDropdowns();
-    }, 2000);
+    // Start initialization
+    initializeApp();
     
-    // Additional checks to ensure dropdowns are populated
-    setTimeout(() => {
-        console.log('🔍 Second check - populating request dropdowns...');
-        populateRequestDropdowns();
-    }, 5000);
-    
-    setTimeout(() => {
-        console.log('🔍 Final check - populating request dropdowns...');
-        populateRequestDropdowns();
-    }, 10000);
+    // Setup event listeners immediately
+    setupEventListeners();
     
     // Auto-refresh functionality removed as requested
     // Data will only refresh when user manually refreshes the page or performs actions
@@ -427,6 +433,8 @@ async function populateRequestDropdowns() {
     console.log('🔄 Starting to populate request dropdowns...');
     console.log('Current filterOptions:', filterOptions);
     console.log('Current allSchedules length:', allSchedules ? allSchedules.length : 'undefined');
+    console.log('Current allPlateUmpires:', window.allPlateUmpires);
+    console.log('Current allBaseUmpires:', window.allBaseUmpires);
     
     try {
         // Wait for umpire data to be loaded if not already available
@@ -457,12 +465,16 @@ async function populateRequestDropdowns() {
         // Try to get umpire names from dedicated umpire tables first
         if (window.allPlateUmpires && window.allPlateUmpires.length > 0) {
             plateUmpireNames = window.allPlateUmpires.map(u => u.name);
-            console.log('Using dedicated plate umpire names:', plateUmpireNames);
+            console.log('✅ Using dedicated plate umpire names:', plateUmpireNames);
+        } else {
+            console.log('⚠️ No plate umpires in window.allPlateUmpires');
         }
         
         if (window.allBaseUmpires && window.allBaseUmpires.length > 0) {
             baseUmpireNames = window.allBaseUmpires.map(u => u.name);
-            console.log('Using dedicated base umpire names:', baseUmpireNames);
+            console.log('✅ Using dedicated base umpire names:', baseUmpireNames);
+        } else {
+            console.log('⚠️ No base umpires in window.allBaseUmpires');
         }
         
         // Get concession staff names
@@ -537,6 +549,7 @@ async function populateRequestDropdowns() {
         // Populate plate umpire dropdown
         const plateUmpireSelect = document.getElementById('requestedPlateUmpire');
         if (plateUmpireSelect) {
+            console.log('🔄 Populating plate umpire dropdown with names:', plateUmpireNames);
             plateUmpireSelect.innerHTML = '<option value="">No change</option>';
             
             // Add current assignment first if available
@@ -547,13 +560,16 @@ async function populateRequestDropdowns() {
                 currentOption.disabled = true;
                 currentOption.style.fontStyle = 'italic';
                 plateUmpireSelect.appendChild(currentOption);
+                console.log('✅ Added current plate umpire option:', currentGame.plate_umpire);
             }
             
             // Add available alternatives from database
             if (plateUmpireNames.length > 0) {
+                console.log('🔄 Adding plate umpire options:', plateUmpireNames);
                 plateUmpireNames.forEach(name => {
                     // Don't add if it's the current assignment (already added above)
                     if (currentGame && name === currentGame.plate_umpire) {
+                        console.log('⏭️ Skipping current assignment:', name);
                         return;
                     }
                     
@@ -561,6 +577,7 @@ async function populateRequestDropdowns() {
                     option.value = name;
                     option.textContent = name;
                     plateUmpireSelect.appendChild(option);
+                    console.log('✅ Added plate umpire option:', name);
                 });
                 console.log('✅ Plate umpire dropdown populated with', plateUmpireSelect.options.length, 'options');
                 
@@ -571,6 +588,7 @@ async function populateRequestDropdowns() {
                 }
             } else {
                 // Show message when no umpires available
+                console.log('⚠️ No plate umpires available, showing error message');
                 const noOption = document.createElement('option');
                 noOption.value = "";
                 noOption.textContent = "No plate umpires available";
