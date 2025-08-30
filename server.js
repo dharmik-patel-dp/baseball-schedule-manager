@@ -1123,6 +1123,9 @@ app.put('/api/umpire-requests/:id/status', async (req, res) => {
                   console.log('📧 User approval notification email result:', userEmailResult);
                   
                   // Notify newly assigned umpires
+                  const plateUmpireEmail = request.requested_plate_umpire ? await getStaffEmail(request.requested_plate_umpire) : null;
+                  const baseUmpireEmail = request.requested_base_umpire ? await getStaffEmail(request.requested_base_umpire) : null;
+                  
                   const assignmentData = {
                     gameDate: game.date,
                     gameTime: `${game.start_time} ${game.am_pm}`,
@@ -1132,8 +1135,8 @@ app.put('/api/umpire-requests/:id/status', async (req, res) => {
                     division: game.division,
                     plateUmpire: request.requested_plate_umpire || request.current_plate_umpire,
                     baseUmpire: request.requested_base_umpire || request.current_base_umpire,
-                    plateUmpireEmail: request.requested_plate_umpire ? getStaffEmail(request.requested_plate_umpire) : null,
-                    baseUmpireEmail: request.requested_base_umpire ? getStaffEmail(request.requested_base_umpire) : null,
+                    plateUmpireEmail: plateUmpireEmail,
+                    baseUmpireEmail: baseUmpireEmail,
                     assignedBy: 'Admin',
                     assignmentDate: new Date().toLocaleDateString()
                   };
@@ -1208,9 +1211,33 @@ app.put('/api/umpire-requests/:id/status', async (req, res) => {
 
 // Helper function to get staff email
 function getStaffEmail(staffName) {
-  // This would need to be implemented to query the staff directory
-  // For now, return null - you can implement this based on your staff table structure
-  return null;
+  if (!staffName) return null;
+  
+  // Try to find email in concession staff table first
+  return new Promise((resolve) => {
+    db.get('SELECT email FROM concession_staff WHERE name = ?', [staffName], (err, row) => {
+      if (err || !row || !row.email) {
+        // If not found in concession staff, try plate umpires
+        db.get('SELECT email FROM plate_umpires WHERE name = ?', [staffName], (err2, row2) => {
+          if (err2 || !row2 || !row2.email) {
+            // If not found in plate umpires, try base umpires
+            db.get('SELECT email FROM base_umpires WHERE name = ?', [staffName], (err3, row3) => {
+              if (err3 || !row3 || !row3.email) {
+                // If not found anywhere, return null
+                resolve(null);
+              } else {
+                resolve(row3.email);
+              }
+            });
+          } else {
+            resolve(row2.email);
+          }
+        });
+      } else {
+        resolve(row.email);
+      }
+    });
+  });
 }
 
 // Concession Staff Request Routes
@@ -1351,13 +1378,64 @@ app.put('/api/concession-staff-requests/:id/status', (req, res) => {
             }
 
             // Commit the transaction
-            db.run('COMMIT', (err) => {
+            db.run('COMMIT', async (err) => {
               if (err) {
                 res.status(500).json({ error: 'Failed to commit transaction' });
                 return;
               }
 
               console.log(`✅ Concession staff request ${id} approved and game schedule updated for game ${request.game_id}`);
+              
+              // Send email notifications
+              try {
+                // Get game details for email notifications
+                db.get('SELECT * FROM schedules WHERE id = ?', [request.game_id], async (err, game) => {
+                  if (!err && game) {
+                    // Notify user of approval
+                    const userNotificationData = {
+                      gameDate: game.date,
+                      gameTime: `${game.start_time} ${game.am_pm}`,
+                      homeTeam: game.home_team,
+                      visitorTeam: game.visitor_team,
+                      venue: game.venue,
+                      division: game.division,
+                      concessionStaffChange: request.requested_concession_staff && request.requested_concession_staff !== game.concession_staff,
+                      currentConcessionStaff: game.concession_staff || 'Not assigned',
+                      requestedConcessionStaff: request.requested_concession_staff || 'No change',
+                      status: 'approved',
+                      adminNotes: '',
+                      requesterEmail: request.requester_email
+                    };
+                    
+                    const userEmailResult = await emailService.notifyUserOfDecision(userNotificationData);
+                    console.log('📧 User concession staff approval notification email result:', userEmailResult);
+                    
+                    // Notify newly assigned concession staff
+                    const concessionStaffEmail = request.requested_concession_staff ? await getStaffEmail(request.requested_concession_staff) : null;
+                    
+                    const assignmentData = {
+                      gameDate: game.date,
+                      gameTime: `${game.start_time} ${game.am_pm}`,
+                      homeTeam: game.home_team,
+                      visitorTeam: game.visitor_team,
+                      venue: game.venue,
+                      division: game.division,
+                      concessionStaff: request.requested_concession_staff || request.current_concession_staff,
+                      concessionStaffEmail: concessionStaffEmail,
+                      assignedBy: 'Admin',
+                      assignmentDate: new Date().toLocaleDateString()
+                    };
+                    
+                    const assignmentEmailResult = await emailService.notifyAssignment(assignmentData);
+                    console.log('📧 Concession staff assignment notification email result:', assignmentEmailResult);
+                  }
+                });
+                
+              } catch (emailError) {
+                console.error('❌ Failed to send email notifications:', emailError);
+                // Don't fail the request if email fails
+              }
+              
               res.json({ 
                 message: 'Request approved and game schedule updated successfully',
                 gameId: request.game_id,
@@ -1367,13 +1445,44 @@ app.put('/api/concession-staff-requests/:id/status', (req, res) => {
           });
         } else {
           // If not approved, just commit the status update
-          db.run('COMMIT', (err) => {
+          db.run('COMMIT', async (err) => {
             if (err) {
               res.status(500).json({ error: 'Failed to commit transaction' });
               return;
             }
 
             console.log(`✅ Concession staff request ${id} status updated to: ${status}`);
+            
+            // Send rejection notification to user
+            try {
+              // Get game details for email notifications
+              db.get('SELECT * FROM schedules WHERE id = ?', [request.game_id], async (err, game) => {
+                if (!err && game) {
+                  const userNotificationData = {
+                    gameDate: game.date,
+                    gameTime: `${game.start_time} ${game.am_pm}`,
+                    homeTeam: game.home_team,
+                    visitorTeam: game.visitor_team,
+                    venue: game.venue,
+                    division: game.division,
+                    concessionStaffChange: request.requested_concession_staff && request.requested_concession_staff !== game.concession_staff,
+                    currentConcessionStaff: game.concession_staff || 'Not assigned',
+                    requestedConcessionStaff: request.requested_concession_staff || 'No change',
+                    status: 'rejected',
+                    adminNotes: 'No reason provided',
+                    requesterEmail: request.requester_email
+                  };
+                  
+                  const userEmailResult = await emailService.notifyUserOfDecision(userNotificationData);
+                  console.log('📧 User concession staff rejection notification email result:', userEmailResult);
+                }
+              });
+              
+            } catch (emailError) {
+              console.error('❌ Failed to send rejection notification email:', emailError);
+              // Don't fail the request if email fails
+            }
+            
             res.json({ 
               message: 'Request status updated successfully',
               status: status
