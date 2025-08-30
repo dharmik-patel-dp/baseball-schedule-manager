@@ -157,29 +157,9 @@ function updateLastUpdatedTime() {
     }
 }
 
-// Update auto-refresh countdown
-function updateAutoRefreshCountdown() {
-    const now = new Date();
-    const nextRefresh = new Date(now.getTime() + 15000); // 15 seconds from now
-    const timeString = nextRefresh.toLocaleTimeString();
-    
-    const statusElement = document.getElementById('autoRefreshStatus');
-    if (statusElement) {
-        statusElement.innerHTML = `
-            <i class="fas fa-sync-alt text-primary"></i>
-            Next refresh at ${timeString}
-        `;
-    }
-}
+// Auto-refresh functionality removed as requested
 
-// Check for request status changes and notify users
-function checkForStatusChanges() {
-    // This function will be called after each data refresh to check if user's requests have status changes
-    console.log('🔍 Checking for request status changes...');
-    
-    // You can implement logic here to compare previous and current request statuses
-    // and show notifications to users about their request updates
-}
+// Status change checking removed as it was part of auto-refresh functionality
 
 // Initialize the application
 document.addEventListener('DOMContentLoaded', function() {
@@ -229,23 +209,8 @@ document.addEventListener('DOMContentLoaded', function() {
         populateRequestDropdowns();
     }, 10000);
     
-    // Set up periodic refresh to show real-time updates
-    setInterval(() => {
-        console.log('🔄 Auto-refreshing data...');
-        loadSchedules();
-        loadUmpireRequests();
-        loadConcessionStaffRequests();
-        updateLastUpdatedTime(); // Update the time indicator
-        updateAutoRefreshCountdown(); // Update the countdown
-        
-        // Check for status changes after refresh
-        setTimeout(checkForStatusChanges, 1000);
-    }, 15000); // Refresh every 15 seconds for more responsive updates
-    
-    // Set up countdown timer that updates every second
-    setInterval(() => {
-        updateAutoRefreshCountdown();
-    }, 1000); // Update countdown every second
+    // Auto-refresh functionality removed as requested
+    // Data will only refresh when user manually refreshes the page or performs actions
 });
 
 // Setup event listeners
