@@ -437,7 +437,8 @@ app.get('/admin', requireAuth, (req, res) => {
 
 // Serve favicon
 app.get('/favicon.ico', (req, res) => {
-  res.redirect(301, 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">⚾</text></svg>');
+  res.setHeader('Content-Type', 'image/svg+xml');
+  res.send('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">⚾</text></svg>');
 });
 
 // Serve public interface

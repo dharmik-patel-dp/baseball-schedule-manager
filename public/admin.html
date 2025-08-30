@@ -2356,12 +2356,6 @@
         // Initialize mobile enhancements
         document.addEventListener('DOMContentLoaded', function() {
             enhanceMobileExperience();
-            
-            // Initialize season visibility controls and admin schedules
-            setTimeout(() => {
-                loadSeasonVisibilityControls();
-                refreshAdminSchedulesDisplay();
-            }, 1000);
         });
 
         // ===== SEASON VISIBILITY CONTROL FUNCTIONS =====
@@ -2577,15 +2571,40 @@
             }
         }
         
-        // Check authentication status on page load
+        // Check authentication status and initialize admin panel
         document.addEventListener('DOMContentLoaded', async function() {
             try {
+                // Check authentication first
                 const response = await fetch('/api/admin/me');
                 if (!response.ok) {
                     // Not authenticated, redirect to login
                     window.location.href = '/admin-login';
+                    return;
                 }
+                
+                // User is authenticated, now load data
+                console.log('✅ Admin authenticated, loading data...');
+                
+                // Initialize data loading with proper error handling
+                try {
+                    await loadSchedules();
+                    await loadStaff();
+                    await loadUmpireRequests();
+                    await loadConcessionStaffRequests();
+                    
+                    // Initialize season visibility controls and admin schedules
+                    setTimeout(() => {
+                        loadSeasonVisibilityControls();
+                        refreshAdminSchedulesDisplay();
+                    }, 500);
+                    
+                } catch (dataError) {
+                    console.error('Error loading admin data:', dataError);
+                    showAlert('Some data failed to load. Please refresh the page.', 'warning');
+                }
+                
             } catch (error) {
+                console.error('Authentication error:', error);
                 // Network error, redirect to login
                 window.location.href = '/admin-login';
             }
