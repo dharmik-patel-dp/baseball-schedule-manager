@@ -46,6 +46,12 @@ function showSection(sectionName) {
                 case 'staff':
                     pageTitle.textContent = 'Staff Directory Management';
                     break;
+                case 'umpires':
+                    pageTitle.textContent = 'Umpire Management';
+                    break;
+                case 'concession-staff':
+                    pageTitle.textContent = 'Concession Staff Management';
+                    break;
                 case 'requests':
                     pageTitle.textContent = 'Change Requests Management';
                     break;
@@ -59,6 +65,13 @@ function showSection(sectionName) {
                 break;
             case 'staff':
                 if (typeof loadStaff === 'function') loadStaff();
+                break;
+            case 'umpires':
+                if (typeof loadPlateUmpires === 'function') loadPlateUmpires();
+                if (typeof loadBaseUmpires === 'function') loadBaseUmpires();
+                break;
+            case 'concession-staff':
+                if (typeof loadConcessionStaff === 'function') loadConcessionStaff();
                 break;
             case 'requests':
                 if (typeof loadUmpireRequests === 'function') loadUmpireRequests();
@@ -90,6 +103,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         await loadStaff();
         await loadPlateUmpires();
         await loadBaseUmpires();
+        await loadConcessionStaff();
         
         // Add 3D effects after DOM loads
         setTimeout(addAdmin3DEffects, 1000);
@@ -195,6 +209,24 @@ function setupEventListeners() {
     const baseUmpiresUploadModal = document.getElementById('baseUmpiresUploadModal');
     if (baseUmpiresUploadModal) {
         baseUmpiresUploadModal.addEventListener('hidden.bs.modal', resetBaseUmpiresCSVModalState);
+    }
+
+    // Concession Staff form submission
+    const concessionStaffForm = document.getElementById('concessionStaffForm');
+    if (concessionStaffForm) {
+        concessionStaffForm.addEventListener('submit', handleConcessionStaffSubmit);
+    }
+
+    // Edit Concession Staff form submission
+    const editConcessionStaffForm = document.getElementById('editConcessionStaffForm');
+    if (editConcessionStaffForm) {
+        editConcessionStaffForm.addEventListener('submit', handleEditConcessionStaffSubmit);
+    }
+
+    // Concession Staff CSV Modal event listeners
+    const concessionStaffUploadModal = document.getElementById('concessionStaffUploadModal');
+    if (concessionStaffUploadModal) {
+        concessionStaffUploadModal.addEventListener('hidden.bs.modal', resetConcessionStaffCSVModalState);
     }
 }
 
@@ -861,6 +893,81 @@ async function handleBaseUmpireSubmit(e) {
     } catch (error) {
         console.error('❌ Error adding base umpire:', error);
         showAlert('Error adding base umpire. Please try again.', 'danger');
+    }
+}
+
+// Handle concession staff form submission
+async function handleConcessionStaffSubmit(e) {
+    e.preventDefault();
+    
+    const formData = {
+        name: document.getElementById('concessionStaffName').value,
+        email: document.getElementById('concessionStaffEmail').value,
+        phone: document.getElementById('concessionStaffPhone').value,
+        availability: document.getElementById('concessionStaffAvailability').value
+    };
+    
+    console.log('📝 Adding concession staff with data:', formData);
+    
+    try {
+        const response = await fetch('/api/concession-staff', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(formData)
+        });
+        
+        if (!response.ok) throw new Error('Failed to add concession staff');
+        
+        const result = await response.json();
+        console.log('✅ Concession staff added successfully:', result);
+        
+        showAlert('Concession staff added successfully!', 'success');
+        document.getElementById('concessionStaffForm').reset();
+        bootstrap.Modal.getInstance(document.getElementById('addConcessionStaffModal')).hide();
+        
+        // Reload concession staff to show the new one
+        await loadConcessionStaff();
+    } catch (error) {
+        console.error('❌ Error adding concession staff:', error);
+        showAlert('Error adding concession staff. Please try again.', 'danger');
+    }
+}
+
+// Handle edit concession staff form submission
+async function handleEditConcessionStaffSubmit(e) {
+    e.preventDefault();
+    
+    const formData = {
+        name: document.getElementById('editConcessionStaffName').value,
+        email: document.getElementById('editConcessionStaffEmail').value,
+        phone: document.getElementById('editConcessionStaffPhone').value,
+        availability: document.getElementById('editConcessionStaffAvailability').value
+    };
+    
+    const staffId = document.getElementById('editConcessionStaffId').value;
+    
+    console.log('📝 Updating concession staff with data:', formData);
+    
+    try {
+        const response = await fetch(`/api/concession-staff/${staffId}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(formData)
+        });
+        
+        if (!response.ok) throw new Error('Failed to update concession staff');
+        
+        const result = await response.json();
+        console.log('✅ Concession staff updated successfully:', result);
+        
+        showAlert('Concession staff updated successfully!', 'success');
+        bootstrap.Modal.getInstance(document.getElementById('editConcessionStaffModal')).hide();
+        
+        // Reload concession staff to show the updates
+        await loadConcessionStaff();
+    } catch (error) {
+        console.error('❌ Error updating concession staff:', error);
+        showAlert('Error updating concession staff. Please try again.', 'danger');
     }
 }
 
@@ -2274,6 +2381,10 @@ function showNoResultsBanner() {
 let allPlateUmpires = [];
 let allBaseUmpires = [];
 
+// Concession Staff Management Functions
+let allConcessionStaff = [];
+let concessionStaffCsvData = null;
+
 // CSV upload data for umpires
 let plateUmpiresCsvData = null;
 let baseUmpiresCsvData = null;
@@ -2778,6 +2889,366 @@ function renderPlateUmpiresTable() {
             </td>
         </tr>
     `).join('');
+}
+
+// Concession Staff Management Functions
+function showAddConcessionStaffModal() {
+    const modal = new bootstrap.Modal(document.getElementById('addConcessionStaffModal'));
+    modal.show();
+}
+
+function showConcessionStaffUploadModal() {
+    const modal = new bootstrap.Modal(document.getElementById('concessionStaffUploadModal'));
+    modal.show();
+}
+
+function showEditConcessionStaffModal(id) {
+    const staff = allConcessionStaff.find(s => s.id === id);
+    if (!staff) return;
+    
+    document.getElementById('editConcessionStaffId').value = staff.id;
+    document.getElementById('editConcessionStaffName').value = staff.name;
+    document.getElementById('editConcessionStaffEmail').value = staff.email || '';
+    document.getElementById('editConcessionStaffPhone').value = staff.phone || '';
+    document.getElementById('editConcessionStaffAvailability').value = staff.availability || 'Available';
+    
+    const modal = new bootstrap.Modal(document.getElementById('editConcessionStaffModal'));
+    modal.show();
+}
+
+// Concession Staff CSV Functions
+function handleConcessionStaffCSVFileSelect(e) {
+    const file = e.target.files[0];
+    if (file) {
+        concessionStaffCsvData = file;
+        document.getElementById('concessionStaffCsvUploadArea').classList.add('file-selected');
+        document.getElementById('concessionStaffCsvUploadArea').innerHTML = `
+            <i class="fas fa-file-csv text-success"></i>
+            <h5>File Selected: ${file.name}</h5>
+            <p>Ready to upload</p>
+        `;
+    }
+}
+
+function handleConcessionStaffDragOver(e) {
+    e.preventDefault();
+    e.currentTarget.classList.add('drag-over');
+}
+
+function handleConcessionStaffDrop(e) {
+    e.preventDefault();
+    e.currentTarget.classList.remove('drag-over');
+    
+    const files = e.dataTransfer.files;
+    if (files.length > 0) {
+        const file = files[0];
+        if (file.type === 'text/csv' || file.name.endsWith('.csv')) {
+            concessionStaffCsvData = file;
+            document.getElementById('concessionStaffCsvUploadArea').classList.add('file-selected');
+            document.getElementById('concessionStaffCsvUploadArea').innerHTML = `
+                <i class="fas fa-file-csv text-success"></i>
+                <h5>File Selected: ${file.name}</h5>
+                <p>Ready to upload</p>
+            `;
+        } else {
+            showAlert('Please select a valid CSV file', 'warning');
+        }
+    }
+}
+
+function handleConcessionStaffDragLeave(e) {
+    e.currentTarget.classList.remove('drag-over');
+}
+
+async function uploadConcessionStaffCSV() {
+    if (!concessionStaffCsvData) {
+        showAlert('Please select a CSV file first', 'warning');
+        return;
+    }
+    
+    const formData = new FormData();
+    formData.append('csv', concessionStaffCsvData);
+
+    try {
+        const response = await fetch('/api/upload-concession-staff-csv', {
+            method: 'POST',
+            body: formData
+        });
+
+        const result = await response.json();
+        
+        if (response.ok) {
+            renderConcessionStaffCSVResultReport(result);
+            // Auto-close after 15 seconds on success
+            setTimeout(() => {
+                bootstrap.Modal.getInstance(document.getElementById('concessionStaffUploadModal')).hide();
+                resetConcessionStaffCSVModalState();
+                loadConcessionStaff(); // Reload the table
+            }, 15000);
+        } else {
+            renderConcessionStaffCSVResultReport(result);
+        }
+    } catch (error) {
+        console.error('❌ Error uploading concession staff CSV:', error);
+        showAlert('Error uploading CSV file', 'danger');
+    }
+}
+
+function renderConcessionStaffCSVResultReport(result) {
+    const summary = document.getElementById('concessionStaffCsvResultSummary');
+    const rowErrors = document.getElementById('concessionStaffCsvRowErrors');
+    const reportDiv = document.getElementById('concessionStaffCsvResultReport');
+
+    if (!summary || !rowErrors || !reportDiv) return;
+
+    reportDiv.style.display = 'block';
+
+    const isFormatError = result.formatError;
+    const alertClass = result.committed ? 'alert-success' : 'alert-danger';
+
+    summary.className = `alert ${alertClass}`;
+    
+    if (isFormatError) {
+        summary.innerHTML = `
+            <div class="d-flex align-items-center">
+                <i class="fas fa-exclamation-triangle text-danger me-2"></i>
+                <div>
+                    <strong>CSV Format Error!</strong><br>
+                    <span class="text-danger">${result.message}</span>
+                </div>
+            </div>
+        `;
+        rowErrors.innerHTML = `
+            <div class="card border-danger">
+                <div class="card-header py-2 bg-danger text-white">
+                    <strong><i class="fas fa-times-circle me-2"></i>Format Mismatch</strong>
+                </div>
+                <div class="card-body p-3">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6 class="text-danger">Expected Columns:</h6>
+                            <div class="d-flex flex-wrap gap-1">
+                                ${(result.expectedColumns || []).map(col => 
+                                    `<span class="badge bg-success">${col}</span>`
+                                ).join('')}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="text-danger">Received Columns:</h6>
+                            <div class="d-flex flex-wrap gap-1">
+                                ${(result.receivedColumns || []).map(col => 
+                                    `<span class="badge bg-secondary">${col}</span>`
+                                ).join('')}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <h6 class="text-danger">Missing Required Columns:</h6>
+                        <div class="d-flex flex-wrap gap-1">
+                            ${(result.rowErrors?.[0]?.errors || []).map(error => 
+                                `<span class="badge bg-danger">${escapeHtml(error)}</span>`
+                            ).join('')}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    } else {
+        summary.innerHTML = `
+            <div class="d-flex align-items-center">
+                <i class="fas fa-check-circle text-success me-2"></i>
+                <div>
+                    <strong>CSV Upload Successful!</strong><br>
+                    <span class="text-success">${result.message}</span>
+                </div>
+            </div>
+        `;
+        
+        if (result.rowErrors && result.rowErrors.length > 0) {
+            rowErrors.innerHTML = `
+                <div class="card border-warning">
+                    <div class="card-header py-2 bg-warning text-dark">
+                        <strong><i class="fas fa-exclamation-triangle me-2"></i>Some Rows Had Issues</strong>
+                    </div>
+                    <div class="card-body p-3">
+                        <div class="table-responsive">
+                            <table class="table table-sm table-bordered">
+                                <thead class="table-warning">
+                                    <tr>
+                                        <th>Row</th>
+                                        <th>Error</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${result.rowErrors.map((rowError, index) => `
+                                        <tr>
+                                            <td><strong>${rowError.row}</strong></td>
+                                            <td class="text-danger">${escapeHtml(rowError.error)}</td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            `;
+        } else {
+            rowErrors.innerHTML = '';
+        }
+    }
+}
+
+function resetConcessionStaffCSVModalState() {
+    concessionStaffCsvData = null;
+    document.getElementById('concessionStaffCsvUploadArea').classList.remove('file-selected');
+    document.getElementById('concessionStaffCsvUploadArea').innerHTML = `
+        <i class="fas fa-store"></i>
+        <h5>Drag & Drop Concession Staff CSV File</h5>
+        <p>or click to browse</p>
+        <input type="file" id="concessionStaffCsvFile" accept=".csv" style="display: none;" onchange="handleConcessionStaffCSVFileSelect(event)">
+    `;
+    document.getElementById('concessionStaffCsvResultReport').style.display = 'none';
+}
+
+async function loadConcessionStaff() {
+    try {
+        const response = await fetch('/api/concession-staff');
+        if (!response.ok) throw new Error('Failed to fetch concession staff');
+        
+        allConcessionStaff = await response.json();
+        renderConcessionStaffTable();
+    } catch (error) {
+        console.error('❌ Error loading concession staff:', error);
+        showAlert('Error loading concession staff', 'danger');
+    }
+}
+
+function renderConcessionStaffTable() {
+    const tbody = document.getElementById('concessionStaffTableBody');
+    if (!tbody) return;
+    
+    if (allConcessionStaff.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" class="no-data">No concession staff found</td></tr>';
+        return;
+    }
+    
+    tbody.innerHTML = allConcessionStaff.map(staff => `
+        <tr>
+            <td>
+                <input type="checkbox" name="concessionStaffCheckbox" value="${staff.id}" 
+                       onchange="toggleConcessionStaffSelection(this)" 
+                       ${selectedConcessionStaffIds.has(staff.id) ? 'checked' : ''}>
+            </td>
+            <td><strong>${staff.name || 'N/A'}</strong></td>
+            <td>${staff.email || '<em class="text-muted">Not provided</em>'}</td>
+            <td>${staff.phone || '<em class="text-muted">Not provided</em>'}</td>
+            <td><span class="badge bg-${getAvailabilityBadgeClass(staff.availability)}">${staff.availability || 'Available'}</span></td>
+            <td>
+                <button class="btn btn-sm btn-outline-primary me-1" onclick="showEditConcessionStaffModal(${staff.id})" title="Edit Concession Staff">
+                    <i class="fas fa-edit"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-danger" onclick="deleteConcessionStaff(${staff.id})" title="Delete Concession Staff">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </td>
+        </tr>
+    `).join('');
+}
+
+// Concession Staff Selection Management
+let selectedConcessionStaffIds = new Set();
+
+function toggleConcessionStaffSelection(checkbox) {
+    if (checkbox.checked) {
+        selectedConcessionStaffIds.add(parseInt(checkbox.value));
+    } else {
+        selectedConcessionStaffIds.delete(parseInt(checkbox.value));
+    }
+    updateConcessionStaffBulkDeleteButton();
+}
+
+function toggleSelectAllConcessionStaff() {
+    const selectAllCheckbox = document.getElementById('selectAllConcessionStaff');
+    const checkboxes = document.querySelectorAll('input[name="concessionStaffCheckbox"]');
+    
+    if (selectAllCheckbox.checked) {
+        checkboxes.forEach(checkbox => {
+            checkbox.checked = true;
+            selectedConcessionStaffIds.add(parseInt(checkbox.value));
+        });
+    } else {
+        checkboxes.forEach(checkbox => {
+            checkbox.checked = false;
+            selectedConcessionStaffIds.delete(parseInt(checkbox.value));
+        });
+    }
+    updateConcessionStaffBulkDeleteButton();
+}
+
+function updateConcessionStaffBulkDeleteButton() {
+    const bulkDeleteBtn = document.getElementById('bulkDeleteConcessionStaffBtn');
+    if (bulkDeleteBtn) {
+        bulkDeleteBtn.style.display = selectedConcessionStaffIds.size > 0 ? 'inline-block' : 'none';
+    }
+}
+
+async function bulkDeleteConcessionStaff() {
+    if (selectedConcessionStaffIds.size === 0) {
+        showAlert('Please select concession staff to delete', 'warning');
+        return;
+    }
+    
+    if (!confirm(`Are you sure you want to delete ${selectedConcessionStaffIds.size} concession staff member(s)?`)) {
+        return;
+    }
+    
+    try {
+        const response = await fetch('/api/concession-staff/bulk-delete', {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                ids: Array.from(selectedConcessionStaffIds)
+            })
+        });
+        
+        if (response.ok) {
+            showAlert(`Successfully deleted ${selectedConcessionStaffIds.size} concession staff member(s)`, 'success');
+            selectedConcessionStaffIds.clear();
+            await loadConcessionStaff();
+            updateConcessionStaffBulkDeleteButton();
+        } else {
+            const error = await response.json();
+            showAlert(error.message || 'Error deleting concession staff', 'danger');
+        }
+    } catch (error) {
+        console.error('❌ Error bulk deleting concession staff:', error);
+        showAlert('Error deleting concession staff', 'danger');
+    }
+}
+
+async function deleteConcessionStaff(id) {
+    if (!confirm('Are you sure you want to delete this concession staff member?')) {
+        return;
+    }
+    
+    try {
+        const response = await fetch(`/api/concession-staff/${id}`, {
+            method: 'DELETE'
+        });
+        
+        if (response.ok) {
+            showAlert('Concession staff member deleted successfully', 'success');
+            await loadConcessionStaff();
+        } else {
+            const error = await response.json();
+            showAlert(error.message || 'Error deleting concession staff member', 'danger');
+        }
+    } catch (error) {
+        console.error('❌ Error deleting concession staff member:', error);
+        showAlert('Error deleting concession staff member', 'danger');
+    }
 }
 
 function renderBaseUmpiresTable() {

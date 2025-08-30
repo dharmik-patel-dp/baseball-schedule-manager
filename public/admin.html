@@ -1008,6 +1008,12 @@
                 </a>
             </div>
             <div class="nav-item">
+                <a href="#concession-staff" class="nav-link" onclick="showSection('concession-staff')">
+                    <i class="fas fa-store"></i>
+                    <span class="nav-text">Concession Staff</span>
+                </a>
+            </div>
+            <div class="nav-item">
                 <a href="#requests" class="nav-link" onclick="showSection('requests')">
                     <i class="fas fa-clipboard-list"></i>
                     <span class="nav-text">Change Requests</span>
@@ -1417,6 +1423,63 @@
                                 <td colspan="6" class="loading">
                                     <i class="fas fa-spinner fa-spin"></i>
                                     <div>Loading base umpires...</div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Concession Staff Management Section -->
+        <div id="concession-staff" class="section">
+            <div class="section-header">
+                <h1 class="section-title">
+                    <i class="fas fa-store"></i>
+                    Concession Staff Management
+                </h1>
+                <div class="section-actions">
+                    <button class="btn btn-primary" onclick="showAddConcessionStaffModal()">
+                        <i class="fas fa-plus me-2"></i>Add Concession Staff
+                    </button>
+                    <button class="btn btn-outline-primary" onclick="showConcessionStaffUploadModal()">
+                        <i class="fas fa-upload me-2"></i>Upload Concession Staff CSV
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Concession Staff Table -->
+            <div class="dashboard-card">
+                <h5 class="mb-3">
+                    <i class="fas fa-store me-2"></i>Concession Staff
+                </h5>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <button class="btn btn-outline-primary btn-sm" onclick="showAddConcessionStaffModal()">
+                        <i class="fas fa-plus me-2"></i>Add Concession Staff
+                    </button>
+                    <button class="btn btn-outline-danger btn-sm" id="bulkDeleteConcessionStaffBtn" onclick="bulkDeleteConcessionStaff()" style="display: none;">
+                        <i class="fas fa-trash-alt me-2"></i>Delete Selected
+                    </button>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>
+                                    <input type="checkbox" id="selectAllConcessionStaff" onchange="toggleSelectAllConcessionStaff()">
+                                </th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>Availability</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="concessionStaffTableBody">
+                            <tr>
+                                <td colspan="6" class="loading">
+                                    <i class="fas fa-spinner fa-spin"></i>
+                                    <div>Loading concession staff...</div>
                                 </td>
                             </tr>
                         </tbody>
@@ -2141,6 +2204,135 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                     <button type="button" class="btn btn-primary" onclick="uploadBaseUmpiresCSV()">Upload Base Umpires</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Concession Staff Modal -->
+    <div class="modal fade" id="addConcessionStaffModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add Concession Staff</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="concessionStaffForm">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Name *</label>
+                                <input type="text" class="form-control" id="concessionStaffName" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Availability</label>
+                                <select class="form-select" id="concessionStaffAvailability">
+                                    <option value="Available">Available</option>
+                                    <option value="Unavailable">Unavailable</option>
+                                    <option value="Part-time">Part-time</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Email</label>
+                                <input type="email" class="form-control" id="concessionStaffEmail" placeholder="staff@example.com">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Phone</label>
+                                <input type="text" class="form-control" id="concessionStaffPhone" placeholder="555-0101">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary" form="concessionStaffForm">Add Concession Staff</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Concession Staff Modal -->
+    <div class="modal fade" id="editConcessionStaffModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Concession Staff</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editConcessionStaffForm">
+                        <input type="hidden" id="editConcessionStaffId">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Name *</label>
+                                <input type="text" class="form-control" id="editConcessionStaffName" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Availability</label>
+                                <select class="form-select" id="editConcessionStaffAvailability">
+                                    <option value="Available">Available</option>
+                                    <option value="Unavailable">Unavailable</option>
+                                    <option value="Part-time">Part-time</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Email</label>
+                                <input type="email" class="form-control" id="editConcessionStaffEmail" placeholder="staff@example.com">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Phone</label>
+                                <input type="text" class="form-control" id="editConcessionStaffPhone" placeholder="555-0101">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary" form="editConcessionStaffForm">Update Concession Staff</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Concession Staff CSV Upload Modal -->
+    <div class="modal fade" id="concessionStaffUploadModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Bulk Upload Concession Staff CSV</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="csv-upload-area" id="concessionStaffCsvUploadArea" 
+                         ondragover="handleConcessionStaffDragOver(event)" 
+                         ondrop="handleConcessionStaffDrop(event)" 
+                         ondragleave="handleConcessionStaffDragLeave(event)"
+                         onclick="document.getElementById('concessionStaffCsvFile').click()">
+                        <i class="fas fa-store"></i>
+                        <h5>Drag & Drop Concession Staff CSV File</h5>
+                        <p>or click to browse</p>
+                        <input type="file" id="concessionStaffCsvFile" accept=".csv" style="display: none;" onchange="handleConcessionStaffCSVFileSelect(event)">
+                    </div>
+
+                    <!-- Concession Staff CSV Result Report -->
+                    <div id="concessionStaffCsvResultReport" class="mt-3" style="display:none;">
+                        <div class="alert" id="concessionStaffCsvResultSummary"></div>
+                        <div id="concessionStaffCsvRowErrors" class="mt-2"></div>
+                    </div>
+
+                    <!-- Concession Staff CSV Format Info -->
+                    <div class="mt-3">
+                        <div class="alert alert-info">
+                            <h6><i class="fas fa-info-circle me-2"></i>Concession Staff CSV Format:</h6>
+                            <p class="mb-1 small">Required: <strong>name</strong></p>
+                            <p class="mb-1 small">Optional: <strong>email</strong>, <strong>phone</strong></p>
+                            <p class="mb-0 small">Default availability: <strong>Available</strong></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="uploadConcessionStaffCSV()">Upload Concession Staff</button>
                 </div>
             </div>
         </div>
