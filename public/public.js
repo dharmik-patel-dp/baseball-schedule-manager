@@ -857,44 +857,24 @@ window.debugDropdowns = function() {
     populateRequestDropdowns();
 };
 
-// Fallback function to populate request dropdowns
+// Fallback function to populate request dropdowns - REMOVED HARDCODED NAMES
 function populateRequestDropdownsFallback() {
-    const fallbackStaff = ['Dylan LeLacheur', 'Scott Patenaude', 'Arthur DeSouza', 'Brady Foote', 'James Kane', 'Logan Kelly', 'Connor Stevens', 'Jack Duffy', 'Nathan Nelson', 'Ryan Abrams', 'Matthew Rurak', 'Zach Chachus', 'Andrey LeMay', 'Ben Durkin', 'Emily Lelacheur', 'Kate LeLacheur', 'Danny Gallo', 'Brayden Shea'];
+    console.log('⚠️ Using fallback dropdown population - this should not happen with real data');
     
-    // Populate plate umpire dropdown
+    // Show error message instead of hardcoded names
     const plateUmpireSelect = document.getElementById('requestedPlateUmpire');
     if (plateUmpireSelect) {
-        plateUmpireSelect.innerHTML = '<option value="">No change</option>';
-        fallbackStaff.forEach(name => {
-            const option = document.createElement('option');
-            option.value = name;
-            option.textContent = name;
-            plateUmpireSelect.appendChild(option);
-        });
+        plateUmpireSelect.innerHTML = '<option value="">No umpires available</option>';
     }
     
-    // Populate base umpire dropdown
     const baseUmpireSelect = document.getElementById('requestedBaseUmpire');
     if (baseUmpireSelect) {
-        baseUmpireSelect.innerHTML = '<option value="">No change</option>';
-        fallbackStaff.forEach(name => {
-            const option = document.createElement('option');
-            option.value = name;
-            option.textContent = name;
-            baseUmpireSelect.appendChild(option);
-        });
+        baseUmpireSelect.innerHTML = '<option value="">No umpires available</option>';
     }
     
-    // Populate concession staff dropdown
     const concessionStaffSelect = document.getElementById('requestedConcessionStaff');
     if (concessionStaffSelect) {
-        concessionStaffSelect.innerHTML = '<option value="">Select Staff Member</option>';
-        fallbackStaff.forEach(name => {
-            const option = document.createElement('option');
-            option.value = name;
-            option.textContent = name;
-            concessionStaffSelect.appendChild(option);
-        });
+        concessionStaffSelect.innerHTML = '<option value="">No staff available</option>';
     }
 }
 
@@ -2143,10 +2123,18 @@ async function rejectConcessionStaffRequest(requestId) {
 
 // Get umpire options for dropdowns
 function getUmpireOptions(currentUmpire) {
-    // This should return available umpires from your staff data
-    // For now, returning some sample options
-    const umpires = ['Dylan LeLacheur', 'Scott Patenaude', 'Ben Durkin', 'Brady Foote', 'Connor Stevens', 'Andrey LeMay'];
-    return umpires
+    // Get real umpire data from the loaded data
+    const plateUmpires = window.allPlateUmpires || [];
+    const baseUmpires = window.allBaseUmpires || [];
+    
+    // Combine both types of umpires
+    const allUmpires = [...plateUmpires, ...baseUmpires].map(u => u.name);
+    
+    if (allUmpires.length === 0) {
+        return '<option value="">No umpires available</option>';
+    }
+    
+    return allUmpires
         .filter(umpire => umpire !== currentUmpire)
         .map(umpire => `<option value="${umpire}">${umpire}</option>`)
         .join('');
@@ -2178,19 +2166,14 @@ function getConcessionStandOptions(currentStand) {
 
 // Get concession staff options for dropdowns
 function getConcessionStaffOptions(currentStaff) {
-    // This should return available concession staff from your staff data
-    // For now, returning some sample options based on your data
-    const staff = [
-        'Dylan LeLacheur',
-        'Connor Stevens',
-        'Emily Lelacheur',
-        'Kate LeLacheur',
-        'Andrey LeMay',
-        'Ben Durkin',
-        'Danny Gallo',
-        'Brayden Shea'
-    ];
-    return staff
+    // Get real concession staff data from the loaded data
+    const concessionStaff = window.allConcessionStaff || [];
+    
+    if (concessionStaff.length === 0) {
+        return '<option value="">No staff available</option>';
+    }
+    
+    return concessionStaff
         .filter(person => person !== currentStaff)
         .map(person => `<option value="${person}">${person}</option>`)
         .join('');
