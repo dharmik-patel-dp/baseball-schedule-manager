@@ -243,62 +243,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Auto-refresh functionality removed as requested
 // Data will only refresh when user manually refreshes the page or performs actions
 
-// Debug functions (Remove in production)
-window.testDropdownPopulation = async function() {
-    console.log('🧪 Testing dropdown population...');
-    const debugOutput = document.getElementById('debugOutput');
-    
-    try {
-        await populateRequestDropdowns();
-        debugOutput.innerHTML = '<span class="text-success">✅ Dropdowns populated successfully</span>';
-        console.log('✅ Test completed');
-    } catch (error) {
-        debugOutput.innerHTML = `<span class="text-danger">❌ Error: ${error.message}</span>`;
-        console.error('❌ Test failed:', error);
-    }
-};
 
-window.checkUmpireData = function() {
-    console.log('🔍 Checking umpire data...');
-    const debugOutput = document.getElementById('debugOutput');
-    
-    const plateUmpires = window.allPlateUmpires || [];
-    const baseUmpires = window.allBaseUmpires || [];
-    
-    debugOutput.innerHTML = `
-        <span class="text-info">📊 Plate Umpires: ${plateUmpires.length}</span><br>
-        <span class="text-info">📊 Base Umpires: ${baseUmpires.length}</span><br>
-        <span class="text-muted">Plate: ${plateUmpires.map(u => u.name).join(', ')}</span><br>
-        <span class="text-muted">Base: ${baseUmpires.map(u => u.name).join(', ')}</span>
-    `;
-    
-    console.log('Plate umpires:', plateUmpires);
-    console.log('Base umpires:', baseUmpires);
-};
-
-window.forceLoadUmpires = async function() {
-    console.log('🔄 Force loading umpires...');
-    const debugOutput = document.getElementById('debugOutput');
-    
-    try {
-        await loadPlateUmpires();
-        await loadBaseUmpires();
-        
-        const plateUmpires = window.allPlateUmpires || [];
-        const baseUmpires = window.allBaseUmpires || [];
-        
-        debugOutput.innerHTML = `
-            <span class="text-success">✅ Umpires loaded!</span><br>
-            <span class="text-info">📊 Plate Umpires: ${plateUmpires.length}</span><br>
-            <span class="text-info">📊 Base Umpires: ${baseUmpires.length}</span>
-        `;
-        
-        console.log('✅ Force load completed');
-    } catch (error) {
-        debugOutput.innerHTML = `<span class="text-danger">❌ Error: ${error.message}</span>`;
-        console.error('❌ Force load failed:', error);
-    }
-};
 });
 
 // Setup event listeners
