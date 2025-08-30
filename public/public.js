@@ -512,7 +512,8 @@ async function populateRequestDropdowns() {
         
         // Try to get from dedicated concession staff data first
         if (window.allConcessionStaff && window.allConcessionStaff.length > 0) {
-            staffNames = window.allConcessionStaff;
+            // Extract names from the concession staff objects
+            staffNames = window.allConcessionStaff.map(staff => staff.name || staff).filter(Boolean);
             console.log('📋 Using dedicated concession staff data:', staffNames);
         } else if (staffNames.length === 0 && allSchedules && allSchedules.length > 0) {
             const uniqueStaff = [...new Set(allSchedules.map(s => s.concession_staff).filter(Boolean))];
@@ -1844,6 +1845,9 @@ async function showConcessionStaffRequestForm(gameId) {
     const schedule = allSchedules.find(s => s.id === gameId);
     if (!schedule) return;
     
+    console.log('🔄 Opening concession staff request form for game:', gameId);
+    console.log('Current schedule data:', schedule);
+    
     // Populate form fields
     document.getElementById('concessionRequestGameId').value = gameId;
     document.getElementById('concessionGameDetails').textContent = `${schedule.home_team} vs ${schedule.visitor_team} on ${formatDate(schedule.date)} at ${schedule.start_time}`;
@@ -1858,6 +1862,15 @@ async function showConcessionStaffRequestForm(gameId) {
     
     // Show form
     document.getElementById('concessionStaffRequestForm').style.display = 'block';
+    
+    // Ensure concession staff data is loaded before populating dropdowns
+    console.log('🔄 Ensuring concession staff data is loaded...');
+    if (!window.allConcessionStaff || window.allConcessionStaff.length === 0) {
+        console.log('⏳ Loading concession staff...');
+        await loadConcessionStaff();
+    }
+    
+    console.log('✅ Concession staff data loaded. Available staff:', window.allConcessionStaff?.length || 0);
     
     // Populate dropdowns with current game context
     await populateRequestDropdowns();
