@@ -1732,11 +1732,11 @@ async function loadBaseUmpires() {
 // Load concession staff data
 async function loadConcessionStaff() {
     try {
-        const response = await fetch('/api/staff-names');
+        const response = await fetch('/api/concession-staff');
         if (!response.ok) throw new Error('Failed to load concession staff');
         const data = await response.json();
         const staffNames = data.map(staff => staff.name).filter(Boolean);
-        window.allConcessionStaff = staffNames;
+        window.allConcessionStaff = data; // Store full data, not just names
         console.log('✅ Concession staff loaded:', staffNames.length);
         
         // Also update filterOptions if available
@@ -2157,12 +2157,12 @@ function getConcessionStaffOptions(currentStaff) {
     const concessionStaff = window.allConcessionStaff || [];
     
     if (concessionStaff.length === 0) {
-        return '<option value="">No staff available</option>';
+        return '<option value="">No concession staff available</option>';
     }
     
     return concessionStaff
-        .filter(person => person !== currentStaff)
-        .map(person => `<option value="${person}">${person}</option>`)
+        .filter(person => person.name !== currentStaff)
+        .map(person => `<option value="${person.name}">${person.name}</option>`)
         .join('');
 }
 
