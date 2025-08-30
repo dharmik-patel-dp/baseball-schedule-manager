@@ -195,6 +195,9 @@ document.addEventListener('DOMContentLoaded', function() {
             // Add 3D effects after DOM loads
             setTimeout(add3DEffects, 1000);
             
+            // Initialize real-time updates for instant synchronization
+            initializeRealTimeUpdates();
+            
             // Update stats after schedules load
             if (typeof loadSchedules === 'function') {
                 const originalLoadSchedules = loadSchedules;
@@ -274,6 +277,14 @@ window.forceLoadUmpires = async function() {
         console.error('❌ Force load failed:', error);
     }
 };
+});
+
+// Cleanup real-time connection when page unloads
+window.addEventListener('beforeunload', function() {
+    if (eventSource) {
+        eventSource.close();
+        console.log('🔌 Real-time connection closed');
+    }
 });
 
 // Setup event listeners
@@ -2380,3 +2391,89 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
+
+// Real-time updates listener
+let eventSource = null;
+
+function initializeRealTimeUpdates() {
+    try {
+        // Close existing connection if any
+        if (eventSource) {
+            eventSource.close();
+        }
+        
+        // Connect to server-sent events
+        eventSource = new EventSource('/api/events');
+        
+        eventSource.onopen = function() {
+            console.log('🔌 Real-time updates connected');
+        };
+        
+        eventSource.onmessage = function(event) {
+            try {
+                const data = JSON.parse(event.data);
+                console.log('📡 Received real-time update:', data);
+                
+                // Handle different types of updates
+                switch (data.type) {
+                    case 'connected':
+                        console.log('✅ Real-time connection established');
+                        break;
+                        
+                    case 'plateUmpireDeleted':
+                    case 'plateUmpiresBulkDeleted':
+                        console.log('🔄 Plate umpire(s) deleted, refreshing data...');
+                        loadPlateUmpires().then(() => {
+                            populateRequestDropdowns();
+                            console.log('✅ Plate umpires refreshed after deletion');
+                        });
+                        break;
+                        
+                    case 'baseUmpireDeleted':
+                    case 'baseUmpiresBulkDeleted':
+                        console.log('🔄 Base umpire(s) deleted, refreshing data...');
+                        loadBaseUmpires().then(() => {
+                            populateRequestDropdowns();
+                            console.log('✅ Base umpires refreshed after deletion');
+                        });
+                        break;
+                        
+                    case 'plateUmpireAdded':
+                    case 'baseUmpireAdded':
+                        console.log('🔄 New umpire added, refreshing data...');
+                        Promise.all([loadPlateUmpires(), loadBaseUmpires()]).then(() => {
+                            populateRequestDropdowns();
+                            console.log('✅ Umpires refreshed after addition');
+                        });
+                        break;
+                        
+                    case 'plateUmpireUpdated':
+                    case 'baseUmpireUpdated':
+                        console.log('🔄 Umpire updated, refreshing data...');
+                        Promise.all([loadPlateUmpires(), loadBaseUmpires()]).then(() => {
+                            populateRequestDropdowns();
+                            console.log('✅ Umpires refreshed after update');
+                        });
+                        break;
+                        
+                    default:
+                        console.log('📡 Unknown update type:', data.type);
+                }
+            } catch (error) {
+                console.error('❌ Error parsing real-time update:', error);
+            }
+        };
+        
+        eventSource.onerror = function(error) {
+            console.error('❌ Real-time connection error:', error);
+            // Try to reconnect after 5 seconds
+            setTimeout(() => {
+                console.log('🔄 Attempting to reconnect...');
+                initializeRealTimeUpdates();
+            }, 5000);
+        };
+        
+    } catch (error) {
+        console.error('❌ Error initializing real-time updates:', error);
+    }
+}

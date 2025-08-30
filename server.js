@@ -578,6 +578,10 @@ app.post('/api/plate-umpires', (req, res) => {
       res.status(500).json({ error: err.message });
       return;
     }
+    
+    // Broadcast real-time update to all connected clients
+    broadcastUpdate('plateUmpireAdded', { id: this.lastID, name, email, phone, availability });
+    
     res.json({ id: this.lastID, message: 'Plate umpire added successfully' });
   });
 });
@@ -593,6 +597,10 @@ app.put('/api/plate-umpires/:id', (req, res) => {
       res.status(500).json({ error: err.message });
       return;
     }
+    
+    // Broadcast real-time update to all connected clients
+    broadcastUpdate('plateUmpireUpdated', { id: id, name, email, phone, availability });
+    
     res.json({ message: 'Plate umpire updated successfully' });
   });
 });
@@ -604,6 +612,10 @@ app.delete('/api/plate-umpires/:id', (req, res) => {
       res.status(500).json({ error: err.message });
       return;
     }
+    
+    // Broadcast real-time update to all connected clients
+    broadcastUpdate('plateUmpireDeleted', { id: id, changes: this.changes });
+    
     res.json({ message: 'Plate umpire deleted successfully' });
   });
 });
@@ -623,6 +635,10 @@ app.post('/api/plate-umpires/bulk-delete', (req, res) => {
       res.status(500).json({ error: err.message });
       return;
     }
+    
+    // Broadcast real-time update to all connected clients
+    broadcastUpdate('plateUmpiresBulkDeleted', { ids: ids, changes: this.changes });
+    
     res.json({ message: `${this.changes} plate umpires deleted successfully` });
   });
 });
@@ -649,6 +665,10 @@ app.post('/api/base-umpires', (req, res) => {
       res.status(500).json({ error: err.message });
       return;
     }
+    
+    // Broadcast real-time update to all connected clients
+    broadcastUpdate('baseUmpireAdded', { id: this.lastID, name, email, phone, availability });
+    
     res.json({ id: this.lastID, message: 'Base umpire added successfully' });
   });
 });
@@ -664,6 +684,10 @@ app.put('/api/base-umpires/:id', (req, res) => {
       res.status(500).json({ error: err.message });
       return;
     }
+    
+    // Broadcast real-time update to all connected clients
+    broadcastUpdate('baseUmpireUpdated', { id: id, name, email, phone, availability });
+    
     res.json({ message: 'Base umpire updated successfully' });
   });
 });
@@ -675,6 +699,10 @@ app.delete('/api/base-umpires/:id', (req, res) => {
       res.status(500).json({ error: err.message });
       return;
     }
+    
+    // Broadcast real-time update to all connected clients
+    broadcastUpdate('baseUmpireDeleted', { id: id, changes: this.changes });
+    
     res.json({ message: 'Base umpire deleted successfully' });
   });
 });
@@ -694,6 +722,10 @@ app.post('/api/base-umpires/bulk-delete', (req, res) => {
       res.status(500).json({ error: err.message });
       return;
     }
+    
+    // Broadcast real-time update to all connected clients
+    broadcastUpdate('baseUmpiresBulkDeleted', { ids: ids, changes: this.changes });
+    
     res.json({ message: `${this.changes} base umpires deleted successfully` });
   });
 });
@@ -2264,6 +2296,50 @@ app.get('/api/visible-seasons', (req, res) => {
     res.json({ visibleSeasons });
   });
 });
+
+// Store connected clients for real-time updates
+const connectedClients = new Set();
+
+// SSE endpoint for real-time updates
+app.get('/api/events', (req, res) => {
+    res.writeHead(200, {
+        'Content-Type': 'text/event-stream',
+        'Cache-Control': 'no-cache',
+        'Connection': 'keep-alive',
+        'Access-Control-Allow-Origin': '*'
+    });
+
+    // Send initial connection message
+    res.write('data: {"type": "connected", "message": "Real-time updates connected"}\n\n');
+
+    // Add client to connected clients
+    const clientId = Date.now() + Math.random();
+    connectedClients.add({ id: clientId, res });
+
+    // Remove client when connection closes
+    req.on('close', () => {
+        connectedClients.delete({ id: clientId, res });
+        console.log(`🔌 Client disconnected. Total clients: ${connectedClients.size}`);
+    });
+
+    console.log(`🔌 New client connected. Total clients: ${connectedClients.size}`);
+});
+
+// Function to broadcast updates to all connected clients
+function broadcastUpdate(type, data) {
+    const message = `data: ${JSON.stringify({ type, data, timestamp: Date.now() })}\n\n`;
+    
+    connectedClients.forEach(client => {
+        try {
+            client.res.write(message);
+        } catch (error) {
+            console.error('❌ Error broadcasting to client:', error);
+            connectedClients.delete(client);
+        }
+    });
+    
+    console.log(`📡 Broadcasted ${type} update to ${connectedClients.size} clients`);
+}
 
 // Start server
 app.listen(PORT, () => {
