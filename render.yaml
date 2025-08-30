@@ -4,15 +4,11 @@ services:
     env: node
     plan: free
     buildCommand: npm install
-    startCommand: npm run start:render
+    startCommand: npm run start:prod
     envVars:
       - key: NODE_ENV
         value: production
       - key: PORT
         value: 10000
-      - key: SESSION_SECRET
-        value: your-super-secure-session-secret-change-this-in-production
-      - key: CORS_ORIGIN
-        value: "*"
     healthCheckPath: /
     autoDeploy: true

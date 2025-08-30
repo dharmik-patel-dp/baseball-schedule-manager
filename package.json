@@ -8,8 +8,7 @@
     "dev": "nodemon server.js",
     "build": "echo 'No build step required for Node.js app'",
     "deploy": "npm start",
-    "start:prod": "NODE_ENV=production node server.prod.js",
-    "start:render": "NODE_ENV=production node server.render.js"
+    "start:prod": "NODE_ENV=production node server.prod.js"
   },
   "keywords": [
     "baseball",

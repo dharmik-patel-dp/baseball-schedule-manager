@@ -20,14 +20,14 @@ app.use(compression()); // Enable gzip compression
 
 // Enhanced security middleware for production
 app.use(helmet({
-  contentSecurityPolicy: {
-    directives: {
-      defaultSrc: ["'self'"],
+    contentSecurityPolicy: {
+        directives: {
+            defaultSrc: ["'self'"],
       styleSrc: ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net", "https://cdnjs.cloudflare.com", "https://fonts.googleapis.com"],
       scriptSrc: ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net"],
-      scriptSrcAttr: ["'unsafe-inline'"],
+            scriptSrcAttr: ["'unsafe-inline'"],
       fontSrc: ["'self'", "https://fonts.gstatic.com", "https://cdnjs.cloudflare.com"],
-      imgSrc: ["'self'", "data:", "https:"],
+            imgSrc: ["'self'", "data:", "https:"],
       connectSrc: ["'self'"],
       frameSrc: ["'self'"],
       objectSrc: ["'none'"],
@@ -66,7 +66,7 @@ app.use(session({
 // Middleware
 app.use(cors({
   origin: process.env.CORS_ORIGIN || 'https://your-domain.com',
-  credentials: true
+    credentials: true
 }));
 app.use(bodyParser.json({ limit: '10mb' }));
 app.use(bodyParser.urlencoded({ extended: true, limit: '10mb' }));
@@ -115,24 +115,24 @@ function createDefaultAdmin() {
 db.serialize(() => {
   // Admin users table
   db.run(`CREATE TABLE IF NOT EXISTS admin_users (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
     username TEXT UNIQUE NOT NULL,
     password_hash TEXT NOT NULL,
     email TEXT,
     role TEXT DEFAULT 'admin',
     last_login DATETIME,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-  )`);
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    )`);
 
   // Staff directory table
-  db.run(`CREATE TABLE IF NOT EXISTS staff_directory (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT NOT NULL,
+    db.run(`CREATE TABLE IF NOT EXISTS staff_directory (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL,
     email TEXT,
-    phone TEXT,
-    parent_name TEXT,
+        phone TEXT,
+        parent_name TEXT,
     parent_email TEXT,
-    parent_phone TEXT,
+        parent_phone TEXT,
     role TEXT DEFAULT 'Staff',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
   )`);
@@ -168,7 +168,7 @@ app.post('/api/admin/login', loginLimiter, (req, res) => {
   }
   
   db.get("SELECT * FROM admin_users WHERE username = ?", [username], (err, user) => {
-    if (err) {
+        if (err) {
       console.error('Database error:', err);
       return res.status(500).json({ error: 'Internal server error' });
     }
@@ -198,18 +198,18 @@ app.post('/api/admin/login', loginLimiter, (req, res) => {
         username: user.username,
         email: user.email,
         role: user.role
-      }
+        }
     });
-  });
+});
 });
 
 app.post('/api/admin/logout', (req, res) => {
   req.session.destroy((err) => {
-    if (err) {
+        if (err) {
       return res.status(500).json({ error: 'Error logging out' });
     }
     res.json({ success: true, message: 'Logout successful' });
-  });
+        });
 });
 
 app.get('/api/admin/me', requireAuth, (req, res) => {
@@ -219,7 +219,7 @@ app.get('/api/admin/me', requireAuth, (req, res) => {
       return res.status(500).json({ error: 'Database error' });
     }
     res.json({ user });
-  });
+    });
 });
 
 // Import existing routes from server.js
@@ -228,12 +228,12 @@ app.get('/api/admin/me', requireAuth, (req, res) => {
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error('Production error:', err);
-  res.status(500).json({ error: 'Internal server error' });
+    res.status(500).json({ error: 'Internal server error' });
 });
 
 // 404 handler
 app.use((req, res) => {
-  res.status(404).json({ error: 'Route not found' });
+    res.status(404).json({ error: 'Route not found' });
 });
 
 // Start server
@@ -246,17 +246,17 @@ app.listen(PORT, () => {
 
 // Graceful shutdown
 process.on('SIGTERM', () => {
-  console.log('SIGTERM received, shutting down gracefully');
+    console.log('SIGTERM received, shutting down gracefully');
   db.close(() => {
-    console.log('Database connection closed');
-    process.exit(0);
-  });
+            console.log('Database connection closed');
+        process.exit(0);
+    });
 });
 
 process.on('SIGINT', () => {
-  console.log('SIGINT received, shutting down gracefully');
+    console.log('SIGINT received, shutting down gracefully');
   db.close(() => {
-    console.log('Database connection closed');
-    process.exit(0);
-  });
+            console.log('Database connection closed');
+        process.exit(0);
+    });
 });

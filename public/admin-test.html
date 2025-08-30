@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login Test - Debug Page</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        .test-section { margin: 20px 0; padding: 20px; border: 1px solid #ccc; border-radius: 5px; }
+        .success { background: #d4edda; border-color: #c3e6cb; }
+        .error { background: #f8d7da; border-color: #f5c6cb; }
+        .info { background: #d1ecf1; border-color: #bee5eb; }
+        button { padding: 10px 20px; margin: 5px; cursor: pointer; }
+        input { padding: 8px; margin: 5px; width: 200px; }
+        .log { background: #f8f9fa; padding: 10px; border-radius: 3px; font-family: monospace; max-height: 200px; overflow-y: auto; }
+    </style>
+</head>
+<body>
+    <h1>🔍 Admin Login Debug Page</h1>
+    
+    <div class="test-section info">
+        <h3>📋 Test Instructions</h3>
+        <p>This page will help us debug your admin login step by step. Follow the tests in order.</p>
+    </div>
+
+    <div class="test-section">
+        <h3>🧪 Test 1: Basic Page Load</h3>
+        <button onclick="testPageLoad()">Test Page Load</button>
+        <div id="test1-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>🔐 Test 2: Login Form</h3>
+        <input type="text" id="username" placeholder="Username" value="admin">
+        <input type="password" id="password" placeholder="Password" value="admin123">
+        <button onclick="testLogin()">Test Login</button>
+        <div id="test2-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>📡 Test 3: API Endpoint Test</h3>
+        <button onclick="testAPI()">Test API Endpoint</button>
+        <div id="test3-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>🍪 Test 4: Session Test</h3>
+        <button onclick="testSession()">Test Session</button>
+        <div id="test4-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>🚪 Test 5: Admin Panel Access</h3>
+        <button onclick="testAdminAccess()">Test Admin Access</button>
+        <div id="test5-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>📝 Debug Log</h3>
+        <div id="debug-log" class="log"></div>
+        <button onclick="clearLog()">Clear Log</button>
+    </div>
+
+    <script>
+        function log(message, type = 'info') {
+            const logDiv = document.getElementById('debug-log');
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = document.createElement('div');
+            logEntry.innerHTML = `[${timestamp}] ${message}`;
+            logEntry.style.color = type === 'error' ? 'red' : type === 'success' ? 'green' : 'black';
+            logDiv.appendChild(logEntry);
+            logDiv.scrollTop = logDiv.scrollHeight;
+            console.log(message);
+        }
+
+        function clearLog() {
+            document.getElementById('debug-log').innerHTML = '';
+        }
+
+        function showResult(testId, message, isSuccess = true) {
+            const resultDiv = document.getElementById(testId + '-result');
+            resultDiv.innerHTML = `<div class="${isSuccess ? 'success' : 'error'}">${message}</div>`;
+        }
+
+        // Test 1: Page Load
+        function testPageLoad() {
+            log('Testing page load...');
+            try {
+                if (document.readyState === 'complete') {
+                    showResult('test1', '✅ Page loaded successfully');
+                    log('✅ Page load test passed');
+                } else {
+                    showResult('test1', '❌ Page not fully loaded');
+                    log('❌ Page load test failed');
+                }
+            } catch (error) {
+                showResult('test1', '❌ Error: ' + error.message);
+                log('❌ Page load test error: ' + error.message, 'error');
+            }
+        }
+
+        // Test 2: Login Form
+        function testLogin() {
+            log('Testing login form...');
+            try {
+                const username = document.getElementById('username').value;
+                const password = document.getElementById('password').value;
+                
+                if (!username || !password) {
+                    showResult('test2', '❌ Username or password is empty');
+                    log('❌ Login form test failed: empty fields');
+                    return;
+                }
+                
+                showResult('test2', '✅ Login form data captured: ' + username + ' / ' + password);
+                log('✅ Login form test passed');
+            } catch (error) {
+                showResult('test2', '❌ Error: ' + error.message);
+                log('❌ Login form test error: ' + error.message, 'error');
+            }
+        }
+
+        // Test 3: API Endpoint
+        async function testAPI() {
+            log('Testing API endpoint...');
+            try {
+                const response = await fetch('/api/admin/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        username: 'admin', 
+                        password: 'admin123' 
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    showResult('test3', '✅ API test passed: ' + data.message);
+                    log('✅ API test passed: ' + JSON.stringify(data));
+                } else {
+                    showResult('test3', '❌ API test failed: ' + (data.error || 'Unknown error'));
+                    log('❌ API test failed: ' + JSON.stringify(data), 'error');
+                }
+            } catch (error) {
+                showResult('test3', '❌ Network error: ' + error.message);
+                log('❌ API test network error: ' + error.message, 'error');
+            }
+        }
+
+        // Test 4: Session Test
+        async function testSession() {
+            log('Testing session...');
+            try {
+                const response = await fetch('/api/admin/me');
+                
+                if (response.status === 401) {
+                    showResult('test4', '✅ Session test passed: Not authenticated (expected)');
+                    log('✅ Session test passed: Not authenticated');
+                } else if (response.ok) {
+                    const data = await response.json();
+                    showResult('test4', '✅ Session test passed: Already authenticated as ' + data.user.username);
+                    log('✅ Session test passed: Already authenticated');
+                } else {
+                    showResult('test4', '❌ Session test failed: Unexpected response');
+                    log('❌ Session test failed: Unexpected response', 'error');
+                }
+            } catch (error) {
+                showResult('test4', '❌ Session test error: ' + error.message);
+                log('❌ Session test error: ' + error.message, 'error');
+            }
+        }
+
+        // Test 5: Admin Panel Access
+        async function testAdminAccess() {
+            log('Testing admin panel access...');
+            try {
+                const response = await fetch('/admin');
+                
+                if (response.status === 401) {
+                    showResult('test5', '✅ Admin access test passed: Properly protected');
+                    log('✅ Admin access test passed: Properly protected');
+                } else if (response.ok) {
+                    showResult('test5', '⚠️ Admin access test: Already authenticated');
+                    log('⚠️ Admin access test: Already authenticated');
+                } else {
+                    showResult('test5', '❌ Admin access test failed: Unexpected response');
+                    log('❌ Admin access test failed: Unexpected response', 'error');
+                }
+            } catch (error) {
+                showResult('test5', '❌ Admin access test error: ' + error.message);
+                log('❌ Admin access test error: ' + error.message, 'error');
+            }
+        }
+
+        // Auto-run page load test
+        window.addEventListener('load', () => {
+            setTimeout(testPageLoad, 500);
+        });
+    </script>
+</body>
+</html>

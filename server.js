@@ -47,7 +47,7 @@ app.use(session({
   resave: false,
   saveUninitialized: false,
   cookie: {
-    secure: process.env.NODE_ENV === 'production',
+    secure: false, // Set to false for local development (HTTP)
     httpOnly: true,
     maxAge: 24 * 60 * 60 * 1000 // 24 hours
   }
@@ -423,6 +423,11 @@ db.serialize(() => {
 // Serve admin login page
 app.get('/admin-login', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'admin-login.html'));
+});
+
+// Serve admin debug test page
+app.get('/admin-test', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'admin-test.html'));
 });
 
 // Serve admin panel (protected)
