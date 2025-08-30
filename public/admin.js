@@ -3204,7 +3204,7 @@ async function bulkDeleteConcessionStaff() {
     
     try {
         const response = await fetch('/api/concession-staff/bulk-delete', {
-            method: 'DELETE',
+            method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
