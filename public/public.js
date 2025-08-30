@@ -689,6 +689,10 @@ async function populateRequestDropdowns() {
         // Populate concession staff dropdown
         const concessionStaffSelect = document.getElementById('requestedConcessionStaff');
         if (concessionStaffSelect) {
+            console.log('🔄 Populating concession staff dropdown...');
+            console.log('Available staff names:', staffNames);
+            console.log('Current game concession staff:', currentGame?.concession_staff);
+            
             concessionStaffSelect.innerHTML = '<option value="">No change</option>';
             
             // Add current assignment first if available
@@ -700,13 +704,16 @@ async function populateRequestDropdowns() {
                 currentOption.style.fontStyle = 'italic';
                 currentOption.setAttribute('data-current', 'true'); // Mark as current
                 concessionStaffSelect.appendChild(currentOption);
+                console.log('✅ Added current concession staff option:', currentGame.concession_staff);
             }
             
             // Add available alternatives from database
             if (staffNames.length > 0) {
+                console.log('🔄 Adding concession staff options:', staffNames);
                 staffNames.forEach(name => {
                     // Don't add if it's the current assignment (already added above)
                     if (currentGame && name === currentGame.concession_staff) {
+                        console.log('⏭️ Skipping current assignment:', name);
                         return;
                     }
                     
@@ -714,6 +721,7 @@ async function populateRequestDropdowns() {
                     option.value = name;
                     option.textContent = name;
                     concessionStaffSelect.appendChild(option);
+                    console.log('✅ Added concession staff option:', name);
                 });
                 
                 // Add helpful note below the dropdown
@@ -723,6 +731,7 @@ async function populateRequestDropdowns() {
                 }
             } else {
                 // Show message when no staff available
+                console.log('⚠️ No concession staff available, showing error message');
                 const noOption = document.createElement('option');
                 noOption.value = "";
                 noOption.textContent = "No concession staff available";
