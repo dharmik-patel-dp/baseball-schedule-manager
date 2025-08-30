@@ -445,6 +445,15 @@
             </form>
         </div>
 
+        <!-- Debug Section (Remove in production) -->
+        <div class="mt-4 p-3 bg-light border rounded">
+            <h6><i class="fas fa-bug me-2"></i>Debug Panel</h6>
+            <button class="btn btn-sm btn-info me-2" onclick="testDropdownPopulation()">Test Dropdowns</button>
+            <button class="btn btn-sm btn-warning me-2" onclick="checkUmpireData()">Check Umpire Data</button>
+            <button class="btn btn-sm btn-success me-2" onclick="forceLoadUmpires()">Force Load Umpires</button>
+            <div id="debugOutput" class="mt-2 small text-muted"></div>
+        </div>
+
         <!-- Alert Messages -->
         <div id="alertContainer"></div>
     </div>
