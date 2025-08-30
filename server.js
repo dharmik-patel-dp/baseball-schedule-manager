@@ -1,3 +1,6 @@
+// Load environment variables
+require('dotenv').config();
+
 const express = require('express');
 const sqlite3 = require('sqlite3').verbose();
 const multer = require('multer');
@@ -10,6 +13,7 @@ const bcrypt = require('bcryptjs');
 const session = require('express-session');
 const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
+const { emailService } = require('./email-config');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -270,6 +274,9 @@ db.serialize(() => {
     requested_plate_umpire TEXT,
     requested_base_umpire TEXT,
     reason TEXT NOT NULL,
+    requester_name TEXT NOT NULL,
+    requester_email TEXT NOT NULL,
+    requester_phone TEXT,
     status TEXT DEFAULT 'pending',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (game_id) REFERENCES schedules (id)
@@ -282,6 +289,9 @@ db.serialize(() => {
     current_concession_staff TEXT NOT NULL,
     requested_concession_staff TEXT,
     reason TEXT NOT NULL,
+    requester_name TEXT NOT NULL,
+    requester_email TEXT NOT NULL,
+    requester_phone TEXT,
     status TEXT DEFAULT 'pending',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (game_id) REFERENCES schedules (id)
@@ -451,6 +461,30 @@ app.get('/', (req, res) => {
 // Staff Directory Routes
 app.get('/api/staff', (req, res) => {
   const query = 'SELECT * FROM staff_directory ORDER BY name';
+  db.all(query, [], (err, rows) => {
+    if (err) {
+      res.status(500).json({ error: err.message });
+      return;
+    }
+    res.json(rows);
+  });
+});
+
+// Plate Umpires Routes
+app.get('/api/plate-umpires', (req, res) => {
+  const query = 'SELECT * FROM plate_umpires WHERE availability = "Available" ORDER BY name';
+  db.all(query, [], (err, rows) => {
+    if (err) {
+      res.status(500).json({ error: err.message });
+      return;
+    }
+    res.json(rows);
+  });
+});
+
+// Base Umpires Routes
+app.get('/api/base-umpires', (req, res) => {
+  const query = 'SELECT * FROM base_umpires WHERE availability = "Available" ORDER BY name';
   db.all(query, [], (err, rows) => {
     if (err) {
       res.status(500).json({ error: err.message });
@@ -800,33 +834,84 @@ app.get('/api/umpire-requests', (req, res) => {
 });
 
 // Create umpire request
-app.post('/api/umpire-requests', (req, res) => {
+app.post('/api/umpire-requests', async (req, res) => {
   const {
     game_id, current_plate_umpire, current_base_umpire,
-    requested_plate_umpire, requested_base_umpire, reason
+    requested_plate_umpire, requested_base_umpire, reason,
+    requester_name, requester_email, requester_phone
   } = req.body;
 
-  const query = `INSERT INTO umpire_requests (
-    game_id, current_plate_umpire, current_base_umpire,
-    requested_plate_umpire, requested_base_umpire, reason
-  ) VALUES (?, ?, ?, ?, ?, ?)`;
+  // Validate required fields
+  if (!game_id || !requester_name || !requester_email) {
+    return res.status(400).json({ error: 'Game ID, requester name, and email are required' });
+  }
 
-  db.run(query, [
-    game_id, current_plate_umpire, current_base_umpire,
-    requested_plate_umpire, requested_base_umpire, reason
-  ], function(err) {
+  // Get current game details first
+  db.get("SELECT * FROM schedules WHERE id = ?", [game_id], (err, game) => {
     if (err) {
-      res.status(500).json({ error: err.message });
-      return;
+      return res.status(500).json({ error: err.message });
     }
-    res.json({ id: this.lastID, message: 'Request submitted successfully' });
+    
+    if (!game) {
+      return res.status(404).json({ error: 'Game not found' });
+    }
+
+    const query = `INSERT INTO umpire_requests (
+      game_id, current_plate_umpire, current_base_umpire,
+      requested_plate_umpire, requested_base_umpire, reason,
+      requester_name, requester_email, requester_phone
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+
+    db.run(query, [
+      game_id, current_plate_umpire || '', current_base_umpire || '',
+      requested_plate_umpire || '', requested_base_umpire || '', reason || '',
+      requester_name, requester_email, requester_phone || ''
+    ], async function(err) {
+      if (err) {
+        res.status(500).json({ error: err.message });
+        return;
+      }
+
+      const requestId = this.lastID;
+
+      try {
+        // Send email notification to admin
+        const requestData = {
+          gameDate: game.date,
+          gameTime: `${game.start_time} ${game.am_pm}`,
+          homeTeam: game.home_team,
+          visitorTeam: game.visitor_team,
+          venue: game.venue,
+          division: game.division,
+          plateUmpireChange: requested_plate_umpire && requested_plate_umpire !== game.plate_umpire,
+          baseUmpireChange: requested_base_umpire && requested_base_umpire !== game.base_umpire,
+          currentPlateUmpire: game.plate_umpire || 'Not assigned',
+          requestedPlateUmpire: requested_plate_umpire || 'No change',
+          currentBaseUmpire: game.base_umpire || 'Not assigned',
+          requestedBaseUmpire: requested_base_umpire || 'No change',
+          requesterName: requester_name,
+          requesterEmail: requester_email,
+          requesterPhone: requester_phone || 'Not provided',
+          reason: reason || 'No reason provided'
+        };
+        
+        const emailResult = await emailService.notifyAdminOfRequest(requestData);
+        console.log('📧 Admin notification email result:', emailResult);
+        
+      } catch (emailError) {
+        console.error('❌ Failed to send admin notification email:', emailError);
+        // Don't fail the request if email fails
+      }
+
+      res.json({ id: requestId, message: 'Request submitted successfully' });
+    });
   });
 });
 
 // Update umpire request status
-app.put('/api/umpire-requests/:id/status', (req, res) => {
+app.put('/api/umpire-requests/:id/status', async (req, res) => {
   const { id } = req.params;
-  const { status } = req.body;
+  const { status, adminNotes } = req.body;
 
   // First, get the umpire request details to know which game and what umpires were requested
   db.get('SELECT * FROM umpire_requests WHERE id = ?', [id], (err, request) => {
@@ -840,96 +925,239 @@ app.put('/api/umpire-requests/:id/status', (req, res) => {
       return;
     }
 
-    // Start a transaction to update both the request status and the game schedule
-    db.run('BEGIN TRANSACTION', (err) => {
+    // Get game details for email notifications
+    db.get('SELECT * FROM schedules WHERE id = ?', [request.game_id], (err, game) => {
       if (err) {
-        res.status(500).json({ error: 'Failed to start transaction' });
+        res.status(500).json({ error: err.message });
         return;
       }
 
-      // Update the umpire request status
-      db.run('UPDATE umpire_requests SET status = ? WHERE id = ?', [status, id], function(err) {
+      // Start a transaction to update both the request status and the game schedule
+      db.run('BEGIN TRANSACTION', (err) => {
         if (err) {
-          db.run('ROLLBACK', () => {});
-          res.status(500).json({ error: err.message });
+          res.status(500).json({ error: 'Failed to start transaction' });
           return;
         }
 
-        // If the request is approved, update the game schedule with the new umpire assignments
-        if (status === 'approved') {
-          const updateQuery = `
-            UPDATE schedules 
-            SET plate_umpire = ?, base_umpire = ?, updated_at = CURRENT_TIMESTAMP
-            WHERE id = ?
-          `;
-          
-          const updateValues = [
-            request.requested_plate_umpire || request.current_plate_umpire,
-            request.requested_base_umpire || request.current_base_umpire,
-            request.game_id
-          ];
+        // Update the umpire request status
+        db.run('UPDATE umpire_requests SET status = ? WHERE id = ?', [status, id], function(err) {
+          if (err) {
+            db.run('ROLLBACK', () => {});
+            res.status(500).json({ error: err.message });
+            return;
+          }
 
-          db.run(updateQuery, updateValues, function(err) {
-            if (err) {
-              db.run('ROLLBACK', () => {});
-              res.status(500).json({ error: 'Failed to update game schedule: ' + err.message });
-              return;
-            }
+          // If the request is approved, update the game schedule with the new umpire assignments
+          if (status === 'approved') {
+            const updateQuery = `
+              UPDATE schedules 
+              SET plate_umpire = ?, base_umpire = ?, updated_at = CURRENT_TIMESTAMP
+              WHERE id = ?
+            `;
+            
+            const updateValues = [
+              request.requested_plate_umpire || request.current_plate_umpire,
+              request.requested_base_umpire || request.current_base_umpire,
+              request.game_id
+            ];
 
-            // Commit the transaction
-            db.run('COMMIT', (err) => {
+            db.run(updateQuery, updateValues, function(err) {
+              if (err) {
+                db.run('ROLLBACK', () => {});
+                res.status(500).json({ error: 'Failed to update game schedule: ' + err.message });
+                return;
+              }
+
+              // Commit the transaction
+              db.run('COMMIT', async (err) => {
+                if (err) {
+                  res.status(500).json({ error: 'Failed to commit transaction' });
+                  return;
+                }
+
+                console.log(`✅ Umpire request ${id} approved and game schedule updated for game ${request.game_id}`);
+                
+                // Send email notifications
+                try {
+                  // Notify user of approval
+                  const userNotificationData = {
+                    gameDate: game.date,
+                    gameTime: `${game.start_time} ${game.am_pm}`,
+                    homeTeam: game.home_team,
+                    visitorTeam: game.visitor_team,
+                    venue: game.venue,
+                    division: game.division,
+                    plateUmpireChange: request.requested_plate_umpire && request.requested_plate_umpire !== game.plate_umpire,
+                    baseUmpireChange: request.requested_base_umpire && request.requested_base_umpire !== game.base_umpire,
+                    currentPlateUmpire: game.plate_umpire || 'Not assigned',
+                    requestedPlateUmpire: request.requested_plate_umpire || 'No change',
+                    currentBaseUmpire: game.base_umpire || 'Not assigned',
+                    requestedBaseUmpire: request.requested_base_umpire || 'No change',
+                    status: 'approved',
+                    adminNotes: adminNotes || '',
+                    requesterEmail: request.requester_email
+                  };
+                  
+                  const userEmailResult = await emailService.notifyUserOfDecision(userNotificationData);
+                  console.log('📧 User approval notification email result:', userEmailResult);
+                  
+                  // Notify newly assigned umpires
+                  const assignmentData = {
+                    gameDate: game.date,
+                    gameTime: `${game.start_time} ${game.am_pm}`,
+                    homeTeam: game.home_team,
+                    visitorTeam: game.visitor_team,
+                    venue: game.venue,
+                    division: game.division,
+                    plateUmpire: request.requested_plate_umpire || request.current_plate_umpire,
+                    baseUmpire: request.requested_base_umpire || request.current_base_umpire,
+                    plateUmpireEmail: request.requested_plate_umpire ? getStaffEmail(request.requested_plate_umpire) : null,
+                    baseUmpireEmail: request.requested_base_umpire ? getStaffEmail(request.requested_base_umpire) : null,
+                    assignedBy: 'Admin',
+                    assignmentDate: new Date().toLocaleDateString()
+                  };
+                  
+                  const assignmentEmailResult = await emailService.notifyAssignment(assignmentData);
+                  console.log('📧 Assignment notification email result:', assignmentEmailResult);
+                  
+                } catch (emailError) {
+                  console.error('❌ Failed to send email notifications:', emailError);
+                  // Don't fail the request if email fails
+                }
+                
+                res.json({ 
+                  message: 'Request approved and game schedule updated successfully',
+                  gameId: request.game_id,
+                  updatedUmpires: {
+                    plate_umpire: request.requested_plate_umpire || request.current_plate_umpire,
+                    base_umpire: request.requested_base_umpire || request.current_base_umpire
+                  }
+                });
+              });
+            });
+          } else {
+            // If not approved, just commit the status update
+            db.run('COMMIT', async (err) => {
               if (err) {
                 res.status(500).json({ error: 'Failed to commit transaction' });
                 return;
               }
 
-              console.log(`✅ Umpire request ${id} approved and game schedule updated for game ${request.game_id}`);
+              console.log(`✅ Umpire request ${id} status updated to: ${status}`);
+              
+              // Send rejection notification to user
+              try {
+                const userNotificationData = {
+                  gameDate: game.date,
+                  gameTime: `${game.start_time} ${game.am_pm}`,
+                  homeTeam: game.home_team,
+                  visitorTeam: game.visitor_team,
+                  venue: game.venue,
+                  division: game.division,
+                  plateUmpireChange: request.requested_plate_umpire && request.requested_plate_umpire !== game.plate_umpire,
+                  baseUmpireChange: request.requested_base_umpire && request.requested_base_umpire !== game.base_umpire,
+                  currentPlateUmpire: game.plate_umpire || 'Not assigned',
+                  requestedPlateUmpire: request.requested_plate_umpire || 'No change',
+                  currentBaseUmpire: game.base_umpire || 'Not assigned',
+                  requestedBaseUmpire: request.requested_base_umpire || 'No change',
+                  status: 'rejected',
+                  adminNotes: adminNotes || 'No reason provided',
+                  requesterEmail: request.requester_email
+                };
+                
+                const userEmailResult = await emailService.notifyUserOfDecision(userNotificationData);
+                console.log('📧 User rejection notification email result:', userEmailResult);
+                
+              } catch (emailError) {
+                console.error('❌ Failed to send rejection notification email:', emailError);
+                // Don't fail the request if email fails
+              }
+              
               res.json({ 
-                message: 'Request approved and game schedule updated successfully',
-                gameId: request.game_id,
-                updatedUmpires: {
-                  plate_umpire: request.requested_plate_umpire || request.current_plate_umpire,
-                  base_umpire: request.requested_base_umpire || request.current_base_umpire
-                }
+                message: 'Request status updated successfully',
+                status: status
               });
             });
-          });
-        } else {
-          // If not approved, just commit the status update
-          db.run('COMMIT', (err) => {
-            if (err) {
-              res.status(500).json({ error: 'Failed to commit transaction' });
-              return;
-            }
-
-            console.log(`✅ Umpire request ${id} status updated to: ${status}`);
-            res.json({ 
-              message: 'Request status updated successfully',
-              status: status
-            });
-          });
-        }
+          }
+        });
       });
     });
   });
 });
 
+// Helper function to get staff email
+function getStaffEmail(staffName) {
+  // This would need to be implemented to query the staff directory
+  // For now, return null - you can implement this based on your staff table structure
+  return null;
+}
+
 // Concession Staff Request Routes
-app.post('/api/concession-staff-requests', (req, res) => {
+app.post('/api/concession-staff-requests', async (req, res) => {
   const {
-    game_id, current_concession_staff, requested_concession_staff, reason
+    game_id, current_concession_staff, requested_concession_staff, reason,
+    requester_name, requester_email, requester_phone
   } = req.body;
 
-  const query = `INSERT INTO concession_staff_requests (
-    game_id, current_concession_staff, requested_concession_staff, reason
-  ) VALUES (?, ?, ?, ?)`;
+  // Validate required fields
+  if (!game_id || !requester_name || !requester_email) {
+    return res.status(400).json({ error: 'Game ID, requester name, and email are required' });
+  }
 
-  db.run(query, [game_id, current_concession_staff, requested_concession_staff, reason], function(err) {
+  // Get current game details first
+  db.get("SELECT * FROM schedules WHERE id = ?", [game_id], (err, game) => {
     if (err) {
-      res.status(500).json({ error: err.message });
-      return;
+      return res.status(500).json({ error: err.message });
     }
-    res.json({ id: this.lastID, message: 'Request submitted successfully' });
+    
+    if (!game) {
+      return res.status(404).json({ error: 'Game not found' });
+    }
+
+    const query = `INSERT INTO concession_staff_requests (
+      game_id, current_concession_staff, requested_concession_staff, reason,
+      requester_name, requester_email, requester_phone
+    ) VALUES (?, ?, ?, ?, ?, ?, ?)`;
+
+    db.run(query, [
+      game_id, current_concession_staff || '', requested_concession_staff || '', reason || '',
+      requester_name, requester_email, requester_phone || ''
+    ], async function(err) {
+      if (err) {
+        res.status(500).json({ error: err.message });
+        return;
+      }
+
+      const requestId = this.lastID;
+
+      try {
+        // Send email notification to admin
+        const requestData = {
+          gameDate: game.date,
+          gameTime: `${game.start_time} ${game.am_pm}`,
+          homeTeam: game.home_team,
+          visitorTeam: game.visitor_team,
+          venue: game.venue,
+          division: game.division,
+          concessionStaffChange: requested_concession_staff && requested_concession_staff !== game.concession_staff,
+          currentConcessionStaff: game.concession_staff || 'Not assigned',
+          requestedConcessionStaff: requested_concession_staff || 'No change',
+          requesterName: requester_name,
+          requesterEmail: requester_email,
+          requesterPhone: requester_phone || 'Not provided',
+          reason: reason || 'No reason provided'
+        };
+        
+        const emailResult = await emailService.notifyAdminOfRequest(requestData);
+        console.log('📧 Admin concession staff notification email result:', emailResult);
+        
+      } catch (emailError) {
+        console.error('❌ Failed to send admin notification email:', emailError);
+        // Don't fail the request if email fails
+      }
+
+      res.json({ id: requestId, message: 'Request submitted successfully' });
+    });
   });
 });
 

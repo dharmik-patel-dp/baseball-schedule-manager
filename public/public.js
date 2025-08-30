@@ -385,6 +385,43 @@ function populateFilterDropdowns() {
     }
 }
 
+// Function to fetch umpire data from database
+async function fetchUmpireData() {
+    try {
+        console.log('🔄 Fetching plate umpires...');
+        const plateResponse = await fetch('/api/plate-umpires');
+        if (plateResponse.ok) {
+            const plateUmpires = await plateResponse.json();
+            const fetchedPlateNames = plateUmpires.map(umpire => umpire.name);
+            // Update the global arrays
+            window.allPlateUmpires = plateUmpires;
+            plateUmpireNames = fetchedPlateNames;
+            console.log('✅ Fetched plate umpires:', fetchedPlateNames);
+        } else {
+            console.error('❌ Failed to fetch plate umpires:', plateResponse.status);
+        }
+        
+        console.log('🔄 Fetching base umpires...');
+        const baseResponse = await fetch('/api/base-umpires');
+        if (baseResponse.ok) {
+            const baseUmpires = await baseResponse.json();
+            const fetchedBaseNames = baseUmpires.map(umpire => umpire.name);
+            // Update the global arrays
+            window.allBaseUmpires = baseUmpires;
+            baseUmpireNames = fetchedBaseNames;
+            console.log('✅ Fetched base umpires:', fetchedBaseNames);
+        } else {
+            console.error('❌ Failed to fetch base umpires:', baseResponse.status);
+        }
+        
+    } catch (error) {
+        console.error('❌ Error fetching umpire data:', error);
+        // Don't use fallback names - only real database data
+        plateUmpireNames = [];
+        baseUmpireNames = [];
+    }
+}
+
 // Populate request form dropdowns
 async function populateRequestDropdowns() {
     console.log('🔄 Starting to populate request dropdowns...');
@@ -457,21 +494,42 @@ async function populateRequestDropdowns() {
             }
         }
         
-        // Fallback for umpire names if dedicated lists aren't available
+        // Remove fallback names - only use real database data
         if (plateUmpireNames.length === 0) {
-            plateUmpireNames = ['Dylan LeLacheur', 'Arthur DeSouza', 'Connor Stevens', 'James Kane', 'Nathan Nelson', 'Scott Patenaude'];
-            console.log('Using fallback plate umpire names');
+            console.log('⚠️ No plate umpires found, fetching from database...');
+            await fetchUmpireData();
+            // Update the local variables with the fetched data
+            if (window.allPlateUmpires && window.allPlateUmpires.length > 0) {
+                plateUmpireNames = window.allPlateUmpires.map(u => u.name);
+                console.log('✅ Updated plate umpire names from database:', plateUmpireNames);
+            }
         }
         
         if (baseUmpireNames.length === 0) {
-            baseUmpireNames = ['Scott Patenaude', 'Brady Foote', 'Jack Duffy', 'Logan Kelly', 'Ryan Abrams', 'Zach Chachus'];
-            console.log('Using fallback base umpire names');
+            console.log('⚠️ No base umpires found, fetching from database...');
+            await fetchUmpireData();
+            // Update the local variables with the fetched data
+            if (window.allBaseUmpires && window.allBaseUmpires.length > 0) {
+                baseUmpireNames = window.allBaseUmpires.map(u => u.name);
+                console.log('✅ Updated base umpire names from database:', baseUmpireNames);
+            }
         }
         
-        // Fallback for staff names
+        // If still no data, show error message instead of fallback names
+        if (plateUmpireNames.length === 0) {
+            console.error('❌ No plate umpires available in database');
+            plateUmpireNames = [];
+        }
+        
+        if (baseUmpireNames.length === 0) {
+            console.error('❌ No base umpires available in database');
+            baseUmpireNames = [];
+        }
+        
+        // Only use real database data for staff names
         if (staffNames.length === 0) {
-            staffNames = ['Dylan LeLacheur', 'Scott Patenaude', 'Arthur DeSouza', 'Brady Foote', 'James Kane', 'Logan Kelly', 'Connor Stevens', 'Jack Duffy', 'Nathan Nelson', 'Ryan Abrams', 'Matthew Rurak', 'Zach Chachus', 'Andrey LeMay', 'Ben Durkin', 'Emily Lelacheur', 'Kate LeLacheur', 'Danny Gallo', 'Brayden Shea'];
-            console.log('Using fallback staff names');
+            console.log('⚠️ No concession staff found in database');
+            staffNames = [];
         }
         
         console.log('Final names to use - Plate:', plateUmpireNames.length, 'Base:', baseUmpireNames.length, 'Staff:', staffNames.length);
@@ -491,30 +549,38 @@ async function populateRequestDropdowns() {
                 plateUmpireSelect.appendChild(currentOption);
             }
             
-            // Add ALL available alternatives (including current assignment)
-            plateUmpireNames.forEach(name => {
-                // Always add all plate umpires, even if it's the current assignment
-                const option = document.createElement('option');
-                option.value = name;
-                
-                // Mark current assignment differently
-                if (currentGame && name === currentGame.plate_umpire) {
-                    option.textContent = `${name} (Current)`;
-                    option.style.fontWeight = 'bold';
-                    option.style.color = '#6c757d';
-                    option.setAttribute('data-current', 'true'); // Mark as current
-                } else {
+            // Add available alternatives from database
+            if (plateUmpireNames.length > 0) {
+                plateUmpireNames.forEach(name => {
+                    // Don't add if it's the current assignment (already added above)
+                    if (currentGame && name === currentGame.plate_umpire) {
+                        return;
+                    }
+                    
+                    const option = document.createElement('option');
+                    option.value = name;
                     option.textContent = name;
-                }
+                    plateUmpireSelect.appendChild(option);
+                });
+                console.log('✅ Plate umpire dropdown populated with', plateUmpireSelect.options.length, 'options');
                 
-                plateUmpireSelect.appendChild(option);
-            });
-            console.log('✅ Plate umpire dropdown populated with', plateUmpireSelect.options.length, 'options');
-            
-            // Add helpful note below the dropdown
-            const plateUmpireNote = document.getElementById('plateUmpireNote');
-            if (plateUmpireNote) {
-                plateUmpireNote.innerHTML = '<small class="text-muted"><i class="fas fa-info-circle me-1"></i>All available plate umpires are shown. Current assignment is marked with "(Current)".</small>';
+                // Add helpful note below the dropdown
+                const plateUmpireNote = document.getElementById('plateUmpireNote');
+                if (plateUmpireNote) {
+                    plateUmpireNote.innerHTML = '<small class="text-muted"><i class="fas fa-info-circle me-1"></i>Available plate umpires from database. Current assignment is marked with "(Current)".</small>';
+                }
+            } else {
+                // Show message when no umpires available
+                const noOption = document.createElement('option');
+                noOption.value = "";
+                noOption.textContent = "No plate umpires available";
+                noOption.disabled = true;
+                plateUmpireSelect.appendChild(noOption);
+                
+                const plateUmpireNote = document.getElementById('plateUmpireNote');
+                if (plateUmpireNote) {
+                    plateUmpireNote.innerHTML = '<small class="text-danger"><i class="fas fa-exclamation-triangle me-1"></i>No plate umpires found in database. Please add umpires in the admin panel.</small>';
+                }
             }
         } else {
             console.error('❌ Plate umpire dropdown element not found!');
@@ -535,30 +601,38 @@ async function populateRequestDropdowns() {
                 baseUmpireSelect.appendChild(currentOption);
             }
             
-            // Add ALL available alternatives (including current assignment)
-            baseUmpireNames.forEach(name => {
-                // Always add all base umpires, even if it's the current assignment
-                const option = document.createElement('option');
-                option.value = name;
-                
-                // Mark current assignment differently
-                if (currentGame && name === currentGame.base_umpire) {
-                    option.textContent = `${name} (Current)`;
-                    option.style.fontWeight = 'bold';
-                    option.style.color = '#6c757d';
-                    option.setAttribute('data-current', 'true'); // Mark as current
-                } else {
+            // Add available alternatives from database
+            if (baseUmpireNames.length > 0) {
+                baseUmpireNames.forEach(name => {
+                    // Don't add if it's the current assignment (already added above)
+                    if (currentGame && name === currentGame.base_umpire) {
+                        return;
+                    }
+                    
+                    const option = document.createElement('option');
+                    option.value = name;
                     option.textContent = name;
-                }
+                    baseUmpireSelect.appendChild(option);
+                });
+                console.log('✅ Base umpire dropdown populated with', baseUmpireSelect.options.length, 'options');
                 
-                baseUmpireSelect.appendChild(option);
-            });
-            console.log('✅ Base umpire dropdown populated with', baseUmpireSelect.options.length, 'options');
-            
-            // Add helpful note below the dropdown
-            const baseUmpireNote = document.getElementById('baseUmpireNote');
-            if (baseUmpireNote) {
-                baseUmpireNote.innerHTML = '<small class="text-muted"><i class="fas fa-info-circle me-1"></i>All available base umpires are shown. Current assignment is marked with "(Current)".</small>';
+                // Add helpful note below the dropdown
+                const baseUmpireNote = document.getElementById('baseUmpireNote');
+                if (baseUmpireNote) {
+                    baseUmpireNote.innerHTML = '<small class="text-muted"><i class="fas fa-info-circle me-1"></i>Available base umpires from database. Current assignment is marked with "(Current)".</small>';
+                }
+            } else {
+                // Show message when no umpires available
+                const noOption = document.createElement('option');
+                noOption.value = "";
+                noOption.textContent = "No base umpires available";
+                noOption.disabled = true;
+                baseUmpireSelect.appendChild(noOption);
+                
+                const baseUmpireNote = document.getElementById('baseUmpireNote');
+                if (baseUmpireNote) {
+                    baseUmpireNote.innerHTML = '<small class="text-danger"><i class="fas fa-exclamation-triangle me-1"></i>No base umpires found in database. Please add umpires in the admin panel.</small>';
+                }
             }
         } else {
             console.error('❌ Base umpire dropdown element not found!');
@@ -580,29 +654,37 @@ async function populateRequestDropdowns() {
                 concessionStaffSelect.appendChild(currentOption);
             }
             
-            // Add ALL available alternatives (including current assignment)
-            staffNames.forEach(name => {
-                // Always add all staff members, even if it's the current assignment
-                const option = document.createElement('option');
-                option.value = name;
-                
-                // Mark current assignment differently
-                if (currentGame && name === currentGame.concession_staff) {
-                    option.textContent = `${name} (Current)`;
-                    option.style.fontWeight = 'bold';
-                    option.style.color = '#6c757d';
-                    option.setAttribute('data-current', 'true'); // Mark as current
-                } else {
+            // Add available alternatives from database
+            if (staffNames.length > 0) {
+                staffNames.forEach(name => {
+                    // Don't add if it's the current assignment (already added above)
+                    if (currentGame && name === currentGame.concession_staff) {
+                        return;
+                    }
+                    
+                    const option = document.createElement('option');
+                    option.value = name;
                     option.textContent = name;
-                }
+                    concessionStaffSelect.appendChild(option);
+                });
                 
-                concessionStaffSelect.appendChild(option);
-            });
-            
-            // Add helpful note below the dropdown
-            const noteElement = document.getElementById('concessionStaffNote');
-            if (noteElement) {
-                noteElement.innerHTML = '<small class="text-muted"><i class="fas fa-info-circle me-1"></i>All available concession staff members are shown. Current assignment is marked with "(Current)".</small>';
+                // Add helpful note below the dropdown
+                const noteElement = document.getElementById('concessionStaffNote');
+                if (noteElement) {
+                    noteElement.innerHTML = '<small class="text-muted"><i class="fas fa-info-circle me-1"></i>Available concession staff from database. Current assignment is marked with "(Current)".</small>';
+                }
+            } else {
+                // Show message when no staff available
+                const noOption = document.createElement('option');
+                noOption.value = "";
+                noOption.textContent = "No concession staff available";
+                noOption.disabled = true;
+                concessionStaffSelect.appendChild(noOption);
+                
+                const noteElement = document.getElementById('concessionStaffNote');
+                if (noteElement) {
+                    noteElement.innerHTML = '<small class="text-danger"><i class="fas fa-exclamation-triangle me-1"></i>No concession staff found in database. Please add staff in the admin panel.</small>';
+                }
             }
             
             console.log('✅ Concession staff dropdown populated with', concessionStaffSelect.options.length, 'options');
@@ -1685,7 +1767,10 @@ async function handleUmpireRequest(e) {
         current_base_umpire: document.getElementById('currentUmpires').textContent.split('Base: ')[1] || '',
         requested_plate_umpire: document.getElementById('requestedPlateUmpire').value,
         requested_base_umpire: document.getElementById('requestedBaseUmpire').value,
-        reason: document.getElementById('changeReason').value
+        reason: document.getElementById('changeReason').value,
+        requester_name: document.getElementById('requesterName').value,
+        requester_email: document.getElementById('requesterEmail').value,
+        requester_phone: document.getElementById('requesterPhone').value
     };
 
     try {
@@ -1752,7 +1837,10 @@ async function handleConcessionStaffRequest(e) {
         game_id: document.getElementById('concessionRequestGameId').value,
         current_concession_staff: document.getElementById('currentConcessionStaff').textContent,
         requested_concession_staff: document.getElementById('requestedConcessionStaff').value,
-        reason: document.getElementById('concessionChangeReason').value
+        reason: document.getElementById('concessionChangeReason').value,
+        requester_name: document.getElementById('concessionRequesterName').value,
+        requester_email: document.getElementById('concessionRequesterEmail').value,
+        requester_phone: document.getElementById('concessionRequesterPhone').value
     };
     
     try {
