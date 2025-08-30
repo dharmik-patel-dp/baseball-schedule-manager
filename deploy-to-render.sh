@@ -1,117 +1,59 @@
 #!/bin/bash
 
-echo "🚀 Baseball/Softball Schedule Manager - Render.com Deployment"
-echo "=============================================================="
-echo ""
+# 🚀 Quick Render Deployment Script
+# This script helps you deploy your Baseball project to Render
 
-# Check if all required files exist
-echo "📋 Checking deployment files..."
-if [ ! -f "server.prod.js" ]; then
-    echo "❌ Error: server.prod.js not found!"
+echo "⚾ Baseball Schedule Manager - Render Deployment"
+echo "================================================"
+
+# Check if git is available
+if ! command -v git &> /dev/null; then
+    echo "❌ Git is not installed. Please install Git first."
     exit 1
 fi
 
-if [ ! -f "render.yaml" ]; then
-    echo "❌ Error: render.yaml not found!"
+# Check if we're in a git repository
+if ! git rev-parse --git-dir > /dev/null 2>&1; then
+    echo "❌ Not in a git repository. Please navigate to your project directory."
     exit 1
 fi
 
-if [ ! -f "package.json" ]; then
-    echo "❌ Error: package.json not found!"
-    exit 1
+# Check if we have uncommitted changes
+if ! git diff-index --quiet HEAD --; then
+    echo "⚠️  You have uncommitted changes. Committing them now..."
+    git add .
+    git commit -m "🚀 Auto-commit before Render deployment"
 fi
 
-echo "✅ All deployment files found!"
-
-# Check if dependencies are installed
-echo ""
-echo "📦 Checking dependencies..."
-if [ ! -d "node_modules" ]; then
-    echo "📥 Installing dependencies..."
-    npm install
+# Push to GitHub
+echo "📤 Pushing to GitHub..."
+if git push origin main; then
+    echo "✅ Successfully pushed to GitHub!"
 else
-    echo "✅ Dependencies already installed"
-fi
-
-# Check if helmet is installed (required for production)
-echo ""
-echo "🔒 Checking security dependencies..."
-if npm list helmet > /dev/null 2>&1; then
-    echo "✅ Helmet security middleware installed"
-else
-    echo "📥 Installing helmet..."
-    npm install helmet
-fi
-
-# Test production build
-echo ""
-echo "🧪 Testing production build..."
-echo "Starting production server for testing..."
-timeout 10s npm run start:prod > /dev/null 2>&1 &
-SERVER_PID=$!
-sleep 3
-
-if kill -0 $SERVER_PID 2>/dev/null; then
-    echo "✅ Production server started successfully"
-    kill $SERVER_PID 2>/dev/null
-else
-    echo "❌ Error: Production server failed to start"
-    echo "Please check server.prod.js for errors"
-    exit 1
-fi
-
-# Check git status
-echo ""
-echo "📝 Checking git status..."
-if git status --porcelain | grep -q .; then
-    echo "⚠️  Warning: You have uncommitted changes"
-    echo "   Consider committing before deployment:"
-    echo "   git add . && git commit -m 'Update before deployment'"
-    echo ""
-else
-    echo "✅ Working directory is clean"
-fi
-
-# Check if remote is set
-echo ""
-echo "🔗 Checking git remote..."
-if git remote get-url origin > /dev/null 2>&1; then
-    echo "✅ GitHub remote configured:"
-    echo "   $(git remote get-url origin)"
-else
-    echo "❌ Error: No GitHub remote configured"
-    echo "   Please run: git remote add origin <your-repo-url>"
+    echo "❌ Failed to push to GitHub. Please check your remote configuration."
     exit 1
 fi
 
 echo ""
-echo "🎯 DEPLOYMENT READY!"
-echo "===================="
+echo "🎉 Your code is now on GitHub!"
 echo ""
-echo "Your Baseball/Softball Schedule Manager is ready for deployment!"
-echo ""
-echo "📋 Next Steps:"
-echo "1. Go to: https://render.com"
+echo "📋 Next steps for Render deployment:"
+echo "1. Go to [render.com](https://render.com)"
 echo "2. Sign up/Login with GitHub"
 echo "3. Click 'New +' → 'Web Service'"
-echo "4. Connect your repository: $(basename -s .git $(git remote get-url origin))"
-echo "5. Configure with these settings:"
+echo "4. Connect your GitHub repository"
+echo "5. Configure:"
 echo "   - Name: baseball-schedule-manager"
 echo "   - Environment: Node"
 echo "   - Build Command: npm install"
-echo "   - Start Command: npm run start:prod"
-echo "   - Plan: Free"
+echo "   - Start Command: node server.render.js"
+echo "   - Environment Variables:"
+echo "     - NODE_ENV: production"
+echo "     - PORT: 10000"
+echo "     - SESSION_SECRET: Generate (click button)"
+echo "6. Click 'Create Web Service'"
 echo ""
-echo "6. Add Environment Variables:"
-echo "   - NODE_ENV: production"
-echo "   - PORT: 10000"
-echo "   - DATABASE_PATH: /opt/render/project/src/schedules.db"
+echo "🔗 Your GitHub repository: https://github.com/dharmik-patel-dp/baseball-schedule-manager"
+echo "📚 Complete guide: GITHUB-RENDER-DEPLOYMENT.md"
 echo ""
-echo "7. Click 'Create Web Service'"
-echo ""
-echo "⏱️  Expected deployment time: 5-10 minutes"
-echo "🌐 Your live website will be available at: https://your-app-name.onrender.com"
-echo ""
-echo "📚 For detailed instructions, see: RENDER-DEPLOYMENT-GUIDE.md"
-echo ""
-echo "🚀 Happy deploying! Your complete website will be live soon!"
+echo "�� Happy deploying!"
