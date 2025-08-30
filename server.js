@@ -327,6 +327,16 @@ db.serialize(() => {
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
   )`);
 
+  // Concession Staff table
+  db.run(`CREATE TABLE IF NOT EXISTS concession_staff (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL UNIQUE,
+    email TEXT,
+    phone TEXT,
+    availability TEXT DEFAULT 'Available',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  )`);
+
   // Insert sample staff data if table is empty
   db.get("SELECT COUNT(*) as count FROM staff_directory", [], (err, row) => {
     if (err) {
@@ -421,6 +431,35 @@ db.serialize(() => {
       
       insertBaseUmpire.finalize();
       console.log('Sample base umpires data inserted');
+    }
+  });
+
+  // Insert sample concession staff if table is empty
+  db.get("SELECT COUNT(*) as count FROM concession_staff", [], (err, row) => {
+    if (err) {
+      console.error('Error checking concession staff count:', err);
+      return;
+    }
+    
+    if (row.count === 0) {
+      const sampleConcessionStaff = [
+        ['Dylan LeLacheur', 'dlelacheur16@gmail.com', '978-337-8174', 'Available'],
+        ['Emily Lelacheur', '', '', 'Available'],
+        ['Kate LeLacheur', '', '978-995-4048', 'Available'],
+        ['Andrey LeMay', '', '', 'Available'],
+        ['Ben Durkin', '', '', 'Available'],
+        ['Danny Gallo', '', '', 'Available'],
+        ['Brayden Shea', '', '', 'Available']
+      ];
+
+      const insertConcessionStaff = db.prepare("INSERT INTO concession_staff (name, email, phone, availability) VALUES (?, ?, ?, ?)");
+      
+      sampleConcessionStaff.forEach(staff => {
+        insertConcessionStaff.run(staff);
+      });
+      
+      insertConcessionStaff.finalize();
+      console.log('Sample concession staff data inserted');
     }
   });
   
@@ -565,6 +604,88 @@ app.get('/api/plate-umpires', (req, res) => {
       return;
     }
     res.json(rows);
+  });
+});
+
+// Concession Staff Routes
+app.get('/api/concession-staff', (req, res) => {
+  const query = 'SELECT * FROM concession_staff ORDER BY name';
+  db.all(query, [], (err, rows) => {
+    if (err) {
+      res.status(500).json({ error: err.message });
+      return;
+    }
+    res.json(rows);
+  });
+});
+
+app.post('/api/concession-staff', (req, res) => {
+  const { name, email, phone, availability } = req.body;
+  
+  if (!name) {
+    return res.status(400).json({ error: 'Name is required' });
+  }
+  
+  const query = `INSERT INTO concession_staff (name, email, phone, availability) 
+                 VALUES (?, ?, ?, ?)`;
+
+  db.run(query, [name, email || '', phone || '', availability || 'Available'], function(err) {
+    if (err) {
+      res.status(500).json({ error: err.message });
+      return;
+    }
+    res.json({ id: this.lastID, message: 'Concession staff added successfully' });
+  });
+});
+
+app.put('/api/concession-staff/:id', (req, res) => {
+  const { id } = req.params;
+  const { name, email, phone, availability } = req.body;
+  
+  if (!name) {
+    return res.status(400).json({ error: 'Name is required' });
+  }
+  
+  const query = `UPDATE concession_staff SET 
+                 name = ?, email = ?, phone = ?, availability = ?
+                 WHERE id = ?`;
+
+  db.run(query, [name, email || '', phone || '', availability || 'Available', id], function(err) {
+    if (err) {
+      res.status(500).json({ error: err.message });
+      return;
+    }
+    res.json({ message: 'Concession staff updated successfully' });
+  });
+});
+
+app.delete('/api/concession-staff/:id', (req, res) => {
+  const { id } = req.params;
+  db.run('DELETE FROM concession_staff WHERE id = ?', [id], function(err) {
+    if (err) {
+      res.status(500).json({ error: err.message });
+      return;
+    }
+    res.json({ message: 'Concession staff deleted successfully' });
+  });
+});
+
+// Bulk delete concession staff
+app.post('/api/concession-staff/bulk-delete', (req, res) => {
+  const { ids } = req.body;
+  if (!ids || !Array.isArray(ids) || ids.length === 0) {
+    return res.status(400).json({ error: 'No valid IDs provided' });
+  }
+
+  const placeholders = ids.map(() => '?').join(',');
+  const query = `DELETE FROM concession_staff WHERE id IN (${placeholders})`;
+
+  db.run(query, ids, function(err) {
+    if (err) {
+      res.status(500).json({ error: err.message });
+      return;
+    }
+    res.json({ message: `${this.changes} concession staff members deleted successfully` });
   });
 });
 
@@ -2143,6 +2264,239 @@ app.post('/api/upload-base-umpires-csv', upload.single('csv'), (req, res) => {
                   console.log(`✅ Base Umpires CSV processed successfully: ${successCount} rows inserted`);
                   res.json({
                     message: 'Base Umpires CSV processed successfully',
+                    committed: true,
+                    totalRows: results.length,
+                    successCount,
+                    errorCount,
+                    rowErrors: []
+                  });
+                });
+              }
+            }
+          });
+        });
+      });
+    });
+});
+
+// Concession Staff CSV upload endpoint
+app.post('/api/upload-concession-staff-csv', upload.single('csv'), (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ error: 'No file uploaded' });
+  }
+
+  const results = [];
+  const rowErrors = [];
+  
+  fs.createReadStream(req.file.path)
+    .pipe(csv())
+    .on('data', (data) => {
+      // Normalize keys by trimming and lowering
+      const normalized = {};
+      Object.keys(data || {}).forEach(k => {
+        if (!k) return;
+        const key = String(k).trim();
+        normalized[key] = typeof data[k] === 'string' ? data[k].trim() : data[k];
+      });
+      console.log('📊 Concession Staff CSV row data:', normalized);
+      results.push(normalized);
+    })
+    .on('error', (error) => {
+      console.error('❌ CSV parsing error:', error);
+      fs.unlink(req.file.path, (err) => {
+        if (err) console.error('Error deleting uploaded file:', err);
+      });
+      return res.status(400).json({
+        message: 'Concession Staff CSV parsing failed',
+        committed: false,
+        totalRows: 0,
+        successCount: 0,
+        errorCount: 1,
+        rowErrors: [{ row: 0, errors: [error.message] }]
+      });
+    })
+    .on('end', () => {
+      console.log(`📊 Processing ${results.length} concession staff CSV rows...`);
+      
+      if (results.length === 0) {
+        fs.unlink(req.file.path, (err) => {
+          if (err) console.error('Error deleting uploaded file:', err);
+        });
+        return res.status(400).json({
+          message: 'Concession Staff CSV file is empty or contains no valid data',
+          committed: false,
+          totalRows: 0,
+          successCount: 0,
+          errorCount: 0,
+          rowErrors: []
+        });
+      }
+
+      // Check CSV format - required columns
+      const requiredColumns = ['name'];
+      const firstRow = results[0];
+      const missingColumns = requiredColumns.filter(col => !firstRow.hasOwnProperty(col));
+      
+      if (missingColumns.length > 0) {
+        fs.unlink(req.file.path, (err) => {
+          if (err) console.error('Error deleting uploaded file:', err);
+        });
+        return res.status(400).json({
+          message: 'Concession Staff CSV format does not match expected structure',
+          committed: false,
+          totalRows: results.length,
+          successCount: 0,
+          errorCount: rowErrors.length,
+          rowErrors: [{
+            row: 0,
+            errors: [`Missing required columns: ${missingColumns.join(', ')}`]
+          }],
+          formatError: true,
+          expectedColumns: requiredColumns,
+          receivedColumns: Object.keys(firstRow)
+        });
+      }
+
+      // Basic validation helpers
+      function isEmpty(value) {
+        return value === undefined || value === null || String(value).trim() === '';
+      }
+
+      function validateConcessionStaffRow(row, index) {
+        const errors = [];
+        // Required fields
+        if (isEmpty(row.name)) {
+          errors.push('name is required');
+        }
+        
+        // Optional fields validation
+        if (!isEmpty(row.email) && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(row.email)) {
+          errors.push('email format is invalid');
+        }
+        
+        if (!isEmpty(row.phone) && !/^[\d\-\+\(\)\s]+$/.test(row.phone)) {
+          errors.push('phone format is invalid');
+        }
+
+        if (errors.length > 0) {
+          rowErrors.push({ row: index + 1, errors });
+          return false;
+        }
+        return true;
+      }
+
+      // Validate all rows first
+      results.forEach((row, idx) => validateConcessionStaffRow(row, idx));
+
+      if (rowErrors.length > 0) {
+        // Clean up uploaded file
+        fs.unlink(req.file.path, (err) => {
+          if (err) console.error('Error deleting uploaded file:', err);
+        });
+        return res.status(400).json({
+          message: 'Concession Staff CSV failed validation',
+          committed: false,
+          totalRows: results.length,
+          successCount: 0,
+          errorCount: rowErrors.length,
+          rowErrors
+        });
+      }
+
+      // Start transaction
+      db.run('BEGIN TRANSACTION', (err) => {
+        if (err) {
+          console.error('Error starting transaction:', err);
+          fs.unlink(req.file.path, (err) => {
+            if (err) console.error('Error deleting uploaded file:', err);
+          });
+          return res.status(500).json({
+            message: 'Database transaction failed',
+            committed: false,
+            totalRows: results.length,
+            successCount: 0,
+            errorCount: results.length,
+            rowErrors: [{ row: 0, errors: [err.message] }]
+          });
+        }
+
+        let successCount = 0;
+        let errorCount = 0;
+        let processedCount = 0;
+
+        results.forEach((row, index) => {
+          const query = `
+            INSERT INTO concession_staff (
+              name, email, phone, availability
+            ) VALUES (?, ?, ?, ?)
+          `;
+          
+          const values = [
+            row.name,
+            row.email || '',
+            row.phone || '',
+            row.availability || 'Available' // Use provided availability or default to Available
+          ];
+
+          db.run(query, values, function(err) {
+            processedCount++;
+            
+            if (err) {
+              console.error(`❌ Error inserting concession staff row ${index + 1}:`, err);
+              errorCount++;
+              rowErrors.push({ row: index + 1, errors: [err.message] });
+            } else {
+              console.log(`✅ Concession staff row ${index + 1} inserted successfully, ID: ${this.lastID}`);
+              successCount++;
+            }
+
+            if (processedCount === results.length) {
+              if (errorCount > 0) {
+                // Rollback transaction if there were errors
+                db.run('ROLLBACK', (rollbackErr) => {
+                  if (rollbackErr) console.error('Error rolling back transaction:', rollbackErr);
+                  
+                  // Clean up uploaded file
+                  fs.unlink(req.file.path, (err) => {
+                    if (err) console.error('Error deleting uploaded file:', err);
+                  });
+
+                  res.json({
+                    message: 'Concession Staff CSV processing failed',
+                    committed: false,
+                    totalRows: results.length,
+                    successCount,
+                    errorCount,
+                    rowErrors
+                  });
+                });
+              } else {
+                // Commit transaction on success
+                db.run('COMMIT', (commitErr) => {
+                  if (commitErr) {
+                    console.error('Error committing transaction:', commitErr);
+                    // Clean up uploaded file
+                    fs.unlink(req.file.path, (err) => {
+                      if (err) console.error('Error deleting uploaded file:', err);
+                    });
+                    return res.status(500).json({
+                      message: 'Database commit failed',
+                      committed: false,
+                      totalRows: results.length,
+                      successCount: 0,
+                      errorCount: results.length,
+                      rowErrors: [{ row: 0, errors: [commitErr.message] }]
+                    });
+                  }
+
+                  // Clean up uploaded file
+                  fs.unlink(req.file.path, (err) => {
+                    if (err) console.error('Error deleting uploaded file:', err);
+                  });
+
+                  console.log(`✅ Concession Staff CSV processed successfully: ${successCount} rows inserted`);
+                  res.json({
+                    message: 'Concession Staff CSV processed successfully',
                     committed: true,
                     totalRows: results.length,
                     successCount,
