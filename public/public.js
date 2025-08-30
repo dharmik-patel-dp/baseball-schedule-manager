@@ -1424,7 +1424,7 @@ function renderMobileLayout(schedules, tbody) {
                                     ${schedule.plate_umpire ? 'disabled' : ''}>
                                 <option value="">Select Plate Umpire</option>
                                 ${schedule.plate_umpire ? `<option value="${schedule.plate_umpire}" selected>${schedule.plate_umpire}</option>` : ''}
-                                ${getUmpireOptions(schedule.plate_umpire)}
+                                ${getPlateUmpireOptions(schedule.plate_umpire)}
                             </select>
                             ${!schedule.plate_umpire ? 
                                 `<button class="btn btn-primary btn-sm mobile-btn submit-plate-umpire-btn" 
@@ -1444,7 +1444,7 @@ function renderMobileLayout(schedules, tbody) {
                                     ${schedule.base_umpire ? 'disabled' : ''}>
                                 <option value="">Select Base Umpire</option>
                                 ${schedule.base_umpire ? `<option value="${schedule.base_umpire}" selected>${schedule.base_umpire}</option>` : ''}
-                                ${getUmpireOptions(schedule.base_umpire)}
+                                ${getBaseUmpireOptions(schedule.base_umpire)}
                             </select>
                             ${!schedule.base_umpire ? 
                                 `<button class="btn btn-primary btn-sm mobile-btn submit-base-umpire-btn" 
@@ -1525,7 +1525,7 @@ function renderDesktopLayout(schedules, tbody) {
                                 ${schedule.plate_umpire ? 'disabled' : ''}>
                             <option value="">Select Plate Umpire</option>
                             ${schedule.plate_umpire ? `<option value="${schedule.plate_umpire}" selected>${schedule.plate_umpire}</option>` : ''}
-                            ${getUmpireOptions(schedule.plate_umpire)}
+                            ${getPlateUmpireOptions(schedule.plate_umpire)}
                         </select>
                     </div>
                     
@@ -1546,7 +1546,7 @@ function renderDesktopLayout(schedules, tbody) {
                                 ${schedule.base_umpire ? 'disabled' : ''}>
                             <option value="">Select Base Umpire</option>
                             ${schedule.base_umpire ? `<option value="${schedule.base_umpire}" selected>${schedule.base_umpire}</option>` : ''}
-                            ${getUmpireOptions(schedule.base_umpire)}
+                            ${getBaseUmpireOptions(schedule.base_umpire)}
                         </select>
                     </div>
                     
@@ -2148,23 +2148,38 @@ async function rejectConcessionStaffRequest(requestId) {
     }
 } 
 
-// Get umpire options for dropdowns
-function getUmpireOptions(currentUmpire) {
-    // Get real umpire data from the loaded data
+// Get plate umpire options for dropdowns (ONLY plate umpires)
+function getPlateUmpireOptions(currentUmpire) {
     const plateUmpires = window.allPlateUmpires || [];
-    const baseUmpires = window.allBaseUmpires || [];
     
-    // Combine both types of umpires
-    const allUmpires = [...plateUmpires, ...baseUmpires].map(u => u.name);
-    
-    if (allUmpires.length === 0) {
-        return '<option value="">No umpires available</option>';
+    if (plateUmpires.length === 0) {
+        return '<option value="">No plate umpires available</option>';
     }
     
-    return allUmpires
-        .filter(umpire => umpire !== currentUmpire)
-        .map(umpire => `<option value="${umpire}">${umpire}</option>`)
+    return plateUmpires
+        .filter(umpire => umpire.name !== currentUmpire)
+        .map(umpire => `<option value="${umpire.name}">${umpire.name}</option>`)
         .join('');
+}
+
+// Get base umpire options for dropdowns (ONLY base umpires)
+function getBaseUmpireOptions(currentUmpire) {
+    const baseUmpires = window.allBaseUmpires || [];
+    
+    if (baseUmpires.length === 0) {
+        return '<option value="">No base umpires available</option>';
+    }
+    
+    return baseUmpires
+        .filter(umpire => umpire.name !== currentUmpire)
+        .map(umpire => `<option value="${umpire.name}">${umpire.name}</option>`)
+        .join('');
+}
+
+// Legacy function for backward compatibility
+function getUmpireOptions(currentUmpire) {
+    console.warn('⚠️ getUmpireOptions is deprecated. Use getPlateUmpireOptions or getBaseUmpireOptions instead.');
+    return getPlateUmpireOptions(currentUmpire);
 }
 
 
