@@ -2728,6 +2728,254 @@ app.get('/api/visible-seasons', (req, res) => {
   });
 });
 
+// ===== GAME REMINDER SERVICE =====
+// This service automatically sends reminder emails 30 minutes before games
+
+// Function to send game reminders
+async function sendGameReminders() {
+    try {
+        console.log('🔔 Checking for games that need reminders...');
+        
+        // Get current time and calculate 30 minutes from now
+        const now = new Date();
+        const thirtyMinutesFromNow = new Date(now.getTime() + 30 * 60 * 1000);
+        
+        // Format times for database comparison
+        const currentTimeStr = now.toLocaleTimeString('en-US', { 
+            hour12: false, 
+            hour: '2-digit', 
+            minute: '2-digit' 
+        });
+        const reminderTimeStr = thirtyMinutesFromNow.toLocaleTimeString('en-US', { 
+            hour12: false, 
+            hour: '2-digit', 
+            minute: '2-digit' 
+        });
+        
+        console.log(`🕐 Current time: ${currentTimeStr}, Checking for games at: ${reminderTimeStr}`);
+        
+        // Query for games starting in approximately 30 minutes
+        const query = `
+            SELECT * FROM schedules 
+            WHERE date = ? 
+            AND start_time = ? 
+            AND (plate_umpire IS NOT NULL AND plate_umpire != '' 
+                 OR base_umpire IS NOT NULL AND base_umpire != '' 
+                 OR concession_staff IS NOT NULL AND concession_staff != '')
+        `;
+        
+        const today = now.toLocaleDateString('en-US', { 
+            month: '2-digit', 
+            day: '2-digit', 
+            year: '2-digit' 
+        });
+        
+        db.all(query, [today, reminderTimeStr], async (err, games) => {
+            if (err) {
+                console.error('❌ Error querying games for reminders:', err);
+                return;
+            }
+            
+            if (games.length === 0) {
+                console.log('📅 No games found that need reminders at this time');
+                return;
+            }
+            
+            console.log(`🔔 Found ${games.length} game(s) that need reminders`);
+            
+            for (const game of games) {
+                try {
+                    console.log(`📧 Sending reminder for game: ${game.home_team} vs ${game.visitor_team} at ${game.start_time}`);
+                    
+                    // Get email addresses for assigned staff
+                    const plateUmpireEmail = game.plate_umpire ? await getStaffEmail(game.plate_umpire) : null;
+                    const baseUmpireEmail = game.base_umpire ? await getStaffEmail(game.base_umpire) : null;
+                    const concessionStaffEmail = game.concession_staff ? await getStaffEmail(game.concession_staff) : null;
+                    
+                    // Calculate arrival time (15 minutes before game)
+                    const gameTime = new Date();
+                    const [hours, minutes] = game.start_time.split(':');
+                    gameTime.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+                    const arrivalTime = new Date(gameTime.getTime() - 15 * 60 * 1000);
+                    const arrivalTimeStr = arrivalTime.toLocaleTimeString('en-US', { 
+                        hour: '2-digit', 
+                        minute: '2-digit', 
+                        hour12: true 
+                    });
+                    
+                    // Prepare reminder data
+                    const reminderData = {
+                        gameDate: game.date,
+                        gameTime: `${game.start_time} ${game.am_pm}`,
+                        homeTeam: game.home_team,
+                        visitorTeam: game.visitor_team,
+                        venue: game.venue,
+                        division: game.division,
+                        season: game.season,
+                        plateUmpire: game.plate_umpire,
+                        baseUmpire: game.base_umpire,
+                        concessionStaff: game.concession_staff,
+                        plateUmpireEmail: plateUmpireEmail,
+                        baseUmpireEmail: baseUmpireEmail,
+                        concessionStaffEmail: concessionStaffEmail,
+                        arrivalTime: arrivalTimeStr,
+                        requiredEquipment: getRequiredEquipment(game.plate_umpire, game.base_umpire, game.concession_staff),
+                        adminContact: process.env.ADMIN_EMAILS ? process.env.ADMIN_EMAILS.split(',')[0] : 'Admin Panel'
+                    };
+                    
+                    // Send reminder emails
+                    const reminderResult = await emailService.sendGameReminder(reminderData);
+                    console.log('✅ Game reminder emails sent:', reminderResult);
+                    
+                    // Log reminder sent to prevent duplicate emails
+                    const reminderLogQuery = `
+                        INSERT OR IGNORE INTO game_reminder_logs 
+                        (game_id, reminder_time, sent_to) 
+                        VALUES (?, ?, ?)
+                    `;
+                    
+                    const sentTo = [];
+                    if (plateUmpireEmail) sentTo.push('plate_umpire');
+                    if (baseUmpireEmail) sentTo.push('base_umpire');
+                    if (concessionStaffEmail) sentTo.push('concession_staff');
+                    
+                    db.run(reminderLogQuery, [
+                        game.id, 
+                        now.toISOString(), 
+                        sentTo.join(',')
+                    ], (err) => {
+                        if (err) {
+                            console.error('❌ Error logging reminder:', err);
+                        } else {
+                            console.log('📝 Reminder logged to database');
+                        }
+                    });
+                    
+                } catch (gameError) {
+                    console.error(`❌ Error sending reminder for game ${game.id}:`, gameError);
+                }
+            }
+        });
+        
+    } catch (error) {
+        console.error('❌ Error in game reminder service:', error);
+    }
+}
+
+// Helper function to determine required equipment based on role
+function getRequiredEquipment(plateUmpire, baseUmpire, concessionStaff) {
+    const equipment = [];
+    
+    if (plateUmpire) {
+        equipment.push('Plate umpire: Mask, chest protector, shin guards, ball/strike indicator');
+    }
+    
+    if (baseUmpire) {
+        equipment.push('Base umpire: Cap, base umpire indicator');
+    }
+    
+    if (concessionStaff) {
+        equipment.push('Concession staff: Appropriate attire, name tag');
+    }
+    
+    return equipment.length > 0 ? equipment.join('; ') : 'Standard equipment for your role';
+}
+
+// Create reminder logs table if it doesn't exist
+db.run(`
+    CREATE TABLE IF NOT EXISTS game_reminder_logs (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        game_id INTEGER NOT NULL,
+        reminder_time DATETIME NOT NULL,
+        sent_to TEXT NOT NULL,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (game_id) REFERENCES schedules (id)
+    )
+`);
+
+// Start the reminder service
+// Check every 5 minutes for games that need reminders
+setInterval(sendGameReminders, 5 * 60 * 1000);
+
+// Also run once when server starts
+setTimeout(sendGameReminders, 10000); // Wait 10 seconds after server starts
+
+console.log('🔔 Game reminder service started - checking every 5 minutes');
+
+// ===== GAME REMINDER ADMIN ENDPOINTS =====
+
+// Manual trigger for game reminders (for testing)
+app.post('/api/admin/trigger-game-reminders', requireAuth, async (req, res) => {
+    try {
+        console.log('🔔 Manual trigger of game reminders requested by admin');
+        await sendGameReminders();
+        res.json({ message: 'Game reminders triggered successfully' });
+    } catch (error) {
+        console.error('❌ Error triggering game reminders:', error);
+        res.status(500).json({ error: 'Failed to trigger game reminders' });
+    }
+});
+
+// Get reminder logs
+app.get('/api/admin/reminder-logs', requireAuth, (req, res) => {
+    const query = `
+        SELECT grl.*, s.home_team, s.visitor_team, s.date, s.start_time, s.am_pm
+        FROM game_reminder_logs grl
+        JOIN schedules s ON grl.game_id = s.id
+        ORDER BY grl.created_at DESC
+        LIMIT 100
+    `;
+    
+    db.all(query, [], (err, rows) => {
+        if (err) {
+            res.status(500).json({ error: err.message });
+            return;
+        }
+        res.json(rows);
+    });
+});
+
+// Get upcoming games that will need reminders
+app.get('/api/admin/upcoming-reminders', requireAuth, (req, res) => {
+    const now = new Date();
+    const today = now.toLocaleDateString('en-US', { 
+        month: '2-digit', 
+        day: '2-digit', 
+        year: '2-digit' 
+    });
+    
+    const query = `
+        SELECT * FROM schedules 
+        WHERE date >= ? 
+        AND (plate_umpire IS NOT NULL AND plate_umpire != '' 
+             OR base_umpire IS NOT NULL AND base_umpire != '' 
+             OR concession_staff IS NOT NULL AND concession_staff != '')
+        ORDER BY date ASC, start_time ASC
+        LIMIT 50
+    `;
+    
+    db.all(query, [today], (err, rows) => {
+        if (err) {
+            res.status(500).json({ error: err.message });
+            return;
+        }
+        
+        // Filter games that will need reminders in the next few hours
+        const upcomingReminders = rows.filter(game => {
+            const gameTime = new Date();
+            const [hours, minutes] = game.start_time.split(':');
+            gameTime.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+            
+            const timeUntilGame = gameTime.getTime() - now.getTime();
+            const timeUntilReminder = timeUntilGame - (30 * 60 * 1000); // 30 minutes before
+            
+            return timeUntilReminder > 0 && timeUntilReminder < (4 * 60 * 60 * 1000); // Next 4 hours
+        });
+        
+        res.json(upcomingReminders);
+    });
+});
+
 // Start server
 app.listen(PORT, () => {
   console.log(`Baseball/Softball Schedule Manager running on port ${PORT}`);
