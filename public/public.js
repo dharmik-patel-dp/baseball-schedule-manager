@@ -168,35 +168,43 @@ document.addEventListener('DOMContentLoaded', function() {
     // Add custom CSS for current assignments
     addCustomStyles();
     
-    // Load all data first, then populate dropdowns
+    // Load umpire data FIRST for instant dropdown population
     async function initializeApp() {
         try {
-            console.log('🔄 Loading all data...');
+            console.log('🚀 Starting instant initialization...');
             
-            // Load all data in parallel
+            // CRITICAL: Load umpire data FIRST for instant dropdown access
+            console.log('⚡ Loading umpire data immediately...');
             await Promise.all([
-                loadSchedules(),
-                loadUmpireRequests(),
-                loadConcessionStaffRequests(),
-                loadFilterOptions(),
                 loadPlateUmpires(),
                 loadBaseUmpires(),
                 loadConcessionStaff()
             ]);
             
-            console.log('✅ All data loaded successfully');
+            console.log('✅ Umpire data loaded instantly!');
+            console.log('📊 Plate umpires:', window.allPlateUmpires?.length || 0);
+            console.log('📊 Base umpires:', window.allBaseUmpires?.length || 0);
             
-            // Now populate dropdowns with loaded data
+            // Now populate dropdowns IMMEDIATELY with umpire data
             await populateRequestDropdowns();
+            console.log('✅ Dropdowns populated instantly!');
             
-            // Set initial last updated time
-            updateLastUpdatedTime();
+            // Load other data in background (non-blocking)
+            console.log('🔄 Loading other data in background...');
+            Promise.all([
+                loadSchedules(),
+                loadUmpireRequests(),
+                loadConcessionStaffRequests(),
+                loadFilterOptions()
+            ]).then(() => {
+                console.log('✅ Background data loaded');
+                updateLastUpdatedTime();
+            }).catch(error => {
+                console.error('⚠️ Background data loading error:', error);
+            });
             
             // Add 3D effects after DOM loads
             setTimeout(add3DEffects, 1000);
-            
-            // Initialize real-time updates for instant synchronization
-            initializeRealTimeUpdates();
             
             // Update stats after schedules load
             if (typeof loadSchedules === 'function') {
@@ -217,6 +225,20 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Setup event listeners immediately
     setupEventListeners();
+    
+    // Pre-load umpire data for instant access
+    console.log('⚡ Pre-loading umpire data for instant dropdown access...');
+    Promise.all([
+        loadPlateUmpires(),
+        loadBaseUmpires(),
+        loadConcessionStaff()
+    ]).then(() => {
+        console.log('✅ Pre-loading complete - dropdowns ready instantly!');
+        // Store data globally for immediate access
+        window.umpireDataReady = true;
+    }).catch(error => {
+        console.error('❌ Pre-loading failed:', error);
+    });
     
     // Auto-refresh functionality removed as requested
 // Data will only refresh when user manually refreshes the page or performs actions
@@ -277,14 +299,6 @@ window.forceLoadUmpires = async function() {
         console.error('❌ Force load failed:', error);
     }
 };
-});
-
-// Cleanup real-time connection when page unloads
-window.addEventListener('beforeunload', function() {
-    if (eventSource) {
-        eventSource.close();
-        console.log('🔌 Real-time connection closed');
-    }
 });
 
 // Setup event listeners
@@ -505,14 +519,16 @@ async function populateRequestDropdowns() {
     console.log('Current allBaseUmpires:', window.allBaseUmpires);
     
     try {
-        // Wait for umpire data to be loaded if not already available
+        // Umpire data should already be loaded from initialization
         if (!window.allPlateUmpires || window.allPlateUmpires.length === 0) {
-            console.log('⏳ Plate umpires not loaded yet, loading now...');
+            console.log('⚠️ Plate umpires not loaded - this should not happen!');
+            // Force immediate load as fallback
             await loadPlateUmpires();
         }
         
         if (!window.allBaseUmpires || window.allBaseUmpires.length === 0) {
-            console.log('⏳ Base umpires not loaded yet, loading now...');
+            console.log('⚠️ Base umpires not loaded - this should not happen!');
+            // Force immediate load as fallback
             await loadBaseUmpires();
         }
         
@@ -2391,89 +2407,3 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
-
-// Real-time updates listener
-let eventSource = null;
-
-function initializeRealTimeUpdates() {
-    try {
-        // Close existing connection if any
-        if (eventSource) {
-            eventSource.close();
-        }
-        
-        // Connect to server-sent events
-        eventSource = new EventSource('/api/events');
-        
-        eventSource.onopen = function() {
-            console.log('🔌 Real-time updates connected');
-        };
-        
-        eventSource.onmessage = function(event) {
-            try {
-                const data = JSON.parse(event.data);
-                console.log('📡 Received real-time update:', data);
-                
-                // Handle different types of updates
-                switch (data.type) {
-                    case 'connected':
-                        console.log('✅ Real-time connection established');
-                        break;
-                        
-                    case 'plateUmpireDeleted':
-                    case 'plateUmpiresBulkDeleted':
-                        console.log('🔄 Plate umpire(s) deleted, refreshing data...');
-                        loadPlateUmpires().then(() => {
-                            populateRequestDropdowns();
-                            console.log('✅ Plate umpires refreshed after deletion');
-                        });
-                        break;
-                        
-                    case 'baseUmpireDeleted':
-                    case 'baseUmpiresBulkDeleted':
-                        console.log('🔄 Base umpire(s) deleted, refreshing data...');
-                        loadBaseUmpires().then(() => {
-                            populateRequestDropdowns();
-                            console.log('✅ Base umpires refreshed after deletion');
-                        });
-                        break;
-                        
-                    case 'plateUmpireAdded':
-                    case 'baseUmpireAdded':
-                        console.log('🔄 New umpire added, refreshing data...');
-                        Promise.all([loadPlateUmpires(), loadBaseUmpires()]).then(() => {
-                            populateRequestDropdowns();
-                            console.log('✅ Umpires refreshed after addition');
-                        });
-                        break;
-                        
-                    case 'plateUmpireUpdated':
-                    case 'baseUmpireUpdated':
-                        console.log('🔄 Umpire updated, refreshing data...');
-                        Promise.all([loadPlateUmpires(), loadBaseUmpires()]).then(() => {
-                            populateRequestDropdowns();
-                            console.log('✅ Umpires refreshed after update');
-                        });
-                        break;
-                        
-                    default:
-                        console.log('📡 Unknown update type:', data.type);
-                }
-            } catch (error) {
-                console.error('❌ Error parsing real-time update:', error);
-            }
-        };
-        
-        eventSource.onerror = function(error) {
-            console.error('❌ Real-time connection error:', error);
-            // Try to reconnect after 5 seconds
-            setTimeout(() => {
-                console.log('🔄 Attempting to reconnect...');
-                initializeRealTimeUpdates();
-            }, 5000);
-        };
-        
-    } catch (error) {
-        console.error('❌ Error initializing real-time updates:', error);
-    }
-}
