@@ -2,9 +2,10 @@ services:
   - type: web
     name: baseball-schedule-manager
     env: node
-    plan: free
+    plan: starter
     buildCommand: npm install
-    startCommand: node server.render.js
+    startCommand: node server.js
+    healthCheckPath: /
     envVars:
       - key: NODE_ENV
         value: production
@@ -12,5 +13,37 @@ services:
         value: 10000
       - key: SESSION_SECRET
         generateValue: true
-    healthCheckPath: /
-    autoDeploy: true
+      - key: EMAIL_USER
+        value: your-email@gmail.com
+      - key: EMAIL_PASS
+        value: your-app-password
+      - key: DB_DRIVER
+        value: postgres
+      - key: PGHOST
+        fromDatabase:
+          name: baseball-db
+          property: host
+      - key: PGPORT
+        fromDatabase:
+          name: baseball-db
+          property: port
+      - key: PGUSER
+        fromDatabase:
+          name: baseball-db
+          property: user
+      - key: PGPASSWORD
+        fromDatabase:
+          name: baseball-db
+          property: password
+      - key: PGDATABASE
+        fromDatabase:
+          name: baseball-db
+          property: database
+      - key: PGSSLMODE
+        value: require
+
+databases:
+  - name: baseball-db
+    plan: starter
+    databaseName: baseball_schedule
+    user: baseball_user

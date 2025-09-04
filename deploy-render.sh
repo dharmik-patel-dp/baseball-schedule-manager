@@ -1,6 +1,7 @@
 #!/bin/bash
 
-echo "🚀 Deploying Baseball Schedule Manager to Render..."
+echo "🚀 Baseball Schedule Manager - Render Deployment"
+echo "================================================"
 
 # Check if git is initialized
 if [ ! -d ".git" ]; then
@@ -19,25 +20,25 @@ if [ ! -f "render.yaml" ]; then
     exit 1
 fi
 
-# Add all files to git
 echo "📁 Adding files to git..."
 git add .
 
-# Commit changes
 echo "💾 Committing changes..."
 git commit -m "Deploy to Render - $(date)"
 
-# Push to GitHub
 echo "⬆️ Pushing to GitHub..."
 git push origin main
 
+echo ""
 echo "✅ Code pushed to GitHub!"
 echo ""
 echo "Next steps:"
-echo "1. Go to render.com"
-echo "2. Create PostgreSQL database"
-echo "3. Create Web Service"
-echo "4. Set environment variables"
-echo "5. Deploy!"
+echo "1. Go to https://render.com"
+echo "2. Sign up/Login with GitHub"
+echo "3. Create PostgreSQL database (Starter plan)"
+echo "4. Create Web Service (connect your repo)"
+echo "5. Set environment variables"
+echo "6. Deploy!"
 echo ""
-echo "See RENDER-SETUP.md for detailed instructions."
+echo "📋 See RENDER-CHECKLIST.md for detailed instructions"
+echo "🔧 Default login: admin/admin123 (change after deployment!)"

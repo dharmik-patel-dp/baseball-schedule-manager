@@ -5,10 +5,13 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
+    "start:render": "node server.render.js",
     "dev": "nodemon server.js",
     "build": "echo 'No build step required for Node.js app'",
     "deploy": "npm start",
-    "start:prod": "NODE_ENV=production node server.prod.js"
+    "start:prod": "NODE_ENV=production node server.prod.js",
+    "pg:migrate": "node scripts/migrate-sqlite-to-postgres.js",
+    "pg:setup": "node -e \"console.log('PostgreSQL setup complete. Run: npm run pg:migrate')\""
   },
   "keywords": [
     "baseball",
@@ -30,6 +33,7 @@
     "helmet": "^7.2.0",
     "multer": "^1.4.5-lts.1",
     "nodemailer": "^7.0.5",
+    "pg": "^8.16.3",
     "sqlite3": "^5.1.6"
   },
   "devDependencies": {
