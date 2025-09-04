@@ -1303,10 +1303,15 @@ function renderScheduleTable() {
         return;
     }
 
-    // Render based on device type
-    if (isMobile) {
+    // Render based on device type - only use cards for true mobile devices (width <= 767)
+    const screenWidth = window.innerWidth;
+    console.log(`🖥️ Screen width: ${screenWidth}px, isMobile: ${isMobile}`);
+    
+    if (screenWidth <= 767) {
+        console.log('📱 Using mobile card layout');
         renderMobileLayout(schedulesToShow, tbody);
     } else {
+        console.log('💻 Using desktop table layout');
         renderDesktopLayout(schedulesToShow, tbody);
     }
 
@@ -1459,16 +1464,19 @@ function renderMobileLayout(schedules, tbody) {
 function renderDesktopLayout(schedules, tbody) {
     console.log('💻 Rendering desktop layout...');
     
-    // Show desktop table, hide mobile cards
+    // Force show desktop table, hide mobile cards
     const tableContainer = document.querySelector('.table-responsive');
     if (tableContainer) {
         tableContainer.style.display = 'block';
+        tableContainer.style.visibility = 'visible';
+        console.log('✅ Desktop table container shown');
     }
     
     // Hide mobile cards container
     const mobileContainer = document.querySelector('.mobile-cards-container');
     if (mobileContainer) {
         mobileContainer.style.display = 'none';
+        console.log('✅ Mobile cards container hidden');
     }
     
     // Generate desktop table
