@@ -1524,8 +1524,8 @@ function renderDesktopLayout(schedules, tbody) {
             <td data-label="Umpires">
                 <div class="umpire-selection">
                     <div class="mb-2">
-                        <label class="form-label small mb-1"><strong>Plate Umpire:</strong></label>
-                        <select class="form-select form-select-sm plate-umpire-select"
+                        <label class="label-modern"><strong>Plate Umpire:</strong></label>
+                        <select class="select-modern plate-umpire-select"
                                 data-game-id="${schedule.id}"
                                 data-position="plate"
                                 ${schedule.plate_umpire ? 'disabled' : ''}>
@@ -1536,7 +1536,7 @@ function renderDesktopLayout(schedules, tbody) {
                     </div>
                     
                     <div class="mb-2">
-                        <button class="btn btn-sm btn-primary submit-plate-umpire-btn" 
+                        <button class="btn-modern submit-plate-umpire-btn" 
                                  data-game-id="${schedule.id}" 
                                  onclick="submitPlateUmpireRequest(${schedule.id})" 
                                  style="display: none;">
@@ -1545,8 +1545,8 @@ function renderDesktopLayout(schedules, tbody) {
                     </div>
                     
                     <div class="mb-2">
-                        <label class="form-label small mb-1"><strong>Base Umpire:</strong></label>
-                        <select class="form-select form-select-sm base-umpire-select"
+                        <label class="label-modern"><strong>Base Umpire:</strong></label>
+                        <select class="select-modern base-umpire-select"
                                 data-game-id="${schedule.id}"
                                 data-position="base"
                                 ${schedule.base_umpire ? 'disabled' : ''}>
@@ -1557,7 +1557,7 @@ function renderDesktopLayout(schedules, tbody) {
                     </div>
                     
                     <div class="mb-2">
-                        <button class="btn btn-sm btn-primary submit-base-umpire-btn" 
+                        <button class="btn-modern submit-base-umpire-btn" 
                                  data-game-id="${schedule.id}" 
                                  onclick="submitBaseUmpireRequest(${schedule.id})" 
                                  style="display: none;">
@@ -1569,19 +1569,19 @@ function renderDesktopLayout(schedules, tbody) {
             <td data-label="Concession">
                 <div class="concession-selection">
                     <div class="mb-2">
-                        <label class="form-label small mb-1"><strong>Concession Stand:</strong></label>
-                        <div class="concession-stand-display">
-                    ${schedule.concession_stand === 'No Concession' ? 
-                        '<span class="badge bg-secondary">No Concession</span>' : 
-                        schedule.concession_stand ? 
-                            `<span class="badge bg-success">${schedule.concession_stand}</span>` :
-                            '<span class="badge bg-secondary">No Info</span>'
-                    }
-                </div>
+                        <label class="label-modern"><strong>Concession Stand:</strong></label>
+                        <div class="concession-display">
+                            ${schedule.concession_stand === 'No Concession' ? 
+                                '<span class="badge-modern no-concession">No Concession</span>' : 
+                                schedule.concession_stand ? 
+                                    `<span class="badge-modern available">${schedule.concession_stand}</span>` :
+                                    '<span class="badge-modern no-info">No Info</span>'
+                            }
+                        </div>
                     </div>
                     <div class="mb-2">
-                        <label class="form-label small mb-1"><strong>Concession Staff:</strong></label>
-                        <select class="form-select form-select-sm concession-staff-select" 
+                        <label class="label-modern"><strong>Concession Staff:</strong></label>
+                        <select class="select-modern concession-staff-select" 
                                 data-game-id="${schedule.id}" 
                                 data-type="staff"
                                 ${schedule.concession_staff ? 'disabled' : ''}>
@@ -1590,7 +1590,7 @@ function renderDesktopLayout(schedules, tbody) {
                         </select>
                     </div>
                     ${!schedule.concession_staff ? 
-                        `<button class="btn btn-sm btn-primary submit-concession-btn" 
+                        `<button class="btn-modern submit-concession-btn" 
                                  data-game-id="${schedule.id}" 
                                  onclick="submitConcessionRequest(${schedule.id})" 
                                  style="display: none;">
@@ -1599,12 +1599,12 @@ function renderDesktopLayout(schedules, tbody) {
                     }
                 </div>
             </td>
-            <td data-label="Event"><span class="badge ${schedule.event_type === 'Baseball' ? 'bg-success' : 'bg-warning'}">${schedule.event_type || 'N/A'}</span></td>
+            <td data-label="Event"><span class="badge-modern ${schedule.event_type === 'Baseball' ? 'baseball' : 'softball'}">${schedule.event_type || 'N/A'}</span></td>
             <td data-label="Venue">${schedule.venue || 'N/A'}</td>
             <td data-label="Day"><strong>${schedule.day || 'N/A'}</strong></td>
             <td data-label="Date">${formatDate(schedule.date)}</td>
             <td data-label="Time">${schedule.start_time || 'N/A'} ${schedule.am_pm || ''}</td>
-            <td data-label="Division"><span class="badge bg-info">${schedule.division || 'N/A'}</span></td>
+            <td data-label="Division"><span class="badge-modern division">${schedule.division || 'N/A'}</span></td>
             <td data-label="Home Team">
                 <div><strong>${schedule.home_team || 'N/A'}</strong></div>
                 <small class="text-muted">${schedule.home_coach || 'N/A'}</small>
