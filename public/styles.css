@@ -261,7 +261,13 @@ h6 { font-size: 1.125rem; font-weight: 500; }
 
 /* Dark theme filter-section rules removed - always uses light theme */
 
-/* Schedule table hover effect removed to prevent wrapping issues */
+.filter-section:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--primary-300);
+}
+
+/* Schedule table hover effect removed to prevent layout issues */
 
 /* Clean Tables */
 .table-container {
@@ -368,7 +374,7 @@ h6 { font-size: 1.125rem; font-weight: 500; }
   transition: all 0.2s ease;
 }
 
-/* Table row hover effect removed to prevent wrapping issues */
+/* Table hover effects removed to prevent layout issues */
 
 /* Dark theme table tbody tr hover rules removed - always uses light theme */
 
@@ -1202,7 +1208,7 @@ h6 { font-size: 1.125rem; font-weight: 500; }
   z-index: 10;
 }
 
-/* Table row hover effects removed to prevent wrapping issues */
+/* Table hover effects removed to prevent layout issues */
 
 /* Fix button spacing and alignment */
 .btn {
@@ -4080,7 +4086,10 @@ input[type="date"].filter-select:focus {
     transition: transform 0.2s ease, box-shadow 0.2s ease;
   }
   
-  /* Mobile game card hover effect removed to prevent wrapping issues */
+  .mobile-game-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+  }
   
   .mobile-game-card:active {
     transform: translateY(0);
@@ -4334,7 +4343,10 @@ input[type="date"].filter-select:focus {
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-/* Mobile game card hover effect removed to prevent wrapping issues */
+.mobile-game-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+}
 
 .mobile-game-card:active {
   transform: translateY(0);
