@@ -9,452 +9,320 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" integrity="sha384-iw3OoTErCYJJB9mCa8LNS2hbsQ7M3C0EpIsO/H5+EGAkPGc6rk+V8i04oW/K5xq0" crossorigin="anonymous">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="/styles.css" rel="stylesheet">
-    <style>
-        :root {
-            --primary-color: #1e3a8a;
-            --secondary-color: #dc2626;
-            --accent-color: #f59e0b;
-            --light-bg: #f8fafc;
-            --border-color: #e2e8f0;
-        }
-
-        body {
-            background-color: var(--light-bg);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-
-
-
-
-        .filter-section {
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            padding: 1.5rem;
-            margin-bottom: 2rem;
-        }
-
-        .schedule-table {
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            overflow: hidden;
-        }
-
-        .table th {
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            font-weight: 600;
-        }
-
-        .table td {
-            vertical-align: middle;
-            border-color: var(--border-color);
-        }
-
-        .btn-primary {
-            background-color: var(--primary-color);
-            border-color: var(--primary-color);
-        }
-
-        .btn-primary:hover {
-            background-color: #1e40af;
-            border-color: #1e40af;
-        }
-
-        .btn-secondary {
-            background-color: var(--secondary-color);
-            border-color: var(--secondary-color);
-        }
-
-        .umpire-request-form {
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            padding: 2rem;
-            margin-top: 2rem;
-        }
-
-        .form-control:focus {
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 0.2rem rgba(30, 58, 138, 0.25);
-        }
-
-        .alert {
-            border-radius: 8px;
-            border: none;
-        }
-
-        .filter-toggle {
-            display: none;
-        }
-
-        /* Enhanced Concession Display Styles */
-        .concession-info {
-            min-width: 150px;
-        }
-
-        .staff-info {
-            background-color: #f8f9fa;
-            border-radius: 6px;
-            padding: 4px 8px;
-            border-left: 3px solid #28a745;
-            font-size: 0.85rem;
-        }
-
-        .staff-info i {
-            color: #28a745;
-        }
-
-        .staff-info strong {
-            color: #495057;
-        }
-
-        .concession-info .badge {
-            font-size: 0.8rem;
-            padding: 6px 10px;
-        }
-
-        /* Highlight concession stands with staff */
-        .concession-info:has(.staff-info) {
-            background-color: #f0f8f0;
-            border-radius: 8px;
-            padding: 8px;
-            border: 1px solid #d4edda;
-        }
-
-        /* Enhanced Filter Styles */
-        .search-container {
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            border-radius: 15px;
-            padding: 1.5rem;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            border: 1px solid #dee2e6;
-        }
-
-        .search-container .input-group {
-            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-            border-radius: 12px;
-            overflow: hidden;
-        }
-
-        .search-container .form-control {
-            border: none;
-            padding: 0.75rem 1rem;
-            font-size: 1.1rem;
-            background: white;
-        }
-
-        .search-container .input-group-text {
-            background: var(--primary-color);
-            color: white;
-            border: none;
-            padding: 0.75rem 1rem;
-        }
-
-        .filters-container {
-            background: #ffffff;
-            border-radius: 12px;
-            padding: 1.5rem;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
-            border: 1px solid #e3e6f0;
-        }
-
-        .filter-select {
-            border-radius: 8px;
-            border: 1px solid #d1d3e2;
-            padding: 0.5rem 0.75rem;
-            transition: all 0.3s ease;
-        }
-
-        .filter-select:focus {
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25);
-        }
-
-        .btn-outline-primary:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 3px 8px rgba(0,0,0,0.15);
-        }
-
-        #searchResults {
-            font-weight: 500;
-            padding: 0.5rem;
-            border-radius: 6px;
-            background: rgba(40, 167, 69, 0.1);
-        }
-
-        @media (max-width: 768px) {
-            .filter-toggle {
-                display: block;
-                margin-bottom: 1rem;
-            }
-            
-            .filter-section {
-                display: none;
-            }
-            
-            .filter-section.show {
-                display: block;
-            }
-            
-            /* Table responsive styles moved to external CSS */
-
-            .search-container {
-                padding: 1rem;
-            }
-
-            .filters-container {
-                padding: 1rem;
-            }
-
-            .filter-select {
-                margin-bottom: 0.5rem;
-            }
-        }
-
-        .loading {
-            text-align: center;
-            padding: 2rem;
-            color: var(--primary-color);
-        }
-
-        .no-data {
-            text-align: center;
-            padding: 2rem;
-            color: #6b7280;
-        }
-    </style>
 </head>
 <body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-baseball-ball me-2"></i>
+                Baseball Schedule Manager
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#schedules">Schedules</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#requests">Requests</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin-login">
+                            <i class="fas fa-lock me-1"></i>
+                            Admin Login
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
 
-
-
+    <!-- Hero Section -->
+    <section class="py-5 bg-gradient-primary text-white">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-8">
+                    <h1 class="display-4 fw-bold mb-4">
+                        <i class="fas fa-baseball-ball me-3"></i>
+                        Baseball & Softball Schedule Manager
+                    </h1>
+                    <p class="lead mb-4">
+                        Stay updated with game schedules, submit change requests, and manage your team's activities all in one place.
+                    </p>
+                    <div class="d-flex gap-3">
+                        <a href="#schedules" class="btn btn-light btn-lg">
+                            <i class="fas fa-calendar-alt me-2"></i>
+                            View Schedules
+                        </a>
+                        <a href="#requests" class="btn btn-outline-light btn-lg">
+                            <i class="fas fa-edit me-2"></i>
+                            Submit Request
+                        </a>
+                    </div>
+                </div>
+                <div class="col-lg-4 text-center">
+                    <i class="fas fa-baseball-ball" style="font-size: 8rem; opacity: 0.3;"></i>
+                </div>
+            </div>
+        </div>
+    </section>
 
     <!-- Main Content -->
-    
-    <!-- Website Header -->
-    <div class="container mt-4">
-        <div class="text-center">
-            <h1 class="website-title">LYBSL</h1>
-            <p class="website-subtitle">Baseball & Softball Schedule Manager</p>
-        </div>
-    </div>
-    
-    <div class="container">
+    <div class="container my-5">
         <!-- Filter Section -->
-        <div class="filter-section" id="filterSection">
-            <h5 class="mb-3"><i class="fas fa-filter me-2"></i>Filter Schedules (Auto-Filtering)</h5>
-            
-            <!-- Event Type and Availability Filters -->
-            <div class="filters-container">
+        <div class="card mb-5" id="filters">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-filter me-2"></i>
+                    Filter Schedules
+                </h5>
+            </div>
+            <div class="card-body">
                 <div class="row g-3">
-                    <div class="col-lg-3 col-md-4 col-sm-6">
-                        <label class="form-label">Event Type</label>
-                        <select class="form-select filter-select" id="eventTypeFilter">
-                            <option value="">All Events</option>
+                    <div class="col-md-3">
+                        <label for="seasonFilter" class="form-label">Season</label>
+                        <select id="seasonFilter" class="form-control">
+                            <option value="">All Seasons</option>
                         </select>
                     </div>
-                    <div class="col-lg-3 col-md-4 col-sm-6">
-                        <label class="form-label">Available Games</label>
-                        <select class="form-select filter-select" id="availableGamesFilter">
-                            <option value="">All Games</option>
-                            <option value="available">Available Positions</option>
-                            <option value="plate_umpire">Available Plate Umpire</option>
-                            <option value="base_umpire">Available Base Umpire</option>
-                            <option value="concession_staff">Available Concession Staff</option>
+                    <div class="col-md-3">
+                        <label for="divisionFilter" class="form-label">Division</label>
+                        <select id="divisionFilter" class="form-control">
+                            <option value="">All Divisions</option>
                         </select>
-                                        </div>
-                </div>
-                
-                <div class="row mt-2">
-                    <div class="col-12">
-                        <small class="text-muted">
-                            <i class="fas fa-info-circle me-1"></i>
-                            Filters are applied automatically when you make a selection
-                        </small>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="dateFilter" class="form-label">Date</label>
+                        <input type="date" id="dateFilter" class="form-control">
+                    </div>
+                    <div class="col-md-3">
+                        <label for="venueFilter" class="form-label">Venue</label>
+                        <select id="venueFilter" class="form-control">
+                            <option value="">All Venues</option>
+                        </select>
                     </div>
                 </div>
-                    
-                    <div class="row mt-3">
+                <div class="row mt-3">
                     <div class="col-12">
-                        <div class="d-flex gap-2 flex-wrap">
-                            <button class="btn btn-outline-secondary" onclick="clearAllFilters()">
-                                <i class="fas fa-times me-2"></i>Clear All
-                            </button>
-                        </div>
+                        <button id="clearFilters" class="btn btn-secondary">
+                            <i class="fas fa-times me-2"></i>
+                            Clear Filters
+                        </button>
+                        <button id="applyFilters" class="btn btn-primary ms-2">
+                            <i class="fas fa-search me-2"></i>
+                            Apply Filters
+                        </button>
                     </div>
-                </div>
                 </div>
             </div>
         </div>
 
-        <!-- Concession Info Section -->
-        <div class="alert alert-info" role="alert">
-            <div class="d-flex align-items-center">
-                <i class="fas fa-info-circle me-2"></i>
-                <div>
-                    <strong>Concession Stand Information:</strong> Each game shows which concession stand is available and which staff member is working. 
-                    Look for the green badge to see which stand will be open for food and drinks!
-                    <br><small class="text-muted mt-1">
-                        <i class="fas fa-user me-1"></i>Staff names are displayed below each concession stand when assigned.
-                    </small>
+        <!-- Schedules Section -->
+        <div class="card" id="schedules">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="fas fa-calendar-alt me-2"></i>
+                    Game Schedules
+                </h5>
+                <div class="d-flex gap-2">
+                    <button id="refreshSchedules" class="btn btn-outline-primary btn-sm">
+                        <i class="fas fa-sync-alt me-1"></i>
+                        Refresh
+                    </button>
+                    <button id="exportSchedules" class="btn btn-outline-success btn-sm">
+                        <i class="fas fa-download me-1"></i>
+                        Export
+                    </button>
+                </div>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover schedule-table mb-0" id="scheduleTable">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Time</th>
+                                <th>Division</th>
+                                <th>Home Team</th>
+                                <th>Visitor Team</th>
+                                <th>Venue</th>
+                                <th>Plate Umpire</th>
+                                <th>Base Umpire</th>
+                                <th>Concession Staff</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="scheduleTableBody">
+                            <tr>
+                                <td colspan="10" class="text-center py-5">
+                                    <div class="loading">
+                                        <div class="spinner"></div>
+                                        <span>Loading schedules...</span>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
 
-        <!-- No Results Banner -->
-        <div id="noResultsBanner" class="mb-4" style="display: none;"></div>
-        
-        <!-- Schedule Table -->
-        <div class="schedule-table">
-            <div class="table-responsive">
-                <table class="table table-hover mb-0">
-                    <thead>
-                        <tr>
-                            <th>Umpires</th>
-                            <th>Concession</th>
-                            <th>Season</th>
-                            <th>Event</th>
-                            <th>Venue</th>
-                            <th>Day</th>
-                            <th>Date</th>
-                            <th>Time</th>
-                            <th>Division</th>
-                            <th>Home Team</th>
-                            <th>Visitor Team</th>
-                        </tr>
-                    </thead>
-                    <tbody id="scheduleTableBody">
-                        <tr>
-                            <td colspan="11" class="loading">
-                                <i class="fas fa-spinner fa-spin me-2"></i>Loading schedules...
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+        <!-- Request Forms Section -->
+        <div class="row mt-5" id="requests">
+            <div class="col-lg-6">
+                <div class="card h-100">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-edit me-2"></i>
+                            Umpire Change Request
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="umpireRequestForm">
+                            <div class="row g-3">
+                                <div class="col-12">
+                                    <label for="umpireGameSelect" class="form-label">Select Game</label>
+                                    <select id="umpireGameSelect" class="form-control" required>
+                                        <option value="">Choose a game...</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="requesterName" class="form-label">Your Name</label>
+                                    <input type="text" id="requesterName" class="form-control" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="requesterEmail" class="form-label">Email</label>
+                                    <input type="email" id="requesterEmail" class="form-control" required>
+                                </div>
+                                <div class="col-12">
+                                    <label for="requesterPhone" class="form-label">Phone</label>
+                                    <input type="tel" id="requesterPhone" class="form-control" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="currentPlateUmpire" class="form-label">Current Plate Umpire</label>
+                                    <select id="currentPlateUmpire" class="form-control" required>
+                                        <option value="">Select current plate umpire...</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="currentBaseUmpire" class="form-label">Current Base Umpire</label>
+                                    <select id="currentBaseUmpire" class="form-control" required>
+                                        <option value="">Select current base umpire...</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="requestedPlateUmpire" class="form-label">Requested Plate Umpire</label>
+                                    <select id="requestedPlateUmpire" class="form-control">
+                                        <option value="">Select requested plate umpire...</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="requestedBaseUmpire" class="form-label">Requested Base Umpire</label>
+                                    <select id="requestedBaseUmpire" class="form-control">
+                                        <option value="">Select requested base umpire...</option>
+                                    </select>
+                                </div>
+                                <div class="col-12">
+                                    <label for="umpireReason" class="form-label">Reason for Change</label>
+                                    <textarea id="umpireReason" class="form-control" rows="3" required placeholder="Please explain why you need this change..."></textarea>
+                                </div>
+                            </div>
+                            <div class="mt-4">
+                                <button type="submit" class="btn btn-primary w-100">
+                                    <i class="fas fa-paper-plane me-2"></i>
+                                    Submit Umpire Request
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="card h-100">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-utensils me-2"></i>
+                            Concession Staff Request
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="concessionRequestForm">
+                            <div class="row g-3">
+                                <div class="col-12">
+                                    <label for="concessionGameSelect" class="form-label">Select Game</label>
+                                    <select id="concessionGameSelect" class="form-control" required>
+                                        <option value="">Choose a game...</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="concessionRequesterName" class="form-label">Your Name</label>
+                                    <input type="text" id="concessionRequesterName" class="form-control" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="concessionRequesterEmail" class="form-label">Email</label>
+                                    <input type="email" id="concessionRequesterEmail" class="form-control" required>
+                                </div>
+                                <div class="col-12">
+                                    <label for="concessionRequesterPhone" class="form-label">Phone</label>
+                                    <input type="tel" id="concessionRequesterPhone" class="form-control" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="currentConcessionStaff" class="form-label">Current Concession Staff</label>
+                                    <select id="currentConcessionStaff" class="form-control" required>
+                                        <option value="">Select current concession staff...</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="requestedConcessionStaff" class="form-label">Requested Concession Staff</label>
+                                    <select id="requestedConcessionStaff" class="form-control">
+                                        <option value="">Select requested concession staff...</option>
+                                    </select>
+                                </div>
+                                <div class="col-12">
+                                    <label for="concessionReason" class="form-label">Reason for Change</label>
+                                    <textarea id="concessionReason" class="form-control" rows="3" required placeholder="Please explain why you need this change..."></textarea>
+                                </div>
+                            </div>
+                            <div class="mt-4">
+                                <button type="submit" class="btn btn-success w-100">
+                                    <i class="fas fa-paper-plane me-2"></i>
+                                    Submit Concession Request
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
             </div>
         </div>
-
-        <!-- Umpire Request Form -->
-        <div class="umpire-request-form" id="umpireRequestForm" style="display: none;">
-            <h5 class="mb-3"><i class="fas fa-edit me-2"></i>Request Umpire Change</h5>
-            <form id="umpireRequestFormElement">
-                <input type="hidden" id="requestGameId">
-                <div class="row g-3">
-                    <div class="col-md-6">
-                        <label class="form-label">Game Details</label>
-                        <div id="gameDetails" class="form-control-plaintext"></div>
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label">Current Umpires</label>
-                        <div id="currentUmpires" class="form-control-plaintext"></div>
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label">Requested Plate Umpire</label>
-                        <select class="form-select" id="requestedPlateUmpire">
-                            <option value="">No change</option>
-                        </select>
-                        <div id="plateUmpireNote" class="mt-1"></div>
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label">Requested Base Umpire</label>
-                        <select class="form-select" id="requestedBaseUmpire">
-                            <option value="">No change</option>
-                        </select>
-                        <div id="baseUmpireNote" class="mt-1"></div>
-                    </div>
-                    <div class="col-12">
-                        <label class="form-label">Reason for Change</label>
-                        <textarea class="form-control" id="changeReason" rows="3" required placeholder="Please provide a reason for the umpire change request"></textarea>
-                    </div>
-                    <div class="col-md-4">
-                        <label class="form-label">Your Name *</label>
-                        <input type="text" class="form-control" id="requesterName" required placeholder="Enter your full name">
-                    </div>
-                    <div class="col-md-4">
-                        <label class="form-label">Your Email *</label>
-                        <input type="email" class="form-control" id="requesterEmail" required placeholder="Enter your email address">
-                    </div>
-                    <div class="col-md-4">
-                        <label class="form-label">Your Phone</label>
-                        <input type="tel" class="form-control" id="requesterPhone" placeholder="Enter your phone number (optional)">
-                    </div>
-                    <div class="col-12">
-                        <button type="submit" class="btn btn-primary me-2">
-                            <i class="fas fa-paper-plane me-2"></i>Submit Request
-                        </button>
-                        <button type="button" class="btn btn-outline-secondary" onclick="hideUmpireRequestForm()">
-                            <i class="fas fa-times me-2"></i>Cancel
-                        </button>
-                    </div>
-                </div>
-            </form>
-        </div>
-
-        <!-- Concession Staff Request Form -->
-        <div class="umpire-request-form" id="concessionStaffRequestForm" style="display: none;">
-            <h5 class="mb-3"><i class="fas fa-edit me-2"></i>Request Concession Staff Change</h5>
-            <form id="concessionStaffRequestFormElement">
-                <input type="hidden" id="concessionRequestGameId">
-                <div class="row g-3">
-                    <div class="col-md-6">
-                        <label class="form-label">Game Details</label>
-                        <div id="concessionGameDetails" class="form-control-plaintext"></div>
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label">Current Concession Staff</label>
-                        <div id="currentConcessionStaff" class="form-control-plaintext"></div>
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label">Requested Concession Staff</label>
-                        <select class="form-select" id="requestedConcessionStaff">
-                            <option value="">No change</option>
-                        </select>
-                        <div id="concessionStaffNote" class="mt-1"></div>
-                    </div>
-                    <div class="col-12">
-                        <label class="form-label">Reason for Change</label>
-                        <textarea class="form-control" id="concessionChangeReason" rows="3" required placeholder="Please provide a reason for the concession staff change request"></textarea>
-                    </div>
-                    <div class="col-md-4">
-                        <label class="form-label">Your Name *</label>
-                        <input type="text" class="form-control" id="concessionRequesterName" required placeholder="Enter your full name">
-                    </div>
-                    <div class="col-md-4">
-                        <label class="form-label">Your Email *</label>
-                        <input type="email" class="form-control" id="concessionRequesterEmail" required placeholder="Enter your email address">
-                    </div>
-                    <div class="col-md-4">
-                        <label class="form-label">Your Phone</label>
-                        <input type="tel" class="form-control" id="concessionRequesterPhone" placeholder="Enter your phone number (optional)">
-                    </div>
-                    <div class="col-12">
-                        <button type="submit" class="btn btn-primary me-2">
-                            <i class="fas fa-paper-plane me-2"></i>Submit Request
-                        </button>
-                        <button type="button" class="btn btn-outline-secondary" onclick="hideConcessionStaffRequestForm()">
-                            <i class="fas fa-times me-2"></i>Cancel
-                        </button>
-                    </div>
-                </div>
-            </form>
-        </div>
-
-
-
-        <!-- Alert Messages -->
-        <div id="alertContainer"></div>
     </div>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-light py-4 mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h6>Baseball Schedule Manager</h6>
+                    <p class="mb-0">Managing your team's schedule with ease.</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <p class="mb-0">&copy; 2024 Baseball Schedule Manager. All rights reserved.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Success/Error Messages -->
+    <div id="messageContainer" class="position-fixed top-0 end-0 p-3" style="z-index: 1050;"></div>
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
     
-    <!-- Main JavaScript -->
-    <script src="public.js"></script>
+    <!-- Custom JavaScript -->
+    <script src="/public.js"></script>
 </body>
-</html> 
+</html>
