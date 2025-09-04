@@ -335,6 +335,14 @@ async function loadSchedules() {
         if (!response.ok) throw new Error('Failed to fetch schedules');
         
         allSchedules = await response.json();
+        
+        // Sort schedules by date to ensure chronological order
+        allSchedules.sort((a, b) => {
+            const dateA = new Date(a.date);
+            const dateB = new Date(b.date);
+            return dateA - dateB;
+        });
+        
         filteredSchedules = [...allSchedules];
         
         // Debug: Log the first few schedules to check data integrity
@@ -1258,7 +1266,7 @@ function renderScheduleTable() {
             
         tbody.innerHTML = `
             <tr>
-                    <td colspan="11" class="no-data text-center">
+                    <td colspan="10" class="no-data text-center">
                         <div class="py-5">
                             <i class="fas fa-search fa-3x text-warning mb-4"></i>
                             <h4 class="text-warning mb-3">No Results Found</h4>
@@ -1283,7 +1291,7 @@ function renderScheduleTable() {
             // Show simple message when no schedules exist in database
             tbody.innerHTML = `
                 <tr>
-                    <td colspan="11" class="no-data text-center">
+                    <td colspan="10" class="no-data text-center">
                         <div class="py-4">
                             <i class="fas fa-calendar-times fa-3x text-muted mb-3"></i>
                             <h5 class="text-muted">No schedules found in the database</h5>
@@ -1354,10 +1362,6 @@ function renderMobileLayout(schedules, tbody) {
                 </div>
                 
                 <div class="mobile-game-details">
-                    <div class="detail-item">
-                        <span class="detail-label">📅 Season:</span>
-                        <span class="detail-value">${schedule.season || 'N/A'}</span>
-                    </div>
                     <div class="detail-item">
                         <span class="detail-label">🏟️ Venue:</span>
                         <span class="detail-value">${schedule.venue || 'N/A'}</span>
@@ -1548,7 +1552,6 @@ function renderDesktopLayout(schedules, tbody) {
                     }
                 </div>
             </td>
-            <td data-label="Season"><span class="badge bg-primary">${schedule.season || 'N/A'}</span></td>
             <td data-label="Event"><span class="badge ${schedule.event_type === 'Baseball' ? 'bg-success' : 'bg-warning'}">${schedule.event_type || 'N/A'}</span></td>
             <td data-label="Venue">${schedule.venue || 'N/A'}</td>
             <td data-label="Day"><strong>${schedule.day || 'N/A'}</strong></td>
