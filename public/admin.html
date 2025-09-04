@@ -2,582 +2,2450 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard - Baseball Schedule Manager</title>
+            <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+        <title>Admin Dashboard - Baseball/Softball Schedule Manager</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" integrity="sha384-iw3OoTErCYJJB9mCa8LNS2hbsQ7M3C0EpIsO/H5+EGAkPGc6rk+V8i04oW/K5xq0" crossorigin="anonymous">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link href="/styles.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        .admin-sidebar {
-            background: linear-gradient(135deg, var(--primary-600) 0%, var(--primary-700) 100%);
-            min-height: 100vh;
+        :root {
+            /* Deep Red & Maroon Color Palette */
+            --primary-color: #dc2626;
+            --primary-600: #dc2626;
+            --primary-700: #b91c1c;
+            --primary-800: #991b1b;
+            --primary-900: #7f1d1d;
+            --primary-950: #450a0a;
+            
+            --secondary-color: #78716c;
+            --success-color: #059669;
+            --info-color: #0891b2;
+            --warning-color: #d97706;
+            --danger-color: #dc2626;
+            --light-color: #fafaf9;
+            --dark-color: #292524;
+            --sidebar-width: 280px;
+            --header-height: 70px;
+            
+            /* Enhanced Gradients */
+            --gradient-primary: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+            --gradient-secondary: linear-gradient(135deg, #7c3aed 0%, #dc2626 100%);
+            --gradient-success: linear-gradient(135deg, #059669 0%, #047857 100%);
+            --gradient-warning: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+            --gradient-danger: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+            --gradient-info: linear-gradient(135deg, #0891b2 0%, #0e7490 100%);
+            
+            /* Enhanced Shadows */
+            --shadow-sm: 0 1px 3px 0 rgba(220, 38, 38, 0.1), 0 1px 2px -1px rgba(220, 38, 38, 0.1);
+            --shadow-md: 0 4px 6px -1px rgba(220, 38, 38, 0.1), 0 2px 4px -1px rgba(220, 38, 38, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(220, 38, 38, 0.1), 0 4px 6px -2px rgba(220, 38, 38, 0.05);
+            --shadow-xl: 0 20px 25px -5px rgba(220, 38, 38, 0.1), 0 8px 10px -6px rgba(220, 38, 38, 0.04);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #fafaf9 0%, #f5f5f4 100%);
+            color: #292524;
+            overflow-x: hidden;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Top Header */
+        .top-header {
+            position: fixed;
+            top: 0;
+            left: var(--sidebar-width);
+            right: 0;
+            height: var(--header-height);
+            background: white;
+            border-bottom: 1px solid rgba(220, 38, 38, 0.1);
+            z-index: 999;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2rem;
+            box-shadow: var(--shadow-md);
+            backdrop-filter: blur(10px);
+        }
+
+        .header-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
             position: fixed;
             top: 0;
             left: 0;
-            width: 280px;
+            height: 100vh;
+            width: var(--sidebar-width);
+            background: var(--gradient-primary);
             z-index: 1000;
-            transition: transform 0.3s ease;
-        }
-        
-        .admin-main {
-            margin-left: 280px;
-            min-height: 100vh;
-            background: var(--neutral-50);
-        }
-        
-        .admin-header {
-            background: white;
-            border-bottom: 1px solid var(--neutral-200);
-            padding: 1rem 2rem;
-            box-shadow: var(--shadow-sm);
-        }
-        
-        .admin-content {
-            padding: 2rem;
-        }
-        
-        .sidebar-nav {
-            padding: 2rem 0;
-        }
-        
-        .sidebar-nav .nav-link {
-            color: rgba(255, 255, 255, 0.8);
-            padding: 0.75rem 2rem;
-            border-radius: 0;
             transition: all 0.3s ease;
-            border-left: 3px solid transparent;
+            box-shadow: var(--shadow-xl);
+            overflow-y: auto;
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
         }
-        
-        .sidebar-nav .nav-link:hover {
-            color: white;
-            background: rgba(255, 255, 255, 0.1);
-            border-left-color: white;
-        }
-        
-        .sidebar-nav .nav-link.active {
-            color: white;
-            background: rgba(255, 255, 255, 0.2);
-            border-left-color: white;
-        }
-        
-        .sidebar-brand {
-            padding: 1.5rem 2rem;
+
+        .sidebar-header {
+            padding: 2rem 1.5rem;
+            text-align: center;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            margin-bottom: 1rem;
         }
-        
-        .sidebar-brand h4 {
+
+        .sidebar-brand {
             color: white;
-            margin: 0;
-            font-weight: 700;
+            font-size: 1.75rem;
+            font-weight: 800;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         }
-        
-        .stats-card {
-            background: white;
-            border-radius: var(--radius-lg);
-            padding: 1.5rem;
-            box-shadow: var(--shadow);
-            border: 1px solid var(--neutral-200);
+
+        .sidebar-brand:hover {
+            color: rgba(255, 255, 255, 0.95);
+            transform: scale(1.02);
             transition: all 0.3s ease;
         }
-        
-        .stats-card:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-lg);
+
+        .sidebar-nav {
+            padding: 1.5rem 0;
         }
-        
-        .stats-icon {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
+
+        .nav-item {
+            margin: 0.5rem 1rem;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 1rem 1.25rem;
+            color: rgba(255, 255, 255, 0.85);
+            text-decoration: none;
+            border-radius: 0.75rem;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            position: relative;
+        }
+
+        .nav-link:hover {
+            color: white;
+            background-color: rgba(255, 255, 255, 0.15);
+            transform: translateX(8px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .nav-link.active {
+            color: white;
+            background-color: rgba(255, 255, 255, 0.25);
+            box-shadow: var(--shadow-lg);
+            border-left: 4px solid rgba(255, 255, 255, 0.8);
+        }
+
+        .nav-link i {
+            width: 1.75rem;
+            margin-right: 1rem;
+            font-size: 1.1rem;
+        }
+
+        .nav-link .nav-text {
+            font-size: 0.95rem;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            margin-top: var(--header-height);
+            padding: 2rem;
+            min-height: calc(100vh - var(--header-height));
+        }
+
+        /* Dashboard Cards */
+        .dashboard-card {
+            background: white;
+            border-radius: 1.5rem;
+            padding: 2.5rem;
+            box-shadow: var(--shadow-md);
+            border: 1px solid rgba(220, 38, 38, 0.08);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .dashboard-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--gradient-primary);
+            transform: scaleX(0);
+            transition: transform 0.4s ease;
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-xl);
+            border-color: rgba(220, 38, 38, 0.15);
+        }
+
+        .dashboard-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .card-icon {
+            width: 4rem;
+            height: 4rem;
+            border-radius: 1rem;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 1.5rem;
-            color: white;
+            margin-bottom: 1.5rem;
         }
-        
-        .stats-icon.primary { background: var(--primary-500); }
-        .stats-icon.success { background: var(--success-500); }
-        .stats-icon.warning { background: var(--warning-500); }
-        .stats-icon.info { background: var(--primary-500); }
-        
-        .section-content {
-            display: none;
+
+        .card-icon.primary { background: var(--gradient-primary); color: white; box-shadow: var(--shadow-md); }
+        .card-icon.success { background: var(--gradient-success); color: white; box-shadow: var(--shadow-md); }
+        .card-icon.warning { background: var(--gradient-warning); color: white; box-shadow: var(--shadow-md); }
+        .card-icon.info { background: var(--gradient-info); color: white; box-shadow: var(--shadow-md); }
+
+        .card-value {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 2px 4px rgba(220, 38, 38, 0.1);
         }
-        
-        .section-content.active {
-            display: block;
+
+        .card-label {
+            color: var(--secondary-color);
+            font-size: 1rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.75px;
+            opacity: 0.8;
         }
-        
-        .table-actions {
+
+        /* Section Headers */
+        .section-header {
             display: flex;
-            gap: 0.5rem;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 3px solid #e3e6f0;
         }
-        
-        .btn-icon {
-            width: 32px;
-            height: 32px;
-            padding: 0;
+
+        .section-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--dark-color);
+            margin: 0;
             display: flex;
             align-items: center;
-            justify-content: center;
+            gap: 1rem;
         }
-        
-        @media (max-width: 768px) {
-            .admin-sidebar {
-                transform: translateX(-100%);
+
+        .section-title i {
+            color: var(--primary-color);
+        }
+
+        .section-actions {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        /* Tables */
+        .table-container {
+            background: white;
+            border-radius: 1.5rem;
+            box-shadow: var(--shadow-md);
+            border: 1px solid rgba(220, 38, 38, 0.08);
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .table-container:hover {
+            box-shadow: var(--shadow-lg);
+            border-color: rgba(220, 38, 38, 0.15);
+        }
+
+        .table {
+            margin: 0;
+        }
+
+        .table thead th {
+            background: var(--gradient-primary);
+            color: white;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+            font-weight: 700;
+            padding: 1.5rem 1rem;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 0.75px;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .table tbody td {
+            padding: 1.5rem 1rem;
+            vertical-align: middle;
+            border-bottom: 1px solid rgba(220, 38, 38, 0.05);
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
+        }
+
+        .table tbody tr:hover {
+            background: linear-gradient(135deg, rgba(220, 38, 38, 0.02) 0%, rgba(153, 27, 27, 0.05) 100%);
+            transform: translateX(4px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        /* Buttons */
+        .btn {
+            border-radius: 1rem;
+            font-weight: 700;
+            padding: 1rem 2rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: none;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 0.75px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btn:active {
+            transform: translateY(-2px);
+        }
+
+        .btn-primary {
+            background: var(--gradient-primary);
+            color: white;
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-success {
+            background: var(--gradient-success);
+            color: white;
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-warning {
+            background: var(--gradient-warning);
+            color: white;
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-danger {
+            background: var(--gradient-danger);
+            color: white;
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-outline-primary {
+            border: 2px solid var(--primary-color);
+            color: var(--primary-color);
+            background: transparent;
+        }
+
+        .btn-outline-primary:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        /* Modals */
+        .modal-content {
+            border-radius: 1.5rem;
+            border: none;
+            box-shadow: var(--shadow-xl);
+            overflow: hidden;
+        }
+
+        .modal-header {
+            border-bottom: 1px solid rgba(220, 38, 38, 0.1);
+            padding: 2.5rem 2.5rem 2rem;
+            background: var(--gradient-primary);
+            color: white;
+        }
+
+        .modal-title {
+            font-weight: 800;
+            font-size: 1.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .modal-body {
+            padding: 2rem;
+        }
+
+        .modal-footer {
+            border-top: 1px solid #e3e6f0;
+            padding: 1.5rem 2rem;
+            background: #f8f9fc;
+        }
+
+        /* Loading and No Data States */
+        .loading, .no-data {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--secondary-color);
+        }
+
+        .loading i {
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
+            color: var(--primary-color);
+        }
+
+        .loading div, .no-data {
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+
+        /* Badges */
+        .badge {
+            font-size: 0.8rem;
+            padding: 0.6rem 1rem;
+            border-radius: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Form Controls */
+        .form-control, .form-select {
+            border-radius: 1rem;
+            border: 2px solid rgba(220, 38, 38, 0.1);
+            padding: 1.25rem;
+            font-size: 1rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: white;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.3rem rgba(220, 38, 38, 0.15);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: var(--dark-color);
+            margin-bottom: 0.75rem;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* CSV Upload Area */
+        .csv-upload-area {
+            border: 3px dashed rgba(220, 38, 38, 0.2);
+            border-radius: 1.5rem;
+            padding: 4rem 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            background: linear-gradient(135deg, #fafaf9 0%, #f5f5f4 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .csv-upload-area::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--gradient-primary);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            z-index: 1;
+        }
+
+        .csv-upload-area:hover {
+            border-color: var(--primary-color);
+            background: linear-gradient(135deg, rgba(220, 38, 38, 0.02) 0%, rgba(153, 27, 27, 0.05) 100%);
+            transform: scale(1.02);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .csv-upload-area:hover::before {
+            opacity: 0.05;
+        }
+
+        .csv-upload-area i {
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+            font-size: 3.5rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .csv-upload-area h5 {
+            color: var(--dark-color);
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .csv-upload-area p {
+            color: var(--secondary-color);
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Enhanced Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
             }
-            
-            .admin-sidebar.show {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+            to {
+                opacity: 1;
                 transform: translateX(0);
             }
-            
-            .admin-main {
-                margin-left: 0;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
             }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        /* Animated Elements */
+        .dashboard-card {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .sidebar {
+            animation: slideInLeft 0.5s ease-out;
+        }
+
+        .table-container {
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        /* Enhanced Hover Effects */
+        .nav-link:hover i {
+            animation: pulse 1s infinite;
+        }
+
+        .btn:hover i {
+            transform: translateX(4px);
+            transition: transform 0.3s ease;
+        }
+
+        /* Mobile Toggle Button */
+        .mobile-toggle {
+            display: none;
+            position: fixed;
+            top: 1rem;
+            left: 1rem;
+            z-index: 1001;
+            background: var(--gradient-primary);
+            color: white;
+            border: none;
+            padding: 1rem;
+            border-radius: 12px;
+            font-size: 1.3rem;
+            cursor: pointer;
+            box-shadow: var(--shadow-lg);
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .mobile-toggle:hover {
+            transform: scale(1.1);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .mobile-toggle:active {
+            transform: scale(0.95);
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+
+            .sidebar.show {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+                transition: margin-left 0.3s ease;
+            }
+
+            .top-header {
+                left: 0;
+                transition: left 0.3s ease;
+            }
+
+            .mobile-toggle {
+                display: block;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 1rem;
+                margin-top: 80px;
+            }
+
+            .top-header {
+                height: 60px;
+                padding: 0 1rem;
+            }
+
+            .header-title {
+                font-size: 1.2rem;
+            }
+
+            .dashboard-card {
+                margin-bottom: 1rem;
+                padding: 1.5rem;
+            }
+
+            .section-header {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
+            }
+
+            .section-title {
+                font-size: 1.5rem;
+            }
+
+            .section-actions {
+                width: 100%;
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+
+            .card-value {
+                font-size: 2rem;
+            }
+
+            .card-icon {
+                width: 3rem;
+                height: 3rem;
+                font-size: 1.2rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main-content {
+                padding: 0.75rem;
+            }
+
+            .dashboard-card {
+                padding: 1rem;
+            }
+
+            .section-title {
+                font-size: 1.3rem;
+            }
+
+            .card-value {
+                font-size: 1.8rem;
+            }
+        }
+
+        /* Custom Scrollbar */
+        .sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .sidebar::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 3px;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        /* Animation Classes */
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .slide-in {
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(-20px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        /* Section Display */
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        /* Dark Theme */
+        .dark-theme {
+            background-color: #1a1a1a;
+            color: #e0e0e0;
+        }
+
+        .dark-theme .top-header {
+            background: #2d2d2d;
+            border-bottom-color: #404040;
+        }
+
+        .dark-theme .dashboard-card {
+            background: #2d2d2d;
+            border-color: #404040;
+        }
+
+        .dark-theme .table-container {
+            background: #2d2d2d;
+            border-color: #404040;
+        }
+
+        .dark-theme .table thead th {
+            background: linear-gradient(135deg, #3a3a3a 0%, #2d2d2d 100%);
+            border-bottom-color: #404040;
+            color: #e0e0e0;
+        }
+
+        .dark-theme .table tbody tr:hover {
+            background-color: #3a3a3a;
+        }
+
+        .dark-theme .modal-content {
+            background: #2d2d2d;
+            border-color: #404040;
+        }
+
+        .dark-theme .modal-header {
+            background: linear-gradient(135deg, #3a3a3a 0%, #2d2d2d 100%);
+            border-bottom-color: #404040;
+        }
+
+        .dark-theme .modal-footer {
+            background: #3a3a3a;
+            border-top-color: #404040;
+        }
+
+        .dark-theme .form-control,
+        .dark-theme .form-select {
+            background: #3a3a3a;
+            border-color: #404040;
+            color: #e0e0e0;
+        }
+
+        .dark-theme .form-control:focus,
+        .dark-theme .form-select:focus {
+            background: #3a3a3a;
+            border-color: var(--primary-color);
+        }
+
+        .dark-theme .form-label {
+            color: #e0e0e0;
+        }
+        
+        /* Filter Styles */
+        .filter-section {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border: 1px solid #dee2e6;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+        
+        .dark-theme .filter-section {
+            background: linear-gradient(135deg, #2d2d2d 0%, #3a3a3a 100%);
+            border-color: #404040;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+        
+        .filter-section h5 {
+            color: #495057;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+        
+        .dark-theme .filter-section h5 {
+            color: #e0e0e0;
+        }
+        
+        .filter-section .form-label {
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 0.5rem;
+        }
+        
+        .dark-theme .filter-section .form-label {
+            color: #e0e0e0;
+        }
+        
+        .filter-section .form-select,
+        .filter-section .form-control {
+            border: 2px solid #e9ecef;
+            border-radius: 0.5rem;
+            transition: all 0.2s ease;
+        }
+        
+        .filter-section .form-select:focus,
+        .filter-section .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25);
+            transform: scale(1.02);
+        }
+        
+        .filter-section .btn-outline-secondary {
+            border: 2px solid #6c757d;
+            color: #6c757d;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+        
+        .filter-section .btn-outline-secondary:hover {
+            background: #6c757d;
+            border-color: #6c757d;
+            color: white;
+            transform: translateY(-1px);
+        }
+        
+        .filter-counts {
+            background: rgba(78, 115, 223, 0.1);
+            border-radius: 0.5rem;
+            padding: 0.75rem 1rem;
+            border-left: 4px solid var(--primary-color);
+        }
+        
+        .dark-theme .filter-counts {
+            background: rgba(78, 115, 223, 0.2);
+            border-left-color: var(--primary-color);
+        }
+        
+        .filter-counts .fas {
+            color: var(--primary-color);
+        }
+
+        .filter-counts .fw-bold {
+            color: var(--primary-color);
+        }
+        
+        .dark-theme .filter-counts .fw-bold {
+            color: #6ea8fe;
+        }
+
+        /* Season Visibility Control Styles */
+        .season-visibility-card {
+            transition: all 0.3s ease;
+            border: 1px solid rgba(220, 38, 38, 0.1);
+        }
+
+        .season-visibility-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+            border-color: rgba(220, 38, 38, 0.2);
+        }
+
+        .season-visibility-card .card-title {
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .season-visibility-card .badge {
+            font-size: 0.875rem;
+            padding: 0.5rem 1rem;
+            border-radius: 0.75rem;
+        }
+
+        .season-visibility-card .btn {
+            font-size: 0.875rem;
+            padding: 0.5rem 1rem;
+            border-radius: 0.75rem;
+            font-weight: 600;
+        }
+
+        .season-visibility-card .btn-success {
+            background: var(--gradient-success);
+            border: none;
+            color: white;
+        }
+
+        .season-visibility-card .btn-outline-danger {
+            border: 2px solid var(--gradient-danger);
+            color: var(--primary-color);
+            background: transparent;
+        }
+
+        .season-visibility-card .btn-outline-danger:hover {
+            background: var(--gradient-danger);
+            color: white;
         }
     </style>
 </head>
 <body>
+    <!-- Mobile Toggle Button -->
+    <button class="mobile-toggle" onclick="toggleSidebar()">
+        <i class="fas fa-bars"></i>
+    </button>
+
     <!-- Sidebar -->
-    <div class="admin-sidebar" id="adminSidebar">
-        <div class="sidebar-brand">
-            <h4><i class="fas fa-baseball-ball me-2"></i>Admin Panel</h4>
+    <nav class="sidebar">
+        <div class="sidebar-header">
+            <a href="#" class="sidebar-brand">
+                <i class="fas fa-baseball-ball"></i>
+                <span>Admin Panel</span>
+            </a>
         </div>
-        <nav class="sidebar-nav">
-            <ul class="nav flex-column">
-                <li class="nav-item">
-                    <a class="nav-link active" href="#" data-section="dashboard">
-                        <i class="fas fa-tachometer-alt me-2"></i>
-                        Dashboard
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#" data-section="schedules">
-                        <i class="fas fa-calendar-alt me-2"></i>
-                        Game Schedules
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#" data-section="plate-umpires">
-                        <i class="fas fa-user-tie me-2"></i>
-                        Plate Umpires
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#" data-section="base-umpires">
-                        <i class="fas fa-user-tie me-2"></i>
-                        Base Umpires
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#" data-section="concession-staff">
-                        <i class="fas fa-utensils me-2"></i>
-                        Concession Staff
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#" data-section="umpire-requests">
-                        <i class="fas fa-edit me-2"></i>
-                        Umpire Requests
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#" data-section="concession-requests">
-                        <i class="fas fa-utensils me-2"></i>
-                        Concession Requests
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#" data-section="email-reminders">
-                        <i class="fas fa-envelope me-2"></i>
-                        Email Reminders
-                    </a>
-                </li>
-            </ul>
-        </nav>
-    </div>
+        <div class="sidebar-nav">
+            <div class="nav-item">
+                <a href="#dashboard" class="nav-link active" onclick="showSection('dashboard')">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span class="nav-text">Dashboard</span>
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="#schedules" class="nav-link" onclick="showSection('schedules')">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span class="nav-text">Game Schedules</span>
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="#staff" class="nav-link" onclick="showSection('staff')">
+                    <i class="fas fa-users"></i>
+                    <span class="nav-text">Staff Directory</span>
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="#umpires" class="nav-link" onclick="showSection('umpires')">
+                    <i class="fas fa-user-tie"></i>
+                    <span class="nav-text">Umpire Management</span>
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="#concession-staff" class="nav-link" onclick="showSection('concession-staff')">
+                    <i class="fas fa-store"></i>
+                    <span class="nav-text">Concession Staff</span>
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="#requests" class="nav-link" onclick="showSection('requests')">
+                    <i class="fas fa-clipboard-list"></i>
+                    <span class="nav-text">Change Requests</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Top Header -->
+    <header class="top-header">
+        <h1 class="header-title" id="pageTitle">Dashboard Overview</h1>
+        <div class="header-actions">
+            <span class="text-muted me-3">
+                <i class="fas fa-shield-alt me-2"></i>Admin Control Panel
+            </span>
+            <button class="btn btn-outline-danger btn-sm" onclick="logout()">
+                <i class="fas fa-sign-out-alt me-2"></i>Logout
+            </button>
+        </div>
+    </header>
 
     <!-- Main Content -->
-    <div class="admin-main">
-        <!-- Header -->
-        <div class="admin-header d-flex justify-content-between align-items-center">
-            <div class="d-flex align-items-center">
-                <button class="btn btn-outline-secondary d-md-none me-3" id="sidebarToggle">
-                    <i class="fas fa-bars"></i>
-                </button>
-                <h5 class="mb-0" id="pageTitle">Dashboard</h5>
+    <div class="main-content">
+        <!-- Dashboard Section -->
+        <div id="dashboard" class="section active fade-in">
+            <div class="section-header">
+                <h1 class="section-title">
+                    <i class="fas fa-tachometer-alt"></i>
+                    Dashboard Overview
+                </h1>
+    </div>
+
+            <!-- Stats Cards -->
+            <div class="row g-4 mb-5">
+                <div class="col-xl-3 col-lg-4 col-md-6">
+                    <div class="dashboard-card">
+                        <div class="card-icon primary">
+                            <i class="fas fa-calendar-check"></i>
+                        </div>
+                        <div class="card-value" id="adminTotalGames">0</div>
+                        <div class="card-label">Total Games</div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-lg-4 col-md-6">
+                    <div class="dashboard-card">
+                        <div class="card-icon warning">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="card-value" id="pendingRequests">0</div>
+                        <div class="card-label">Pending Requests</div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-lg-4 col-md-6">
+                    <div class="dashboard-card">
+                        <div class="card-icon info">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="card-value" id="totalStaff">0</div>
+                        <div class="card-label">Total Staff</div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-lg-4 col-md-6">
+                    <div class="dashboard-card">
+                        <div class="card-icon success">
+                            <i class="fas fa-store"></i>
+                        </div>
+                        <div class="card-value" id="totalConcessionStands">0</div>
+                        <div class="card-label">Concession Stands</div>
+                    </div>
+                </div>
             </div>
-            <div class="d-flex align-items-center gap-3">
-                <span class="text-muted">Welcome, <strong id="adminUsername">Admin</strong></span>
-                <button class="btn btn-outline-danger" id="logoutBtn">
-                    <i class="fas fa-sign-out-alt me-1"></i>
-                    Logout
-                </button>
+
+            <!-- Season Visibility Control -->
+            <div class="row g-4 mb-5">
+                <div class="col-12">
+                    <div class="dashboard-card">
+                        <h5 class="mb-4">
+                            <i class="fas fa-eye-slash me-2 text-primary"></i>
+                            Season Visibility Control
+                        </h5>
+                        <p class="text-muted mb-4">Control which seasons are visible to the public. Only published seasons will be shown on the public website.</p>
+                        
+
+                        
+                        <div id="seasonVisibilityControls" class="row g-3">
+                            <!-- Season visibility controls will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions & Recent Activity -->
+            <div class="row g-4">
+                <div class="col-lg-6">
+                    <div class="dashboard-card">
+                        <h5 class="mb-4">
+                            <i class="fas fa-bolt me-2 text-warning"></i>
+                            Quick Actions
+                        </h5>
+                        <div class="d-grid gap-3">
+                            <button class="btn btn-primary" onclick="showCreateScheduleModal()">
+                                <i class="fas fa-plus me-2"></i>Add New Schedule
+                            </button>
+                            <button class="btn btn-outline-primary" onclick="showUploadModal()">
+                                <i class="fas fa-upload me-2"></i>Bulk Upload CSV
+                            </button>
+                            <button class="btn btn-outline-success" onclick="showAddStaffModal()">
+                                <i class="fas fa-user-plus me-2"></i>Add Staff Member
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="dashboard-card">
+                        <h5 class="mb-4">
+                            <i class="fas fa-chart-line me-2 text-info"></i>
+                            Recent Activity
+                        </h5>
+                        <div id="recentActivity">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="bg-primary rounded-circle p-2 me-3">
+                                    <i class="fas fa-calendar-plus text-white"></i>
+                        </div>
+                                <div>
+                                    <div class="fw-bold">New Schedule Added</div>
+                                    <small class="text-muted">Eagles vs Sharks - 2:00 PM</small>
+                        </div>
+                        </div>
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="bg-success rounded-circle p-2 me-3">
+                                    <i class="fas fa-user-check text-white"></i>
+                        </div>
+                                <div>
+                                    <div class="fw-bold">Staff Member Added</div>
+                                    <small class="text-muted">John Smith - Umpire</small>
+                        </div>
+                        </div>
+                            <div class="d-flex align-items-center">
+                                <div class="bg-warning rounded-circle p-2 me-3">
+                                    <i class="fas fa-clock text-white"></i>
+                        </div>
+                                <div>
+                                    <div class="fw-bold">Request Pending</div>
+                                    <small class="text-muted">Umpire change for Game #47</small>
+                        </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <!-- Content -->
-        <div class="admin-content">
-            <!-- Dashboard Section -->
-            <div id="dashboard" class="section-content active">
-                <div class="row mb-4">
-                    <div class="col-12">
-                        <h2 class="mb-0">Dashboard Overview</h2>
-                        <p class="text-muted">Welcome to the Baseball Schedule Manager admin panel</p>
-                    </div>
-                </div>
-                
-                <div class="row mb-4">
-                    <div class="col-md-3">
-                        <div class="stats-card">
-                            <div class="d-flex align-items-center">
-                                <div class="stats-icon primary me-3">
-                                    <i class="fas fa-calendar-alt"></i>
-                                </div>
-                                <div>
-                                    <h4 class="mb-0" id="totalGames">0</h4>
-                                    <p class="text-muted mb-0">Total Games</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="stats-card">
-                            <div class="d-flex align-items-center">
-                                <div class="stats-icon success me-3">
-                                    <i class="fas fa-edit"></i>
-                                </div>
-                                <div>
-                                    <h4 class="mb-0" id="pendingRequests">0</h4>
-                                    <p class="text-muted mb-0">Pending Requests</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="stats-card">
-                            <div class="d-flex align-items-center">
-                                <div class="stats-icon warning me-3">
-                                    <i class="fas fa-user-tie"></i>
-                                </div>
-                                <div>
-                                    <h4 class="mb-0" id="totalUmpires">0</h4>
-                                    <p class="text-muted mb-0">Total Umpires</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="stats-card">
-                            <div class="d-flex align-items-center">
-                                <div class="stats-icon info me-3">
-                                    <i class="fas fa-utensils"></i>
-                                </div>
-                                <div>
-                                    <h4 class="mb-0" id="totalStaff">0</h4>
-                                    <p class="text-muted mb-0">Concession Staff</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Schedules Section -->
-            <div id="schedules" class="section-content">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h2>Game Schedules</h2>
-                    <button class="btn btn-primary" id="addScheduleBtn">
-                        <i class="fas fa-plus me-2"></i>
-                        Add Schedule
+        <!-- Game Schedules Section -->
+        <div id="schedules" class="section">
+            <div class="section-header">
+                <h1 class="section-title">
+                    <i class="fas fa-calendar-alt"></i>
+                    Game Schedules Management
+                </h1>
+                <div class="section-actions">
+                    <button class="btn btn-primary" onclick="showCreateScheduleModal()">
+                        <i class="fas fa-plus me-2"></i>Add New Schedule
+                    </button>
+                    <button class="btn btn-outline-primary" onclick="showUploadModal()">
+                        <i class="fas fa-upload me-2"></i>Bulk Upload
+                    </button>
+                    <button class="btn btn-outline-danger" id="bulkDeleteBtn" onclick="bulkDeleteSelected()" disabled>
+                        <i class="fas fa-trash-alt me-2"></i>Delete Selected
                     </button>
                 </div>
-                <div class="card">
-                    <div class="card-body p-0">
-                        <div class="table-responsive">
-                            <table class="table table-hover mb-0" id="schedulesTable">
-                                <thead>
-                                    <tr>
-                                        <th>Date</th>
-                                        <th>Time</th>
-                                        <th>Division</th>
-                                        <th>Home Team</th>
-                                        <th>Visitor Team</th>
-                                        <th>Venue</th>
-                                        <th>Plate Umpire</th>
-                                        <th>Base Umpire</th>
-                                        <th>Concession Staff</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="schedulesTableBody">
-                                    <tr>
-                                        <td colspan="10" class="text-center py-4">
-                                            <div class="loading">
-                                                <div class="spinner"></div>
-                                                <span>Loading schedules...</span>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
+            </div>
+            
+            <!-- Advanced Filters Section -->
+            <div class="dashboard-card mb-4">
+                <h5 class="mb-3">
+                    <i class="fas fa-filter me-2 text-primary"></i>
+                    Advanced Filters
+                </h5>
+                <div class="row g-3">
+                        <div class="col-md-2">
+                        <label class="form-label fw-bold">Season</label>
+                        <select class="form-select" id="filterSeason" onchange="applyFilters()">
+                            <option value="">All Seasons</option>
+                        </select>
+                        </div>
+                        <div class="col-md-2">
+                        <label class="form-label fw-bold">Event Type</label>
+                        <select class="form-select" id="filterEventType" onchange="applyFilters()">
+                            <option value="">All Events</option>
+                        </select>
+                        </div>
+                        <div class="col-md-2">
+                        <label class="form-label fw-bold">Division</label>
+                        <select class="form-select" id="filterDivision" onchange="applyFilters()">
+                            <option value="">All Divisions</option>
+                        </select>
+                        </div>
+                        <div class="col-md-2">
+                        <label class="form-label fw-bold">Venue</label>
+                        <select class="form-select" id="filterVenue" onchange="applyFilters()">
+                            <option value="">All Venues</option>
+                        </select>
+                        </div>
+                        <div class="col-md-2">
+                        <label class="form-label fw-bold">Date Range</label>
+                        <select class="form-select" id="filterDateRange" onchange="applyFilters()">
+                            <option value="">All Dates</option>
+                            <option value="today">Today</option>
+                            <option value="tomorrow">Tomorrow</option>
+                            <option value="this-week">This Week</option>
+                            <option value="next-week">Next Week</option>
+                            <option value="this-month">This Month</option>
+                            </select>
+                        </div>
+                    <div class="col-md-2">
+                        <label class="form-label fw-bold">Search</label>
+                        <input type="text" class="form-control" id="filterSearch" placeholder="Search schedules..." onkeyup="applyFilters()">
                         </div>
                     </div>
-                </div>
-            </div>
-
-            <!-- Plate Umpires Section -->
-            <div id="plate-umpires" class="section-content">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h2>Plate Umpires</h2>
-                    <div class="d-flex gap-2">
-                        <button class="btn btn-success" id="uploadPlateUmpiresBtn">
-                            <i class="fas fa-upload me-2"></i>
-                            Upload CSV
-                        </button>
-                        <button class="btn btn-primary" id="addPlateUmpireBtn">
-                            <i class="fas fa-plus me-2"></i>
-                            Add Umpire
-                        </button>
-                    </div>
-                </div>
-                <div class="card">
-                    <div class="card-body p-0">
-                        <div class="table-responsive">
-                            <table class="table table-hover mb-0" id="plateUmpiresTable">
-                                <thead>
-                                    <tr>
-                                        <th>Name</th>
-                                        <th>Email</th>
-                                        <th>Phone</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="plateUmpiresTableBody">
-                                    <tr>
-                                        <td colspan="4" class="text-center py-4">
-                                            <div class="loading">
-                                                <div class="spinner"></div>
-                                                <span>Loading plate umpires...</span>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                    <div class="row mt-3">
+                        <div class="col-12">
+                        <button class="btn btn-outline-secondary btn-sm" onclick="clearAllFilters()">
+                            <i class="fas fa-times me-2"></i>Clear All Filters
+                            </button>
+                        <span class="ms-3 text-muted">
+                            <i class="fas fa-info-circle me-1"></i>
+                            Showing <span id="filteredCount" class="fw-bold">0</span> of <span id="totalCount" class="fw-bold">0</span> schedules
+                        </span>
                         </div>
-                    </div>
-                </div>
             </div>
+        </div>
 
-            <!-- Base Umpires Section -->
-            <div id="base-umpires" class="section-content">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h2>Base Umpires</h2>
-                    <div class="d-flex gap-2">
-                        <button class="btn btn-success" id="uploadBaseUmpiresBtn">
-                            <i class="fas fa-upload me-2"></i>
-                            Upload CSV
-                        </button>
-                        <button class="btn btn-primary" id="addBaseUmpireBtn">
-                            <i class="fas fa-plus me-2"></i>
-                            Add Umpire
-                        </button>
+            <!-- No Results Banner -->
+            <div id="noResultsBanner" class="mb-4" style="display: none;"></div>
+
+            <div class="table-container">
+                    <div class="table-responsive">
+                    <table class="table table-hover" id="scheduleTable">
+                            <thead>
+                                <tr>
+                                <th style="width:36px"><input type="checkbox" id="selectAllSchedules" onclick="toggleSelectAllSchedules(this)"></th>
+                                    <th>Season</th>
+                                <th>Event</th>
+                                    <th>Date</th>
+                                <th>Time</th>
+                                    <th>Division</th>
+                                <th>Teams</th>
+                                    <th>Venue</th>
+                                <th>Umpires</th>
+                                <th>Concession</th>
+                                <th>Actions</th>
+                                </tr>
+                            </thead>
+                        <tbody id="scheduleTableBody">
+                            <tr>
+                                <td colspan="11" class="loading">
+                                    <i class="fas fa-spinner fa-spin"></i>
+                                    <div>Loading schedules...</div>
+                                </td>
+                            </tr>
+                        </tbody>
+                        </table>
                     </div>
-                </div>
-                <div class="card">
-                    <div class="card-body p-0">
-                        <div class="table-responsive">
-                            <table class="table table-hover mb-0" id="baseUmpiresTable">
-                                <thead>
-                                    <tr>
-                                        <th>Name</th>
-                                        <th>Email</th>
-                                        <th>Phone</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="baseUmpiresTableBody">
-                                    <tr>
-                                        <td colspan="4" class="text-center py-4">
-                                            <div class="loading">
-                                                <div class="spinner"></div>
-                                                <span>Loading base umpires...</span>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
             </div>
+        </div>
 
-            <!-- Concession Staff Section -->
-            <div id="concession-staff" class="section-content">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h2>Concession Staff</h2>
-                    <div class="d-flex gap-2">
-                        <button class="btn btn-success" id="uploadConcessionStaffBtn">
-                            <i class="fas fa-upload me-2"></i>
-                            Upload CSV
-                        </button>
-                        <button class="btn btn-primary" id="addConcessionStaffBtn">
-                            <i class="fas fa-plus me-2"></i>
-                            Add Staff
-                        </button>
-                    </div>
-                </div>
-                <div class="card">
-                    <div class="card-body p-0">
-                        <div class="table-responsive">
-                            <table class="table table-hover mb-0" id="concessionStaffTable">
-                                <thead>
-                                    <tr>
-                                        <th>Name</th>
-                                        <th>Email</th>
-                                        <th>Phone</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="concessionStaffTableBody">
-                                    <tr>
-                                        <td colspan="4" class="text-center py-4">
-                                            <div class="loading">
-                                                <div class="spinner"></div>
-                                                <span>Loading concession staff...</span>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Umpire Requests Section -->
-            <div id="umpire-requests" class="section-content">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h2>Umpire Requests</h2>
-                    <button class="btn btn-outline-primary" id="refreshUmpireRequestsBtn">
-                        <i class="fas fa-sync-alt me-2"></i>
-                        Refresh
+        <!-- Staff Directory Section -->
+        <div id="staff" class="section">
+            <div class="section-header">
+                <h1 class="section-title">
+                    <i class="fas fa-users"></i>
+                    Staff Directory Management
+                </h1>
+                <div class="section-actions">
+                    <button class="btn btn-primary" onclick="showAddStaffModal()">
+                        <i class="fas fa-plus me-2"></i>Add Staff Member
+                    </button>
+                    <button class="btn btn-outline-primary" onclick="showStaffUploadModal()">
+                        <i class="fas fa-upload me-2"></i>Upload Staff CSV
+                    </button>
+                    <button class="btn btn-outline-danger" id="bulkDeleteStaffBtn" onclick="bulkDeleteStaff()" style="display: none;">
+                        <i class="fas fa-trash me-2"></i>Delete Selected (<span id="selectedCount">0</span>)
                     </button>
                 </div>
-                <div class="card">
-                    <div class="card-body p-0">
-                        <div class="table-responsive">
-                            <table class="table table-hover mb-0" id="umpireRequestsTable">
-                                <thead>
-                                    <tr>
-                                        <th>Game</th>
-                                        <th>Requester</th>
-                                        <th>Current Umpires</th>
-                                        <th>Requested Umpires</th>
-                                        <th>Reason</th>
-                                        <th>Status</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="umpireRequestsTableBody">
-                                    <tr>
-                                        <td colspan="7" class="text-center py-4">
-                                            <div class="loading">
-                                                <div class="spinner"></div>
-                                                <span>Loading umpire requests...</span>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
+            </div>
+            
+            <div class="table-container">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th style="width:36px"><input type="checkbox" id="selectAllStaff" onclick="toggleSelectAllStaff(this)"></th>
+                                <th>Name</th>
+                                <th>Role</th>
+                                <th>Phone</th>
+                                <th>Email</th>
+                                <th>Parent/Guardian Name</th>
+                                <th>Parent/Guardian Phone</th>
+                                <th>Parent/Guardian Email</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="staffTableBody">
+                            <tr>
+                                <td colspan="8" class="loading">
+                                    <i class="fas fa-spinner fa-spin"></i>
+                                    <div>Loading staff...</div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Umpire Management Section -->
+        <div id="umpires" class="section">
+            <div class="section-header">
+                <h1 class="section-title">
+                    <i class="fas fa-user-tie"></i>
+                    Umpire Management
+                </h1>
+                <div class="section-actions">
+                    <button class="btn btn-primary" onclick="showAddPlateUmpireModal()">
+                        <i class="fas fa-plus me-2"></i>Add Plate Umpire
+                    </button>
+                    <button class="btn btn-primary" onclick="showAddBaseUmpireModal()">
+                        <i class="fas fa-plus me-2"></i>Add Base Umpire
+                    </button>
+                    <button class="btn btn-outline-primary" onclick="showPlateUmpiresUploadModal()">
+                        <i class="fas fa-upload me-2"></i>Upload Plate Umpires CSV
+                    </button>
+                    <button class="btn btn-outline-primary" onclick="showBaseUmpiresUploadModal()">
+                        <i class="fas fa-upload me-2"></i>Upload Base Umpires CSV
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Plate Umpires -->
+            <div class="dashboard-card mb-4">
+                <h5 class="mb-3">
+                    <i class="fas fa-user-tie me-2"></i>Plate Umpires
+                </h5>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <button class="btn btn-outline-primary btn-sm" onclick="showPlateUmpireModal()">
+                        <i class="fas fa-plus me-2"></i>Add Plate Umpire
+                    </button>
+                    <button class="btn btn-outline-danger btn-sm" id="bulkDeletePlateUmpiresBtn" onclick="bulkDeletePlateUmpires()" style="display: none;">
+                        <i class="fas fa-trash-alt me-2"></i>Delete Selected
+                    </button>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>
+                                    <input type="checkbox" id="selectAllPlateUmpires" onchange="toggleSelectAllPlateUmpires()">
+                                </th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>Availability</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="plateUmpiresTableBody">
+                            <tr>
+                                <td colspan="6" class="loading">
+                                    <i class="fas fa-spinner fa-spin"></i>
+                                    <div>Loading plate umpires...</div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
 
-            <!-- Concession Requests Section -->
-            <div id="concession-requests" class="section-content">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h2>Concession Staff Requests</h2>
-                    <button class="btn btn-outline-primary" id="refreshConcessionRequestsBtn">
-                        <i class="fas fa-sync-alt me-2"></i>
-                        Refresh
+            <!-- Base Umpires -->
+            <div class="dashboard-card">
+                <h5 class="mb-3">
+                    <i class="fas fa-user-tie me-2"></i>Base Umpires
+                </h5>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <button class="btn btn-outline-primary btn-sm" onclick="showBaseUmpireModal()">
+                        <i class="fas fa-plus me-2"></i>Add Base Umpire
+                    </button>
+                    <button class="btn btn-outline-danger btn-sm" id="bulkDeleteBaseUmpiresBtn" onclick="bulkDeleteBaseUmpires()" style="display: none;">
+                        <i class="fas fa-trash-alt me-2"></i>Delete Selected
                     </button>
                 </div>
-                <div class="card">
-                    <div class="card-body p-0">
-                        <div class="table-responsive">
-                            <table class="table table-hover mb-0" id="concessionRequestsTable">
-                                <thead>
-                                    <tr>
-                                        <th>Game</th>
-                                        <th>Requester</th>
-                                        <th>Current Staff</th>
-                                        <th>Requested Staff</th>
-                                        <th>Reason</th>
-                                        <th>Status</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="concessionRequestsTableBody">
-                                    <tr>
-                                        <td colspan="7" class="text-center py-4">
-                                            <div class="loading">
-                                                <div class="spinner"></div>
-                                                <span>Loading concession requests...</span>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>
+                                    <input type="checkbox" id="selectAllBaseUmpires" onchange="toggleSelectAllBaseUmpires()">
+                                </th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>Availability</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="baseUmpiresTableBody">
+                            <tr>
+                                <td colspan="6" class="loading">
+                                    <i class="fas fa-spinner fa-spin"></i>
+                                    <div>Loading base umpires...</div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Concession Staff Management Section -->
+        <div id="concession-staff" class="section">
+            <div class="section-header">
+                <h1 class="section-title">
+                    <i class="fas fa-store"></i>
+                    Concession Staff Management
+                </h1>
+                <div class="section-actions">
+                    <button class="btn btn-primary" onclick="showAddConcessionStaffModal()">
+                        <i class="fas fa-plus me-2"></i>Add Concession Staff
+                    </button>
+                    <button class="btn btn-outline-primary" onclick="showConcessionStaffUploadModal()">
+                        <i class="fas fa-upload me-2"></i>Upload Concession Staff CSV
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Concession Staff Table -->
+            <div class="dashboard-card">
+                <h5 class="mb-3">
+                    <i class="fas fa-store me-2"></i>Concession Staff
+                </h5>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <button class="btn btn-outline-primary btn-sm" onclick="showAddConcessionStaffModal()">
+                        <i class="fas fa-plus me-2"></i>Add Concession Staff
+                    </button>
+                    <button class="btn btn-outline-danger btn-sm" id="bulkDeleteConcessionStaffBtn" onclick="bulkDeleteConcessionStaff()" style="display: none;">
+                        <i class="fas fa-trash-alt me-2"></i>Delete Selected
+                    </button>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>
+                                    <input type="checkbox" id="selectAllConcessionStaff" onchange="toggleSelectAllConcessionStaff()">
+                                </th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>Availability</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="concessionStaffTableBody">
+                            <tr>
+                                <td colspan="6" class="loading">
+                                    <i class="fas fa-spinner fa-spin"></i>
+                                    <div>Loading concession staff...</div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Change Requests Section -->
+        <div id="requests" class="section">
+            <div class="section-header">
+                <h1 class="section-title">
+                    <i class="fas fa-clipboard-list"></i>
+                    Change Requests Management
+                </h1>
+            </div>
+            
+            <!-- Umpire Requests -->
+            <div class="dashboard-card mb-4">
+                <h5 class="mb-3">
+                    <i class="fas fa-user-tie me-2"></i>Umpire Change Requests
+                </h5>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Game Details</th>
+                                <th>Current Umpires</th>
+                                <th>Requested Umpires</th>
+                                <th>Reason</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="umpireRequestsTableBody">
+                            <tr>
+                                <td colspan="6" class="loading">
+                                    <i class="fas fa-spinner fa-spin"></i>
+                                    <div>Loading umpire requests...</div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
 
-            <!-- Email Reminders Section -->
-            <div id="email-reminders" class="section-content">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h2>Email Reminders</h2>
-                    <button class="btn btn-primary" id="triggerRemindersBtn">
-                        <i class="fas fa-paper-plane me-2"></i>
-                        Trigger Reminders
+            <!-- Concession Staff Requests -->
+            <div class="dashboard-card">
+                <h5 class="mb-3">
+                    <i class="fas fa-store me-2"></i>Concession Staff Change Requests
+                </h5>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Game Details</th>
+                                <th>Current Staff</th>
+                                <th>Requested Staff</th>
+                                <th>Reason</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="concessionStaffRequestsTableBody">
+                            <tr>
+                                <td colspan="6" class="loading">
+                                    <i class="fas fa-spinner fa-spin"></i>
+                                    <div>Loading concession requests...</div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create Schedule Modal -->
+    <div class="modal fade" id="createScheduleModal" tabindex="-1">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Create New Schedule</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="scheduleForm">
+                        <div class="row g-3">
+                            <div class="col-md-3">
+                                <label class="form-label">Season</label>
+                                <input type="text" class="form-control" id="season" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Event Type</label>
+                                <select class="form-select" id="eventType" required>
+                                    <option value="">Select Event Type</option>
+                                    <option value="Baseball">Baseball</option>
+                                    <option value="Softball">Softball</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Day</label>
+                                <select class="form-select" id="day" required>
+                                    <option value="">Select Day</option>
+                                    <option value="Monday">Monday</option>
+                                    <option value="Tuesday">Tuesday</option>
+                                    <option value="Wednesday">Wednesday</option>
+                                    <option value="Thursday">Thursday</option>
+                                    <option value="Friday">Friday</option>
+                                    <option value="Saturday">Saturday</option>
+                                    <option value="Sunday">Sunday</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Date</label>
+                                <input type="date" class="form-control" id="scheduleDate" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Start Time</label>
+                                <input type="time" class="form-control" id="startTime" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">AM/PM</label>
+                                <select class="form-select" id="amPm" required>
+                                    <option value="">Select</option>
+                                    <option value="AM">AM</option>
+                                    <option value="PM">PM</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Division</label>
+                                <input type="text" class="form-control" id="division" placeholder="e.g. 12U, 14U">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Home Team</label>
+                                <input type="text" class="form-control" id="homeTeam" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Home Coach</label>
+                                <input type="text" class="form-control" id="homeCoach" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Visitor Team</label>
+                                <input type="text" class="form-control" id="visitorTeam" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Visitor Coach</label>
+                                <input type="text" class="form-control" id="visitorCoach" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Venue</label>
+                                <input type="text" class="form-control" id="venue" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Plate Umpire</label>
+                                <select class="form-select" id="plateUmpire">
+                                    <option value="">Select Plate Umpire</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Base Umpire</label>
+                                <select class="form-select" id="baseUmpire">
+                                    <option value="">Select Base Umpire</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Concession Stand</label>
+                                <input type="text" class="form-control" id="concessionStand" placeholder="e.g. Boutin Stand - LeBlanc Park">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Concession Staff</label>
+                                <select class="form-select" id="concessionStaff">
+                                    <option value="">Select Concession Staff</option>
+                                </select>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary" form="scheduleForm">Create Schedule</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Schedule Modal -->
+    <div class="modal fade" id="editScheduleModal" tabindex="-1">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Schedule</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editScheduleForm">
+                        <input type="hidden" id="editScheduleId">
+                        <div class="row g-3">
+                            <div class="col-md-3">
+                                <label class="form-label">Season</label>
+                                <input type="text" class="form-control" id="editSeason" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Event Type</label>
+                                <select class="form-select" id="editEventType" required>
+                                    <option value="">Select Event Type</option>
+                                    <option value="Baseball">Baseball</option>
+                                    <option value="Softball">Softball</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Day</label>
+                                <select class="form-select" id="editDay" required>
+                                    <option value="">Select Day</option>
+                                    <option value="Monday">Monday</option>
+                                    <option value="Tuesday">Tuesday</option>
+                                    <option value="Wednesday">Wednesday</option>
+                                    <option value="Thursday">Thursday</option>
+                                    <option value="Friday">Friday</option>
+                                    <option value="Saturday">Saturday</option>
+                                    <option value="Sunday">Sunday</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Date</label>
+                                <input type="date" class="form-control" id="editScheduleDate" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Start Time</label>
+                                <input type="time" class="form-control" id="editStartTime" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">AM/PM</label>
+                                <select class="form-select" id="editAmPm" required>
+                                    <option value="">Select</option>
+                                    <option value="AM">AM</option>
+                                    <option value="PM">PM</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Division</label>
+                                <input type="text" class="form-control" id="editDivision" placeholder="e.g. 12U, 14U">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Home Team</label>
+                                <input type="text" class="form-control" id="editHomeTeam" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Home Coach</label>
+                                <input type="text" class="form-control" id="editHomeCoach" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Visitor Team</label>
+                                <input type="text" class="form-control" id="editVisitorTeam" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Visitor Coach</label>
+                                <input type="text" class="form-control" id="editVisitorCoach" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Venue</label>
+                                <input type="text" class="form-control" id="editVenue" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Plate Umpire</label>
+                                <select class="form-select" id="editPlateUmpire">
+                                    <option value="">Select Plate Umpire</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Base Umpire</label>
+                                <select class="form-select" id="editBaseUmpire">
+                                    <option value="">Select Base Umpire</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Concession Stand</label>
+                                <input type="text" class="form-control" id="editConcessionStand">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Concession Staff</label>
+                                <select class="form-select" id="editConcessionStaff">
+                                    <option value="">Select Concession Staff</option>
+                                </select>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary" form="editScheduleForm">Update Schedule</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Upload CSV Modal -->
+    <div class="modal fade" id="uploadModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Bulk Upload CSV</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="csv-upload-area" id="csvUploadArea" 
+                         ondragover="handleDragOver(event)" 
+                         ondrop="handleDrop(event)" 
+                         ondragleave="handleDragLeave(event)"
+                         onclick="document.getElementById('csvFile').click()">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <h5>Drag & Drop CSV File</h5>
+                        <p>or click to browse</p>
+                        <input type="file" id="csvFile" accept=".csv" style="display: none;" onchange="handleCSVFileSelect(event)">
+                    </div>
+
+                    <!-- CSV Result Report -->
+                    <div id="csvResultReport" class="mt-3" style="display:none;">
+                        <div class="alert" id="csvResultSummary"></div>
+                        <div id="csvRowErrors" class="mt-2"></div>
+                    </div>
+
+                    <!-- Game Schedules CSV Format Info -->
+                    <div class="mt-3">
+                        <div class="alert alert-info">
+                            <h6><i class="fas fa-info-circle me-2"></i>Game Schedules CSV Format:</h6>
+                            <p class="mb-1 small"><strong>Required:</strong> season, event_type, day, date, division, home_team, visitor_team, venue</p>
+                            <p class="mb-1 small"><strong>Optional:</strong> start_time, am_pm, home_coach, visitor_coach, plate_umpire, base_umpire, concession_stand, concession_staff</p>
+                            <p class="mb-0 small"><strong>Note:</strong> If start_time is provided, am_pm is required</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="uploadCSV()">Upload</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Staff CSV Upload Modal -->
+    <div class="modal fade" id="staffUploadModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Bulk Upload Staff CSV</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="csv-upload-area" id="staffCsvUploadArea" 
+                         ondragover="handleStaffDragOver(event)" 
+                         ondrop="handleStaffDrop(event)" 
+                         ondragleave="handleStaffDragLeave(event)"
+                         onclick="document.getElementById('staffCsvFile').click()">
+                        <i class="fas fa-users"></i>
+                        <h5>Drag & Drop Staff CSV File</h5>
+                        <p>or click to browse</p>
+                        <input type="file" id="staffCsvFile" accept=".csv" style="display: none;" onchange="handleStaffCSVFileSelect(event)">
+                    </div>
+
+                    <!-- Staff CSV Result Report -->
+                    <div id="staffCsvResultReport" class="mt-3" style="display:none;">
+                        <div class="alert" id="staffCsvResultSummary"></div>
+                        <div id="staffCsvRowErrors" class="mt-2"></div>
+                    </div>
+
+                    <!-- Staff CSV Format Info -->
+                    <div class="mt-3">
+                        <div class="alert alert-info">
+                            <h6><i class="fas fa-info-circle me-2"></i>Staff CSV Format:</h6>
+                            <p class="mb-1 small">Required: <strong>name</strong></p>
+                            <p class="mb-1 small">Optional: <strong>email</strong>, <strong>phone</strong>, <strong>parent_name</strong>, <strong>parent_email</strong>, <strong>parent_phone</strong>, <strong>role</strong></p>
+                            <p class="mb-0 small">Default role: <strong>Staff</strong></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="uploadStaffCSV()">Upload Staff</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bulk Delete Staff Confirmation Modal -->
+    <div class="modal fade" id="bulkDeleteStaffModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title text-danger">
+                        <i class="fas fa-exclamation-triangle me-2"></i>Confirm Bulk Delete
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-warning">
+                        <h6>⚠️ Warning: This action cannot be undone!</h6>
+                        <p class="mb-2">You are about to delete <strong id="deleteCount">0</strong> staff member(s):</p>
+                        <div id="staffToDelete" class="border rounded p-2 bg-light" style="max-height: 200px; overflow-y: auto;">
+                            <!-- Staff names will be populated here -->
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger" onclick="confirmBulkDeleteStaff()">
+                        <i class="fas fa-trash me-2"></i>Delete Staff Members
                     </button>
                 </div>
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="card">
-                            <div class="card-header">
-                                <h5 class="mb-0">Upcoming Reminders</h5>
-                            </div>
-                            <div class="card-body">
-                                <div id="upcomingReminders">
-                                    <div class="loading">
-                                        <div class="spinner"></div>
-                                        <span>Loading upcoming reminders...</span>
-                                    </div>
-                                </div>
-                            </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bulk Delete Plate Umpires Confirmation Modal -->
+    <div class="modal fade" id="bulkDeletePlateUmpiresModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title text-danger">
+                        <i class="fas fa-exclamation-triangle me-2"></i>Confirm Bulk Delete
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-warning">
+                        <h6>⚠️ Warning: This action cannot be undone!</h6>
+                        <p class="mb-2">You are about to delete <strong id="deletePlateUmpiresCount">0</strong> plate umpire(s):</p>
+                        <div id="plateUmpiresToDelete" class="border rounded p-2 bg-light" style="max-height: 200px; overflow-y: auto;">
+                            <!-- Plate umpire names will be populated here -->
                         </div>
                     </div>
-                    <div class="col-md-6">
-                        <div class="card">
-                            <div class="card-header">
-                                <h5 class="mb-0">Reminder Logs</h5>
-                            </div>
-                            <div class="card-body">
-                                <div id="reminderLogs">
-                                    <div class="loading">
-                                        <div class="spinner"></div>
-                                        <span>Loading reminder logs...</span>
-                                    </div>
-                                </div>
-                            </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger" onclick="confirmBulkDeletePlateUmpires()">
+                        <i class="fas fa-trash me-2"></i>Delete Plate Umpires
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bulk Delete Base Umpires Confirmation Modal -->
+    <div class="modal fade" id="bulkDeleteBaseUmpiresModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title text-danger">
+                        <i class="fas fa-exclamation-triangle me-2"></i>Confirm Bulk Delete
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-warning">
+                        <h6>⚠️ Warning: This action cannot be undone!</h6>
+                        <p class="mb-2">You are about to delete <strong id="deleteBaseUmpiresCount">0</strong> base umpire(s):</p>
+                        <div id="baseUmpiresToDelete" class="border rounded p-2 bg-light" style="max-height: 200px; overflow-y: auto;">
+                            <!-- Base umpire names will be populated here -->
                         </div>
                     </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger" onclick="confirmBulkDeleteBaseUmpires()">
+                        <i class="fas fa-trash me-2"></i>Delete Base Umpires
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Plate Umpire Modal -->
+    <div class="modal fade" id="addPlateUmpireModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add Plate Umpire</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="plateUmpireForm">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Name *</label>
+                                <input type="text" class="form-control" id="plateUmpireName" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Availability</label>
+                                <select class="form-select" id="plateUmpireAvailability">
+                                    <option value="Available">Available</option>
+                                    <option value="Unavailable">Unavailable</option>
+                                    <option value="Part-time">Part-time</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Email</label>
+                                <input type="email" class="form-control" id="plateUmpireEmail" placeholder="umpire@example.com">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Phone</label>
+                                <input type="text" class="form-control" id="plateUmpirePhone" placeholder="555-0101">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary" form="plateUmpireForm">Add Plate Umpire</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Plate Umpire Modal -->
+    <div class="modal fade" id="editPlateUmpireModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Plate Umpire</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editPlateUmpireForm">
+                        <input type="hidden" id="editPlateUmpireId">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Name *</label>
+                                <input type="text" class="form-control" id="editPlateUmpireName" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Availability</label>
+                                <select class="form-select" id="editPlateUmpireAvailability">
+                                    <option value="Available">Available</option>
+                                    <option value="Unavailable">Unavailable</option>
+                                    <option value="Part-time">Part-time</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Email</label>
+                                <input type="email" class="form-control" id="editPlateUmpireEmail" placeholder="umpire@example.com">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Phone</label>
+                                <input type="text" class="form-control" id="editPlateUmpirePhone" placeholder="555-0101">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary" form="editPlateUmpireForm">Update Plate Umpire</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Base Umpire Modal -->
+    <div class="modal fade" id="addBaseUmpireModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add Base Umpire</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="baseUmpireForm">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Name *</label>
+                                <input type="text" class="form-control" id="baseUmpireName" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Availability</label>
+                                <select class="form-select" id="baseUmpireAvailability">
+                                    <option value="Available">Available</option>
+                                    <option value="Unavailable">Unavailable</option>
+                                    <option value="Part-time">Part-time</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Email</label>
+                                <input type="email" class="form-control" id="baseUmpireEmail" placeholder="umpire@example.com">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Phone</label>
+                                <input type="text" class="form-control" id="baseUmpirePhone" placeholder="555-0101">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary" form="baseUmpireForm">Add Base Umpire</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Base Umpire Modal -->
+    <div class="modal fade" id="editBaseUmpireModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Base Umpire</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editBaseUmpireForm">
+                        <input type="hidden" id="editBaseUmpireId">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Name *</label>
+                                <input type="text" class="form-control" id="editBaseUmpireName" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Availability</label>
+                                <select class="form-select" id="editBaseUmpireAvailability">
+                                    <option value="Available">Available</option>
+                                    <option value="Unavailable">Unavailable</option>
+                                    <option value="Part-time">Part-time</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Email</label>
+                                <input type="email" class="form-control" id="editBaseUmpireEmail" placeholder="umpire@example.com">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Phone</label>
+                                <input type="text" class="form-control" id="editBaseUmpirePhone" placeholder="555-0101">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary" form="editBaseUmpireForm">Update Base Umpire</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Plate Umpires CSV Upload Modal -->
+    <div class="modal fade" id="plateUmpiresUploadModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Bulk Upload Plate Umpires CSV</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="csv-upload-area" id="plateUmpiresCsvUploadArea" 
+                         ondragover="handlePlateUmpiresDragOver(event)" 
+                         ondrop="handlePlateUmpiresDrop(event)" 
+                         ondragleave="handlePlateUmpiresDragLeave(event)"
+                         onclick="document.getElementById('plateUmpiresCsvFile').click()">
+                        <i class="fas fa-user-tie"></i>
+                        <h5>Drag & Drop Plate Umpires CSV File</h5>
+                        <p>or click to browse</p>
+                        <input type="file" id="plateUmpiresCsvFile" accept=".csv" style="display: none;" onchange="handlePlateUmpiresCSVFileSelect(event)">
+                    </div>
+
+                    <!-- Plate Umpires CSV Result Report -->
+                    <div id="plateUmpiresCsvResultReport" class="mt-3" style="display:none;">
+                        <div class="alert" id="plateUmpiresCsvResultSummary"></div>
+                        <div id="plateUmpiresCsvRowErrors" class="mt-2"></div>
+                    </div>
+
+                    <!-- Plate Umpires CSV Format Info -->
+                    <div class="mt-3">
+                        <div class="alert alert-info">
+                            <h6><i class="fas fa-info-circle me-2"></i>Plate Umpires CSV Format:</h6>
+                            <p class="mb-1 small">Required: <strong>name</strong></p>
+                            <p class="mb-1 small">Optional: <strong>email</strong>, <strong>phone</strong></p>
+                            <p class="mb-0 small">Default availability: <strong>Available</strong></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="uploadPlateUmpiresCSV()">Upload Plate Umpires</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Base Umpires CSV Upload Modal -->
+    <div class="modal fade" id="baseUmpiresUploadModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Bulk Upload Base Umpires CSV</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="csv-upload-area" id="baseUmpiresCsvUploadArea" 
+                         ondragover="handleBaseUmpiresDragOver(event)" 
+                         ondrop="handleBaseUmpiresDrop(event)" 
+                         ondragleave="handleBaseUmpiresDragLeave(event)"
+                         onclick="document.getElementById('baseUmpiresCsvFile').click()">
+                        <i class="fas fa-user-tie"></i>
+                        <h5>Drag & Drop Base Umpires CSV File</h5>
+                        <p>or click to browse</p>
+                        <input type="file" id="baseUmpiresCsvFile" accept=".csv" style="display: none;" onchange="handleBaseUmpiresCSVFileSelect(event)">
+                    </div>
+
+                    <!-- Base Umpires CSV Result Report -->
+                    <div id="baseUmpiresCsvResultReport" class="mt-3" style="display:none;">
+                        <div class="alert" id="baseUmpiresCsvResultSummary"></div>
+                        <div id="baseUmpiresCsvRowErrors" class="mt-2"></div>
+                    </div>
+
+                    <!-- Base Umpires CSV Format Info -->
+                    <div class="mt-3">
+                        <div class="alert alert-info">
+                            <h6><i class="fas fa-info-circle me-2"></i>Base Umpires CSV Format:</h6>
+                            <p class="mb-1 small">Required: <strong>name</strong></p>
+                            <p class="mb-1 small">Optional: <strong>email</strong>, <strong>phone</strong></p>
+                            <p class="mb-0 small">Default availability: <strong>Available</strong></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="uploadBaseUmpiresCSV()">Upload Base Umpires</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Concession Staff Modal -->
+    <div class="modal fade" id="addConcessionStaffModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add Concession Staff</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="concessionStaffForm">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Name *</label>
+                                <input type="text" class="form-control" id="concessionStaffName" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Availability</label>
+                                <select class="form-select" id="concessionStaffAvailability">
+                                    <option value="Available">Available</option>
+                                    <option value="Unavailable">Unavailable</option>
+                                    <option value="Part-time">Part-time</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Email</label>
+                                <input type="email" class="form-control" id="concessionStaffEmail" placeholder="staff@example.com">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Phone</label>
+                                <input type="text" class="form-control" id="concessionStaffPhone" placeholder="555-0101">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary" form="concessionStaffForm">Add Concession Staff</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Concession Staff Modal -->
+    <div class="modal fade" id="editConcessionStaffModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Concession Staff</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editConcessionStaffForm">
+                        <input type="hidden" id="editConcessionStaffId">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Name *</label>
+                                <input type="text" class="form-control" id="editConcessionStaffName" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Availability</label>
+                                <select class="form-select" id="editConcessionStaffAvailability">
+                                    <option value="Available">Available</option>
+                                    <option value="Unavailable">Unavailable</option>
+                                    <option value="Part-time">Part-time</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Email</label>
+                                <input type="email" class="form-control" id="editConcessionStaffEmail" placeholder="staff@example.com">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Phone</label>
+                                <input type="text" class="form-control" id="editConcessionStaffPhone" placeholder="555-0101">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary" form="editConcessionStaffForm">Update Concession Staff</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Concession Staff CSV Upload Modal -->
+    <div class="modal fade" id="concessionStaffUploadModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Bulk Upload Concession Staff CSV</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="csv-upload-area" id="concessionStaffCsvUploadArea" 
+                         ondragover="handleConcessionStaffDragOver(event)" 
+                         ondrop="handleConcessionStaffDrop(event)" 
+                         ondragleave="handleConcessionStaffDragLeave(event)"
+                         onclick="document.getElementById('concessionStaffCsvFile').click()">
+                        <i class="fas fa-store"></i>
+                        <h5>Drag & Drop Concession Staff CSV File</h5>
+                        <p>or click to browse</p>
+                        <input type="file" id="concessionStaffCsvFile" accept=".csv" style="display: none;" onchange="handleConcessionStaffCSVFileSelect(event)">
+                    </div>
+
+                    <!-- Concession Staff CSV Result Report -->
+                    <div id="concessionStaffCsvResultReport" class="mt-3" style="display:none;">
+                        <div class="alert" id="concessionStaffCsvResultSummary"></div>
+                        <div id="concessionStaffCsvRowErrors" class="mt-2"></div>
+                    </div>
+
+                    <!-- Concession Staff CSV Format Info -->
+                    <div class="mt-3">
+                        <div class="alert alert-info">
+                            <h6><i class="fas fa-info-circle me-2"></i>Concession Staff CSV Format:</h6>
+                            <p class="mb-1 small">Required: <strong>name</strong></p>
+                            <p class="mb-1 small">Optional: <strong>email</strong>, <strong>phone</strong></p>
+                            <p class="mb-0 small">Default availability: <strong>Available</strong></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="uploadConcessionStaffCSV()">Upload Concession Staff</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Staff Modal -->
+    <div class="modal fade" id="addStaffModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add Staff Member</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="staffForm">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Name *</label>
+                                <input type="text" class="form-control" id="staffName" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Role *</label>
+                                <select class="form-select" id="staffRole" required>
+                                    <option value="">Select Role</option>
+                                    <option value="Umpire">Umpire</option>
+                                    <option value="Coach">Coach</option>
+                                    <option value="Concession Staff">Concession Staff</option>
+                                    <option value="Manager">Manager</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Phone</label>
+                                <input type="text" class="form-control" id="staffPhone" placeholder="555-0101">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Email</label>
+                                <input type="email" class="form-control" id="staffEmail" placeholder="staff@example.com">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Parent/Guardian Name</label>
+                                <input type="text" class="form-control" id="staffParentName" placeholder="Parent name">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Parent/Guardian Phone</label>
+                                <input type="text" class="form-control" id="staffParentPhone" placeholder="555-0102">
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">Parent/Guardian Email</label>
+                                <input type="email" class="form-control" id="staffParentEmail" placeholder="parent@example.com">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary" form="staffForm">Add Staff</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Staff Modal -->
+    <div class="modal fade" id="editStaffModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Staff Member</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editStaffForm">
+                        <input type="hidden" id="editStaffId">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Name *</label>
+                                <input type="text" class="form-control" id="editStaffName" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Role *</label>
+                                <select class="form-select" id="editStaffRole" required>
+                                    <option value="">Select Role</option>
+                                    <option value="Umpire">Umpire</option>
+                                    <option value="Coach">Coach</option>
+                                    <option value="Concession Staff">Concession Staff</option>
+                                    <option value="Manager">Manager</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Phone</label>
+                                <input type="text" class="form-control" id="editStaffPhone" placeholder="555-0101">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Email</label>
+                                <input type="email" class="form-control" id="editStaffEmail" placeholder="staff@example.com">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Parent/Guardian Name</label>
+                                <input type="text" class="form-control" id="editStaffParentName" placeholder="Parent name">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Parent/Guardian Phone</label>
+                                <input type="text" class="form-control" id="editStaffParentPhone" placeholder="555-0102">
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">Parent/Guardian Email</label>
+                                <input type="email" class="form-control" id="editStaffParentEmail" placeholder="parent@example.com">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary" form="editStaffForm">Update Staff</button>
                 </div>
             </div>
         </div>
@@ -585,8 +2453,354 @@
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
-    
-    <!-- Custom JavaScript -->
     <script src="/admin.js"></script>
+    
+    <!-- Mobile Sidebar Toggle -->
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.querySelector('.sidebar');
+            const mainContent = document.querySelector('.main-content');
+            
+            if (sidebar.classList.contains('show')) {
+                sidebar.classList.remove('show');
+                mainContent.classList.remove('sidebar-open');
+            } else {
+                sidebar.classList.add('show');
+                mainContent.classList.add('sidebar-open');
+            }
+        }
+        
+        // Enhanced mobile responsiveness
+        function enhanceMobileExperience() {
+            // Add touch-friendly scrolling
+            const tableResponsive = document.querySelectorAll('.table-responsive');
+            tableResponsive.forEach(table => {
+                table.style.webkitOverflowScrolling = 'touch';
+            });
+            
+            // Enhance button touch targets
+            const buttons = document.querySelectorAll('.btn');
+            buttons.forEach(btn => {
+                btn.style.minHeight = '44px';
+                btn.style.minWidth = '44px';
+            });
+            
+            // Enhance form controls
+            const formControls = document.querySelectorAll('.form-control, .form-select');
+            formControls.forEach(control => {
+                control.style.minHeight = '44px';
+            });
+            
+            // Add mobile-specific event listeners
+            if (window.innerWidth <= 768) {
+                // Close sidebar when clicking outside
+                document.addEventListener('click', function(e) {
+                    const sidebar = document.querySelector('.sidebar');
+                    const mobileToggle = document.querySelector('.mobile-toggle');
+                    
+                    if (!sidebar.contains(e.target) && !mobileToggle.contains(e.target)) {
+                        sidebar.classList.remove('show');
+                        document.querySelector('.main-content').classList.remove('sidebar-open');
+                    }
+                });
+                
+                // Handle orientation change
+                window.addEventListener('orientationchange', function() {
+                    setTimeout(() => {
+                        // Adjust table responsiveness
+                        const tables = document.querySelectorAll('.table-responsive');
+                        tables.forEach(table => {
+                            if (window.orientation === 90 || window.orientation === -90) {
+                                // Landscape mode
+                                table.style.maxHeight = '60vh';
+                            } else {
+                                // Portrait mode
+                                table.style.maxHeight = 'none';
+                            }
+                        });
+                    }, 100);
+                });
+            }
+        }
+        
+        // Close sidebar when clicking outside on mobile
+        document.addEventListener('click', function(event) {
+            const sidebar = document.querySelector('.sidebar');
+            const mobileToggle = document.querySelector('.mobile-toggle');
+            
+            if (window.innerWidth <= 1200 && 
+                !sidebar.contains(event.target) && 
+                !mobileToggle.contains(event.target)) {
+                sidebar.classList.remove('show');
+                document.querySelector('.main-content').classList.remove('sidebar-open');
+            }
+        });
+        
+        // Close sidebar on window resize
+        window.addEventListener('resize', function() {
+            if (window.innerWidth > 1200) {
+                document.querySelector('.sidebar').classList.remove('show');
+                document.querySelector('.main-content').classList.remove('sidebar-open');
+            }
+            enhanceMobileExperience();
+        });
+        
+        // Initialize mobile enhancements
+        document.addEventListener('DOMContentLoaded', function() {
+            enhanceMobileExperience();
+        });
+
+        // ===== SEASON VISIBILITY CONTROL FUNCTIONS =====
+        
+        // Load season visibility controls
+        async function loadSeasonVisibilityControls() {
+            try {
+                const response = await fetch('/api/season-visibility');
+                const seasons = await response.json();
+                
+                const container = document.getElementById('seasonVisibilityControls');
+                if (!container) {
+                    // Try to find the dashboard section and create the container
+                    const dashboardSection = document.getElementById('dashboard');
+                    if (dashboardSection) {
+                        const newContainer = document.createElement('div');
+                        newContainer.id = 'seasonVisibilityControls';
+                        newContainer.className = 'row g-3';
+                        dashboardSection.appendChild(newContainer);
+                        container = newContainer;
+                    } else {
+                        return;
+                    }
+                }
+                
+                // Get unique seasons from schedules
+                let uniqueSeasons = [];
+                try {
+                    const schedulesResponse = await fetch('/api/admin/schedules');
+                    const schedules = await schedulesResponse.json();
+                    uniqueSeasons = [...new Set(schedules.map(s => s.season))].sort();
+                } catch (error) {
+                    // Fallback: use seasons from visibility data
+                    uniqueSeasons = seasons.map(s => s.season).sort();
+                }
+                
+                let html = '';
+                uniqueSeasons.forEach(season => {
+                    const seasonData = seasons.find(s => s.season === season);
+                    const isVisible = seasonData ? seasonData.is_visible : false;
+                    const publishedAt = seasonData ? new Date(seasonData.published_at).toLocaleDateString() : 'Never';
+                    
+                    html += `
+                        <div class="col-lg-4 col-md-6">
+                            <div class="card border-0 shadow-sm h-100 season-visibility-card">
+                                <div class="card-body text-center">
+                                    <h6 class="card-title text-primary mb-3">
+                                        <i class="fas fa-calendar-alt me-2"></i>${season} Season
+                                    </h6>
+                                    <div class="mb-3">
+                                        <span class="badge ${isVisible ? 'bg-success' : 'bg-secondary'} fs-6">
+                                            ${isVisible ? 'Published' : 'Unpublished'}
+                                        </span>
+                                    </div>
+                                    <div class="mb-3">
+                                        <small class="text-muted">
+                                            ${isVisible ? `Published on ${publishedAt}` : 'Not visible to public'}
+                                        </small>
+                                    </div>
+                                    <div class="d-grid">
+                                        <button class="btn ${isVisible ? 'btn-outline-danger' : 'btn-success'} btn-sm" 
+                                                onclick="toggleSeasonVisibility('${season}', ${!isVisible})">
+                                            <i class="fas fa-${isVisible ? 'eye-slash' : 'eye'} me-2"></i>
+                                            ${isVisible ? 'Unpublish' : 'Publish'}
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                container.innerHTML = html;
+            } catch (error) {
+                // Handle errors silently in production
+                console.error('Error loading season visibility controls:', error);
+            }
+        }
+        
+        // Toggle season visibility
+        async function toggleSeasonVisibility(season, isVisible) {
+            try {
+                const response = await fetch(`/api/season-visibility/${season}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ is_visible: isVisible })
+                });
+                
+                if (!response.ok) throw new Error('Failed to update season visibility');
+                
+                const result = await response.json();
+                
+                // Show success message
+                showAlert(result.message, 'success');
+                
+                // Reload the controls
+                await loadSeasonVisibilityControls();
+                
+                // Refresh admin schedules display to show visibility changes
+                await refreshAdminSchedulesDisplay();
+                
+            } catch (error) {
+                console.error('Error toggling season visibility:', error);
+                showAlert('Error updating season visibility. Please try again.', 'danger');
+            }
+        }
+        
+        // Show alert function
+        function showAlert(message, type = 'info') {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+            alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+            alertDiv.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            
+            document.body.appendChild(alertDiv);
+            
+            // Auto-remove after 5 seconds
+            setTimeout(() => {
+                if (alertDiv.parentNode) {
+                    alertDiv.remove();
+                }
+            }, 5000);
+        }
+        
+        // Refresh admin schedules display to show visibility changes
+        async function refreshAdminSchedulesDisplay() {
+            try {
+                // Get all schedules (including unpublished)
+                const response = await fetch('/api/admin/schedules');
+                const schedules = await response.json();
+                
+                // Get season visibility status
+                const visibilityResponse = await fetch('/api/season-visibility');
+                const visibilityData = await visibilityResponse.json();
+                
+                // Create a map of season visibility
+                const seasonVisibility = {};
+                visibilityData.forEach(item => {
+                    seasonVisibility[item.season] = item.is_visible;
+                });
+                
+                // Update the admin schedules table if it exists
+                const scheduleTable = document.getElementById('scheduleTable');
+                if (scheduleTable && schedules.length > 0) {
+                    // Add visibility indicators to the table
+                    const tbody = scheduleTable.querySelector('tbody');
+                    if (tbody) {
+                        tbody.innerHTML = '';
+                        
+                        schedules.forEach(schedule => {
+                            const isVisible = seasonVisibility[schedule.season] || false;
+                            const visibilityBadge = isVisible 
+                                ? '<span class="badge bg-success">Published</span>'
+                                : '<span class="badge bg-secondary">Unpublished</span>';
+                            
+                            const row = document.createElement('tr');
+                            row.innerHTML = `
+                                <td><input type="checkbox" value="${schedule.id}"></td>
+                                <td>${schedule.season} ${visibilityBadge}</td>
+                                <td>${schedule.event_type}</td>
+                                <td>${schedule.date}</td>
+                                <td>${schedule.start_time} ${schedule.am_pm}</td>
+                                <td>${schedule.division}</td>
+                                <td>${schedule.home_team} vs ${schedule.visitor_team}</td>
+                                <td>${schedule.venue}</td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary" onclick="editSchedule(${schedule.id})">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-danger" onclick="deleteSchedule(${schedule.id})">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            `;
+                            tbody.appendChild(row);
+                        });
+                        
+                        // Update filter counts
+                        const totalCount = document.getElementById('totalCount');
+                        const filteredCount = document.getElementById('filteredCount');
+                        if (totalCount) totalCount.textContent = schedules.length;
+                        if (filteredCount) filteredCount.textContent = schedules.length;
+                    }
+                }
+            } catch (error) {
+                console.error('Error refreshing admin schedules display:', error);
+            }
+        }
+        
+        // Logout function
+        async function logout() {
+            try {
+                const response = await fetch('/api/admin/logout', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+                
+                if (response.ok) {
+                    showAlert('Logout successful! Redirecting to login...', 'success');
+                    setTimeout(() => {
+                        window.location.href = '/admin-login';
+                    }, 1000);
+                } else {
+                    showAlert('Logout failed. Please try again.', 'danger');
+                }
+            } catch (error) {
+                showAlert('Network error during logout.', 'danger');
+            }
+        }
+        
+        // Check authentication status and initialize admin panel
+        document.addEventListener('DOMContentLoaded', async function() {
+            try {
+                // Check authentication first
+                const response = await fetch('/api/admin/me');
+                if (!response.ok) {
+                    // Not authenticated, redirect to login
+                    window.location.href = '/admin-login';
+                    return;
+                }
+                
+                // User is authenticated, now load data
+                console.log('✅ Admin authenticated, loading data...');
+                
+                // Initialize data loading with proper error handling
+                try {
+                    await loadSchedules();
+                    await loadStaff();
+                    await loadUmpireRequests();
+                    await loadConcessionStaffRequests();
+                    
+                    // Initialize season visibility controls and admin schedules
+                    setTimeout(() => {
+                        loadSeasonVisibilityControls();
+                        refreshAdminSchedulesDisplay();
+                    }, 500);
+                    
+                } catch (dataError) {
+                    console.error('Error loading admin data:', dataError);
+                    showAlert('Some data failed to load. Please refresh the page.', 'warning');
+                }
+                
+            } catch (error) {
+                console.error('Authentication error:', error);
+                // Network error, redirect to login
+                window.location.href = '/admin-login';
+            }
+        });
+    </script>
 </body>
-</html>
+</html> 

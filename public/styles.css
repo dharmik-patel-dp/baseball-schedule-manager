@@ -1,5 +1,5 @@
 /* Clean, Neat & Modern UI Design - Enhanced UX */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+/* Using system default fonts for better performance and consistency */
 
 /* Enhanced UX Improvements */
 * {
@@ -204,7 +204,7 @@ html, html[data-theme="dark"], html.theme-dark {
 }
 
 html, body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   background: var(--neutral-50);
   color: var(--neutral-900);
   line-height: 1.6;
