@@ -272,13 +272,13 @@
             border-top-right-radius: 24px;
         }
 
-        .modern-table-row {
+        .table tbody tr {
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             border-bottom: 1px solid rgba(0, 0, 0, 0.06);
             position: relative;
         }
 
-        .modern-table-row:hover {
+        .table tbody tr:hover {
             background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
             transform: scale(1.02);
             box-shadow: 
@@ -287,7 +287,7 @@
             z-index: 10;
         }
 
-        .modern-table-row td {
+        .table tbody tr td {
             padding: 1.75rem 1.25rem;
             vertical-align: middle;
             border: none;
@@ -295,7 +295,7 @@
             background: transparent;
         }
 
-        .modern-table-row td::before {
+        .table tbody tr:hover td::before {
             content: '';
             position: absolute;
             left: 0;
@@ -303,16 +303,10 @@
             bottom: 0;
             width: 4px;
             background: linear-gradient(180deg, #667eea, #764ba2);
-            opacity: 0;
-            transition: opacity 0.4s ease;
             border-radius: 0 4px 4px 0;
         }
 
-        .modern-table-row:hover td::before {
-            opacity: 1;
-        }
-
-        .umpires-cell, .concession-cell {
+        .umpire-selection, .concession-selection {
             background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
             border-radius: 16px;
             margin: 0.75rem;
@@ -322,210 +316,77 @@
                 inset 0 1px 0 rgba(255, 255, 255, 0.5);
         }
 
-        .modern-umpire-section, .modern-concession-section {
-            padding: 0;
-        }
-
-        .umpire-group-modern, .concession-group-modern {
-            display: grid;
-            gap: 1.25rem;
-        }
-
-        .form-group-modern {
-            display: flex;
-            flex-direction: column;
-            gap: 0.75rem;
-        }
-
-        .label-modern {
-            font-weight: 700;
-            color: #374151;
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            letter-spacing: 0.75px;
-            margin-bottom: 0.25rem;
-        }
-
-        .select-modern {
-            padding: 1rem 1.25rem;
+        .form-select {
+            padding: 0.75rem 1rem;
             border: 2px solid #e5e7eb;
-            border-radius: 16px;
+            border-radius: 12px;
             background: white;
             font-size: 0.9rem;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 
-                0 4px 12px rgba(0, 0, 0, 0.08),
-                inset 0 1px 0 rgba(255, 255, 255, 0.5);
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
         }
 
-        .select-modern:focus {
+        .form-select:focus {
             outline: none;
             border-color: #667eea;
-            box-shadow: 
-                0 0 0 4px rgba(102, 126, 234, 0.15),
-                0 8px 25px rgba(102, 126, 234, 0.2);
-            transform: translateY(-2px);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            transform: translateY(-1px);
         }
 
-        .select-modern:disabled {
+        .form-select:disabled {
             background: #f3f4f6;
             color: #9ca3af;
             cursor: not-allowed;
-            opacity: 0.7;
         }
 
-        .btn-modern {
-            padding: 0.875rem 1.5rem;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            border: none;
+        .btn {
+            padding: 0.75rem 1.5rem;
             border-radius: 12px;
-            font-weight: 700;
+            font-weight: 600;
             font-size: 0.85rem;
-            cursor: pointer;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 
-                0 6px 20px rgba(102, 126, 234, 0.4),
-                inset 0 1px 0 rgba(255, 255, 255, 0.2);
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            justify-content: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #5a67d8, #6b46c1);
+        }
+
+        .badge {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
 
-        .btn-modern:hover {
-            transform: translateY(-3px);
-            box-shadow: 
-                0 12px 30px rgba(102, 126, 234, 0.5),
-                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+        .bg-success {
+            background: linear-gradient(135deg, #4ade80, #22c55e) !important;
         }
 
-        .btn-modern:active {
-            transform: translateY(-1px);
-            box-shadow: 
-                0 6px 20px rgba(102, 126, 234, 0.4),
-                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        .bg-warning {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b) !important;
         }
 
-        .concession-display-modern {
-            padding: 0.5rem 0;
+        .bg-info {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8) !important;
         }
 
-        .event-cell, .division-cell {
-            text-align: center;
+        .bg-secondary {
+            background: linear-gradient(135deg, #6b7280, #4b5563) !important;
         }
 
-        .venue-info-modern, .day-info-modern, .date-info-modern, .time-info-modern {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            font-size: 0.95rem;
-            color: #475569;
-            font-weight: 500;
-        }
-
-        .venue-info-modern i, .day-info-modern i, .date-info-modern i, .time-info-modern i {
-            color: #667eea;
-            width: 20px;
-            font-size: 1rem;
-            text-align: center;
-        }
-
-        .team-info-modern {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            padding: 0.75rem;
-            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-            border-radius: 12px;
-            box-shadow: 
-                0 4px 12px rgba(0, 0, 0, 0.06),
-                inset 0 1px 0 rgba(255, 255, 255, 0.5);
-        }
-
-        .team-info-modern .team-icon {
-            font-size: 1.75rem;
-            width: 40px;
-            text-align: center;
-            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
-        }
-
-        .team-details {
-            flex: 1;
-        }
-
-        .team-name {
-            font-weight: 800;
-            font-size: 1.1rem;
-            color: #1e293b;
-            margin-bottom: 0.25rem;
-            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-        }
-
-        .team-coach {
-            font-size: 0.85rem;
-            color: #64748b;
-            font-style: italic;
-            font-weight: 500;
-        }
-
-        .team-info-modern.home .team-name {
-            color: #059669;
-        }
-
-        .team-info-modern.visitor .team-name {
-            color: #dc2626;
-        }
-
-        /* Enhanced Badge Styles */
-        .badge-modern {
-            padding: 0.75rem 1.25rem;
-            border-radius: 30px;
-            font-size: 0.85rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.75px;
-            box-shadow: 
-                0 6px 20px rgba(0, 0, 0, 0.15),
-                inset 0 1px 0 rgba(255, 255, 255, 0.3);
-            display: inline-block;
-            text-align: center;
-            min-width: 80px;
-        }
-
-        .badge-modern.baseball {
-            background: linear-gradient(135deg, #4ade80, #22c55e);
-            color: white;
-        }
-
-        .badge-modern.softball {
-            background: linear-gradient(135deg, #fbbf24, #f59e0b);
-            color: white;
-        }
-
-        .badge-modern.division {
-            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
-            color: white;
-        }
-
-        .badge-modern.available {
-            background: linear-gradient(135deg, #10b981, #059669);
-            color: white;
-        }
-
-        .badge-modern.no-concession {
-            background: linear-gradient(135deg, #6b7280, #4b5563);
-            color: white;
-        }
-
-        .badge-modern.no-info {
-            background: linear-gradient(135deg, #ef4444, #dc2626);
-            color: white;
-        }
-
-        /* Table Responsive Enhancements */
         .table-responsive {
             border-radius: 24px;
             overflow: hidden;

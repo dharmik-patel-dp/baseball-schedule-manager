@@ -300,27 +300,45 @@ function setupMobileEventListeners() {
     console.log('📱 Setting up mobile event listeners...');
     
     // Add event listeners for mobile umpire dropdowns
-    document.querySelectorAll('.mobile-select.plate-umpire-select').forEach(select => {
+    document.querySelectorAll('.select-modern.plate-umpire-select').forEach(select => {
         select.addEventListener('change', (e) => {
             const gameId = e.target.dataset.gameId;
             const position = e.target.dataset.position;
-            showUmpireSubmitButton(gameId, position);
+            const value = e.target.value;
+            
+            if (value) {
+                showUmpireSubmitButton(gameId, position);
+            } else {
+                hideUmpireSubmitButton(gameId, position);
+            }
         });
     });
     
-    document.querySelectorAll('.mobile-select.base-umpire-select').forEach(select => {
+    document.querySelectorAll('.select-modern.base-umpire-select').forEach(select => {
         select.addEventListener('change', (e) => {
             const gameId = e.target.dataset.gameId;
             const position = e.target.dataset.position;
-            showUmpireSubmitButton(gameId, position);
+            const value = e.target.value;
+            
+            if (value) {
+                showUmpireSubmitButton(gameId, position);
+            } else {
+                hideUmpireSubmitButton(gameId, position);
+            }
         });
     });
     
     // Add event listeners for mobile concession staff dropdowns
-    document.querySelectorAll('.mobile-select.concession-staff-select').forEach(select => {
+    document.querySelectorAll('.select-modern.concession-staff-select').forEach(select => {
         select.addEventListener('change', (e) => {
             const gameId = e.target.dataset.gameId;
-            showConcessionSubmitButton(gameId);
+            const value = e.target.value;
+            
+            if (value) {
+                showConcessionSubmitButton(gameId);
+            } else {
+                hideConcessionSubmitButton(gameId);
+            }
         });
     });
     
@@ -1500,137 +1518,100 @@ function renderDesktopLayout(schedules, tbody) {
         mobileContainer.style.display = 'none';
     }
     
-    // Generate modern desktop table
+    // Generate desktop table
     tbody.innerHTML = schedules.map(schedule => `
-        <tr class="modern-table-row">
-            <td data-label="Umpires" class="umpires-cell">
-                <div class="modern-umpire-section">
-                    <div class="umpire-group-modern">
-                        <div class="form-group-modern">
-                            <label class="label-modern">Plate Umpire</label>
-                            <select class="select-modern plate-umpire-select"
-                                    data-game-id="${schedule.id}"
-                                    data-position="plate"
-                                    ${schedule.plate_umpire ? 'disabled' : ''}>
-                                <option value="">Select Plate Umpire</option>
-                                ${schedule.plate_umpire ? `<option value="${schedule.plate_umpire}" selected>${schedule.plate_umpire}</option>` : ''}
-                                ${getPlateUmpireOptions(schedule.plate_umpire)}
-                            </select>
-                            ${!schedule.plate_umpire ? 
-                                `<button class="btn-modern submit-plate-umpire-btn" 
-                                         data-game-id="${schedule.id}" 
-                                         onclick="submitPlateUmpireRequest(${schedule.id})" 
-                                         style="display: none;">
-                                    <i class="fas fa-paper-plane"></i>Submit
-                                </button>` : ''
-                            }
-                        </div>
-                        
-                        <div class="form-group-modern">
-                            <label class="label-modern">Base Umpire</label>
-                            <select class="select-modern base-umpire-select"
-                                    data-game-id="${schedule.id}"
-                                    data-position="base"
-                                    ${schedule.base_umpire ? 'disabled' : ''}>
-                                <option value="">Select Base Umpire</option>
-                                ${schedule.base_umpire ? `<option value="${schedule.base_umpire}" selected>${schedule.base_umpire}</option>` : ''}
-                                ${getBaseUmpireOptions(schedule.base_umpire)}
-                            </select>
-                            ${!schedule.base_umpire ? 
-                                `<button class="btn-modern submit-base-umpire-btn" 
-                                         data-game-id="${schedule.id}" 
-                                         onclick="submitBaseUmpireRequest(${schedule.id})" 
-                                         style="display: none;">
-                                    <i class="fas fa-paper-plane"></i>Submit
-                                </button>` : ''
-                            }
-                        </div>
+        <tr>
+            <td data-label="Umpires">
+                <div class="umpire-selection">
+                    <div class="mb-2">
+                        <label class="form-label small mb-1"><strong>Plate Umpire:</strong></label>
+                        <select class="form-select form-select-sm plate-umpire-select"
+                                data-game-id="${schedule.id}"
+                                data-position="plate"
+                                ${schedule.plate_umpire ? 'disabled' : ''}>
+                            <option value="">Select Plate Umpire</option>
+                            ${schedule.plate_umpire ? `<option value="${schedule.plate_umpire}" selected>${schedule.plate_umpire}</option>` : ''}
+                            ${getPlateUmpireOptions(schedule.plate_umpire)}
+                        </select>
+                    </div>
+                    
+                    <div class="mb-2">
+                        <button class="btn btn-sm btn-primary submit-plate-umpire-btn" 
+                                 data-game-id="${schedule.id}" 
+                                 onclick="submitPlateUmpireRequest(${schedule.id})" 
+                                 style="display: none;">
+                            <i class="fas fa-paper-plane"></i>Submit Plate Umpire
+                        </button>
+                    </div>
+                    
+                    <div class="mb-2">
+                        <label class="form-label small mb-1"><strong>Base Umpire:</strong></label>
+                        <select class="form-select form-select-sm base-umpire-select"
+                                data-game-id="${schedule.id}"
+                                data-position="base"
+                                ${schedule.base_umpire ? 'disabled' : ''}>
+                            <option value="">Select Base Umpire</option>
+                            ${schedule.base_umpire ? `<option value="${schedule.base_umpire}" selected>${schedule.base_umpire}</option>` : ''}
+                            ${getBaseUmpireOptions(schedule.base_umpire)}
+                        </select>
+                    </div>
+                    
+                    <div class="mb-2">
+                        <button class="btn btn-sm btn-primary submit-base-umpire-btn" 
+                                 data-game-id="${schedule.id}" 
+                                 onclick="submitBaseUmpireRequest(${schedule.id})" 
+                                 style="display: none;">
+                            <i class="fas fa-paper-plane"></i>Submit Base Umpire
+                        </button>
                     </div>
                 </div>
             </td>
-            <td data-label="Concession" class="concession-cell">
-                <div class="modern-concession-section">
-                    <div class="concession-group-modern">
-                        <div class="form-group-modern">
-                            <label class="label-modern">Concession Stand</label>
-                            <div class="concession-display-modern">
-                                ${schedule.concession_stand === 'No Concession' ? 
-                                    '<span class="badge-modern no-concession">No Concession</span>' : 
-                                    schedule.concession_stand ? 
-                                        `<span class="badge-modern available">${schedule.concession_stand}</span>` :
-                                        '<span class="badge-modern no-info">No Info</span>'
-                                }
-                            </div>
-                        </div>
-                        
-                        <div class="form-group-modern">
-                            <label class="label-modern">Concession Staff</label>
-                            <select class="select-modern concession-staff-select" 
-                                    data-game-id="${schedule.id}" 
-                                    data-type="staff"
-                                    ${schedule.concession_staff ? 'disabled' : ''}>
-                                <option value="">${schedule.concession_staff || 'Select Concession Staff'}</option>
-                                ${getConcessionStaffOptions(schedule.concession_staff)}
-                            </select>
-                            ${!schedule.concession_staff ? 
-                                `<button class="btn-modern submit-concession-btn" 
-                                         data-game-id="${schedule.id}" 
-                                         onclick="submitConcessionRequest(${schedule.id})" 
-                                         style="display: none;">
-                                    <i class="fas fa-paper-plane"></i>Submit
-                                </button>` : ''
-                            }
-                        </div>
+            <td data-label="Concession">
+                <div class="concession-selection">
+                    <div class="mb-2">
+                        <label class="form-label small mb-1"><strong>Concession Stand:</strong></label>
+                        <div class="concession-stand-display">
+                    ${schedule.concession_stand === 'No Concession' ? 
+                        '<span class="badge bg-secondary">No Concession</span>' : 
+                        schedule.concession_stand ? 
+                            `<span class="badge bg-success">${schedule.concession_stand}</span>` :
+                            '<span class="badge bg-secondary">No Info</span>'
+                    }
+                </div>
                     </div>
-                </div>
-            </td>
-            <td data-label="Event" class="event-cell">
-                <span class="badge-modern ${schedule.event_type === 'Baseball' ? 'baseball' : 'softball'}">${schedule.event_type || 'N/A'}</span>
-            </td>
-            <td data-label="Venue" class="venue-cell">
-                <div class="venue-info-modern">
-                    <i class="fas fa-map-marker-alt"></i>
-                    <span>${schedule.venue || 'N/A'}</span>
-                </div>
-            </td>
-            <td data-label="Day" class="day-cell">
-                <div class="day-info-modern">
-                    <i class="fas fa-calendar-day"></i>
-                    <span>${schedule.day || 'N/A'}</span>
-                </div>
-            </td>
-            <td data-label="Date" class="date-cell">
-                <div class="date-info-modern">
-                    <i class="fas fa-calendar-alt"></i>
-                    <span>${formatDate(schedule.date)}</span>
-                </div>
-            </td>
-            <td data-label="Time" class="time-cell">
-                <div class="time-info-modern">
-                    <i class="fas fa-clock"></i>
-                    <span>${schedule.start_time || 'N/A'} ${schedule.am_pm || ''}</span>
-                </div>
-            </td>
-            <td data-label="Division" class="division-cell">
-                <span class="badge-modern division">${schedule.division || 'N/A'}</span>
-            </td>
-            <td data-label="Home Team" class="home-team-cell">
-                <div class="team-info-modern home">
-                    <div class="team-icon">🏠</div>
-                    <div class="team-details">
-                        <div class="team-name">${schedule.home_team || 'N/A'}</div>
-                        <div class="team-coach">${schedule.home_coach || 'N/A'}</div>
+                    <div class="mb-2">
+                        <label class="form-label small mb-1"><strong>Concession Staff:</strong></label>
+                        <select class="form-select form-select-sm concession-staff-select" 
+                                data-game-id="${schedule.id}" 
+                                data-type="staff"
+                                ${schedule.concession_staff ? 'disabled' : ''}>
+                            <option value="">${schedule.concession_staff || 'Select Concession Staff'}</option>
+                            ${getConcessionStaffOptions(schedule.concession_staff)}
+                        </select>
                     </div>
+                    ${!schedule.concession_staff ? 
+                        `<button class="btn btn-sm btn-primary submit-concession-btn" 
+                                 data-game-id="${schedule.id}" 
+                                 onclick="submitConcessionRequest(${schedule.id})" 
+                                 style="display: none;">
+                            <i class="fas fa-paper-plane"></i>Submit Request
+                            </button>` : ''
+                    }
                 </div>
             </td>
-            <td data-label="Visitor Team" class="visitor-team-cell">
-                <div class="team-info-modern visitor">
-                    <div class="team-icon">✈️</div>
-                    <div class="team-details">
-                        <div class="team-name">${schedule.visitor_team || 'N/A'}</div>
-                        <div class="team-coach">${schedule.visitor_coach || 'N/A'}</div>
-                    </div>
-                </div>
+            <td data-label="Event"><span class="badge ${schedule.event_type === 'Baseball' ? 'bg-success' : 'bg-warning'}">${schedule.event_type || 'N/A'}</span></td>
+            <td data-label="Venue">${schedule.venue || 'N/A'}</td>
+            <td data-label="Day"><strong>${schedule.day || 'N/A'}</strong></td>
+            <td data-label="Date">${formatDate(schedule.date)}</td>
+            <td data-label="Time">${schedule.start_time || 'N/A'} ${schedule.am_pm || ''}</td>
+            <td data-label="Division"><span class="badge bg-info">${schedule.division || 'N/A'}</span></td>
+            <td data-label="Home Team">
+                <div><strong>${schedule.home_team || 'N/A'}</strong></div>
+                <small class="text-muted">${schedule.home_coach || 'N/A'}</small>
+            </td>
+            <td data-label="Visitor Team">
+                <div><strong>${schedule.visitor_team || 'N/A'}</strong></div>
+                <small class="text-muted">${schedule.visitor_coach || 'N/A'}</small>
             </td>
         </tr>
     `).join('');
@@ -2298,6 +2279,14 @@ function showConcessionSubmitButton(gameId) {
     const submitBtn = document.querySelector(`.submit-concession-btn[data-game-id="${gameId}"]`);
     if (submitBtn) {
         submitBtn.style.display = 'inline-block';
+    }
+}
+
+// Hide concession submit button when selection is cleared
+function hideConcessionSubmitButton(gameId) {
+    const submitBtn = document.querySelector(`.submit-concession-btn[data-game-id="${gameId}"]`);
+    if (submitBtn) {
+        submitBtn.style.display = 'none';
     }
 }
 
