@@ -1488,10 +1488,10 @@ function renderMobileLayout(schedules, tbody) {
 function renderDesktopLayout(schedules, tbody) {
     console.log('💻 Rendering desktop layout...');
     
-    // Show desktop table, hide mobile cards
+    // Hide desktop table, show modern desktop cards
     const tableContainer = document.querySelector('.table-responsive');
     if (tableContainer) {
-        tableContainer.style.display = 'block';
+        tableContainer.style.display = 'none';
     }
     
     // Hide mobile cards container
@@ -1500,103 +1500,169 @@ function renderDesktopLayout(schedules, tbody) {
         mobileContainer.style.display = 'none';
     }
     
-    // Generate desktop table
-    tbody.innerHTML = schedules.map(schedule => `
-        <tr>
-            <td data-label="Umpires">
-                <div class="umpire-selection">
-                    <div class="mb-2">
-                        <label class="form-label small mb-1"><strong>Plate Umpire:</strong></label>
-                        <select class="form-select form-select-sm plate-umpire-select"
-                                data-game-id="${schedule.id}"
-                                data-position="plate"
-                                ${schedule.plate_umpire ? 'disabled' : ''}>
-                            <option value="">Select Plate Umpire</option>
-                            ${schedule.plate_umpire ? `<option value="${schedule.plate_umpire}" selected>${schedule.plate_umpire}</option>` : ''}
-                            ${getPlateUmpireOptions(schedule.plate_umpire)}
-                        </select>
+    // Create or update desktop cards container
+    let desktopContainer = document.querySelector('.desktop-cards-container');
+    if (!desktopContainer) {
+        desktopContainer = document.createElement('div');
+        desktopContainer.className = 'desktop-cards-container';
+        desktopContainer.innerHTML = '<h4 class="text-center mb-4 modern-title">⚾ Game Schedules</h4>';
+        tableContainer.parentNode.insertBefore(desktopContainer, tableContainer.nextSibling);
+    }
+    
+    // Generate modern desktop cards
+    const desktopCards = schedules.map(schedule => `
+        <div class="desktop-game-card" data-game-id="${schedule.id}">
+            <div class="desktop-card-header">
+                <div class="game-info-section">
+                    <div class="game-badges">
+                        <span class="badge-modern ${schedule.event_type === 'Baseball' ? 'baseball' : 'softball'}">${schedule.event_type || 'Game'}</span>
+                        <span class="badge-modern division">${schedule.division || 'Division'}</span>
                     </div>
-                    
-                    <div class="mb-2">
-                        <button class="btn btn-sm btn-primary submit-plate-umpire-btn" 
-                                 data-game-id="${schedule.id}" 
-                                 onclick="submitPlateUmpireRequest(${schedule.id})" 
-                                 style="display: none;">
-                            <i class="fas fa-paper-plane"></i>Submit Plate Umpire
-                        </button>
-                    </div>
-                    
-                    <div class="mb-2">
-                        <label class="form-label small mb-1"><strong>Base Umpire:</strong></label>
-                        <select class="form-select form-select-sm base-umpire-select"
-                                data-game-id="${schedule.id}"
-                                data-position="base"
-                                ${schedule.base_umpire ? 'disabled' : ''}>
-                            <option value="">Select Base Umpire</option>
-                            ${schedule.base_umpire ? `<option value="${schedule.base_umpire}" selected>${schedule.base_umpire}</option>` : ''}
-                            ${getBaseUmpireOptions(schedule.base_umpire)}
-                        </select>
-                    </div>
-                    
-                    <div class="mb-2">
-                        <button class="btn btn-sm btn-primary submit-base-umpire-btn" 
-                                 data-game-id="${schedule.id}" 
-                                 onclick="submitBaseUmpireRequest(${schedule.id})" 
-                                 style="display: none;">
-                            <i class="fas fa-paper-plane"></i>Submit Base Umpire
-                        </button>
+                    <div class="game-datetime">
+                        <div class="date-modern">
+                            <i class="fas fa-calendar-alt"></i>
+                            <span>${formatDate(schedule.date)}</span>
+                        </div>
+                        <div class="time-modern">
+                            <i class="fas fa-clock"></i>
+                            <span>${schedule.start_time || 'N/A'} ${schedule.am_pm || ''}</span>
+                        </div>
+                        <div class="day-modern">
+                            <i class="fas fa-calendar-day"></i>
+                            <span>${schedule.day || 'N/A'}</span>
+                        </div>
                     </div>
                 </div>
-            </td>
-            <td data-label="Concession">
-                <div class="concession-selection">
-                    <div class="mb-2">
-                        <label class="form-label small mb-1"><strong>Concession Stand:</strong></label>
-                        <div class="concession-stand-display">
-                    ${schedule.concession_stand === 'No Concession' ? 
-                        '<span class="badge bg-secondary">No Concession</span>' : 
-                        schedule.concession_stand ? 
-                            `<span class="badge bg-success">${schedule.concession_stand}</span>` :
-                            '<span class="badge bg-secondary">No Info</span>'
-                    }
-                </div>
+                
+                <div class="venue-section">
+                    <div class="venue-info">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>${schedule.venue || 'N/A'}</span>
                     </div>
-                    <div class="mb-2">
-                        <label class="form-label small mb-1"><strong>Concession Staff:</strong></label>
-                        <select class="form-select form-select-sm concession-staff-select" 
-                                data-game-id="${schedule.id}" 
-                                data-type="staff"
-                                ${schedule.concession_staff ? 'disabled' : ''}>
-                            <option value="">${schedule.concession_staff || 'Select Concession Staff'}</option>
-                            ${getConcessionStaffOptions(schedule.concession_staff)}
-                        </select>
-                    </div>
-                    ${!schedule.concession_staff ? 
-                        `<button class="btn btn-sm btn-primary submit-concession-btn" 
-                                 data-game-id="${schedule.id}" 
-                                 onclick="submitConcessionRequest(${schedule.id})" 
-                                 style="display: none;">
-                            <i class="fas fa-paper-plane"></i>Submit Request
-                            </button>` : ''
-                    }
                 </div>
-            </td>
-            <td data-label="Event"><span class="badge ${schedule.event_type === 'Baseball' ? 'bg-success' : 'bg-warning'}">${schedule.event_type || 'N/A'}</span></td>
-            <td data-label="Venue">${schedule.venue || 'N/A'}</td>
-            <td data-label="Day"><strong>${schedule.day || 'N/A'}</strong></td>
-            <td data-label="Date">${formatDate(schedule.date)}</td>
-            <td data-label="Time">${schedule.start_time || 'N/A'} ${schedule.am_pm || ''}</td>
-            <td data-label="Division"><span class="badge bg-info">${schedule.division || 'N/A'}</span></td>
-            <td data-label="Home Team">
-                <div><strong>${schedule.home_team || 'N/A'}</strong></div>
-                <small class="text-muted">${schedule.home_coach || 'N/A'}</small>
-            </td>
-            <td data-label="Visitor Team">
-                <div><strong>${schedule.visitor_team || 'N/A'}</strong></div>
-                <small class="text-muted">${schedule.visitor_coach || 'N/A'}</small>
-            </td>
-        </tr>
+            </div>
+            
+            <div class="desktop-card-body">
+                <div class="teams-section-desktop">
+                    <div class="team-card-desktop home">
+                        <div class="team-header">
+                            <div class="team-icon">🏠</div>
+                            <div class="team-label">Home</div>
+                        </div>
+                        <div class="team-info">
+                            <div class="team-name">${schedule.home_team || 'N/A'}</div>
+                            <div class="team-coach">${schedule.home_coach || 'N/A'}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="vs-divider-desktop">
+                        <span>VS</span>
+                    </div>
+                    
+                    <div class="team-card-desktop visitor">
+                        <div class="team-header">
+                            <div class="team-icon">✈️</div>
+                            <div class="team-label">Visitor</div>
+                        </div>
+                        <div class="team-info">
+                            <div class="team-name">${schedule.visitor_team || 'N/A'}</div>
+                            <div class="team-coach">${schedule.visitor_coach || 'N/A'}</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="controls-section-desktop">
+                    <div class="umpires-controls-desktop">
+                        <h6 class="section-title-desktop">Umpires</h6>
+                        <div class="controls-grid">
+                            <div class="control-group">
+                                <label class="label-modern">Plate Umpire</label>
+                                <select class="select-modern plate-umpire-select"
+                                        data-game-id="${schedule.id}"
+                                        data-position="plate"
+                                        ${schedule.plate_umpire ? 'disabled' : ''}>
+                                    <option value="">Select Plate Umpire</option>
+                                    ${schedule.plate_umpire ? `<option value="${schedule.plate_umpire}" selected>${schedule.plate_umpire}</option>` : ''}
+                                    ${getPlateUmpireOptions(schedule.plate_umpire)}
+                                </select>
+                                ${!schedule.plate_umpire ? 
+                                    `<button class="btn-modern submit-plate-umpire-btn" 
+                                             data-game-id="${schedule.id}" 
+                                             onclick="submitPlateUmpireRequest(${schedule.id})" 
+                                             style="display: none;">
+                                        <i class="fas fa-paper-plane"></i>Submit
+                                    </button>` : ''
+                                }
+                            </div>
+                            
+                            <div class="control-group">
+                                <label class="label-modern">Base Umpire</label>
+                                <select class="select-modern base-umpire-select"
+                                        data-game-id="${schedule.id}"
+                                        data-position="base"
+                                        ${schedule.base_umpire ? 'disabled' : ''}>
+                                    <option value="">Select Base Umpire</option>
+                                    ${schedule.base_umpire ? `<option value="${schedule.base_umpire}" selected>${schedule.base_umpire}</option>` : ''}
+                                    ${getBaseUmpireOptions(schedule.base_umpire)}
+                                </select>
+                                ${!schedule.base_umpire ? 
+                                    `<button class="btn-modern submit-base-umpire-btn" 
+                                             data-game-id="${schedule.id}" 
+                                             onclick="submitBaseUmpireRequest(${schedule.id})" 
+                                             style="display: none;">
+                                        <i class="fas fa-paper-plane"></i>Submit
+                                    </button>` : ''
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="concession-controls-desktop">
+                        <h6 class="section-title-desktop">Concession</h6>
+                        <div class="controls-grid">
+                            <div class="control-group">
+                                <label class="label-modern">Concession Stand</label>
+                                <div class="concession-display">
+                                    ${schedule.concession_stand === 'No Concession' ? 
+                                        '<span class="badge-modern no-concession">No Concession</span>' : 
+                                        schedule.concession_stand ? 
+                                            `<span class="badge-modern available">${schedule.concession_stand}</span>` :
+                                            '<span class="badge-modern no-info">No Info</span>'
+                                    }
+                                </div>
+                            </div>
+                            
+                            <div class="control-group">
+                                <label class="label-modern">Concession Staff</label>
+                                <select class="select-modern concession-staff-select" 
+                                        data-game-id="${schedule.id}" 
+                                        data-type="staff"
+                                        ${schedule.concession_staff ? 'disabled' : ''}>
+                                    <option value="">${schedule.concession_staff || 'Select Concession Staff'}</option>
+                                    ${getConcessionStaffOptions(schedule.concession_staff)}
+                                </select>
+                                ${!schedule.concession_staff ? 
+                                    `<button class="btn-modern submit-concession-btn" 
+                                             data-game-id="${schedule.id}" 
+                                             onclick="submitConcessionRequest(${schedule.id})" 
+                                             style="display: none;">
+                                        <i class="fas fa-paper-plane"></i>Submit
+                                    </button>` : ''
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     `).join('');
+    
+    desktopContainer.innerHTML = `
+        <h4 class="text-center mb-4 modern-title">⚾ Game Schedules</h4>
+        <div class="desktop-cards-grid">
+            ${desktopCards}
+        </div>
+    `;
 }
 
 // Load umpire requests

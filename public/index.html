@@ -507,7 +507,212 @@
             border-top: 2px solid #f1f5f9;
         }
 
+        /* Desktop Card Styles */
+        .desktop-cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(800px, 1fr));
+            gap: 2rem;
+            padding: 1rem 0;
+        }
+
+        .desktop-game-card {
+            background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
+            border-radius: 24px;
+            box-shadow: 
+                0 15px 35px rgba(0, 0, 0, 0.1),
+                0 5px 15px rgba(0, 0, 0, 0.07);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+
+        .desktop-game-card:hover {
+            transform: translateY(-12px) scale(1.02);
+            box-shadow: 
+                0 25px 50px rgba(0, 0, 0, 0.15),
+                0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .desktop-game-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: linear-gradient(90deg, #667eea, #764ba2, #f093fb, #667eea);
+            background-size: 200% 100%;
+            animation: gradientShift 3s ease-in-out infinite;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .desktop-card-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+        }
+
+        .game-info-section {
+            flex: 1;
+        }
+
+        .game-datetime {
+            display: flex;
+            gap: 2rem;
+            margin-top: 1rem;
+        }
+
+        .day-modern {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .venue-section {
+            text-align: right;
+        }
+
+        .venue-info {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0.75rem 1.5rem;
+            border-radius: 25px;
+            backdrop-filter: blur(10px);
+        }
+
+        .venue-info i {
+            font-size: 1.1rem;
+        }
+
+        .desktop-card-body {
+            padding: 2rem;
+        }
+
+        .teams-section-desktop {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: linear-gradient(135deg, #f1f5f9, #e2e8f0);
+            border-radius: 20px;
+        }
+
+        .team-card-desktop {
+            flex: 1;
+            text-align: center;
+        }
+
+        .team-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .team-icon {
+            font-size: 2.5rem;
+        }
+
+        .team-label {
+            font-weight: 700;
+            font-size: 1rem;
+            color: #374151;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .team-name {
+            font-weight: 800;
+            font-size: 1.3rem;
+            color: #1e293b;
+            margin-bottom: 0.5rem;
+        }
+
+        .team-coach {
+            font-size: 0.95rem;
+            color: #64748b;
+            font-style: italic;
+        }
+
+        .vs-divider-desktop {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-radius: 50%;
+            font-weight: 800;
+            font-size: 1.1rem;
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .controls-section-desktop {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        .umpires-controls-desktop, .concession-controls-desktop {
+            background: #f8fafc;
+            padding: 1.5rem;
+            border-radius: 16px;
+            border: 2px solid #e2e8f0;
+        }
+
+        .section-title-desktop {
+            font-weight: 800;
+            color: #1e293b;
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            text-align: center;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .controls-grid {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .control-group .btn-modern {
+            margin-top: 0.5rem;
+        }
+
         /* Mobile Responsive Adjustments */
+        @media (max-width: 1200px) {
+            .desktop-cards-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+        }
+
         @media (max-width: 768px) {
             .modern-cards-grid {
                 gap: 1rem;
@@ -544,6 +749,48 @@
 
             .game-details-modern {
                 grid-template-columns: 1fr;
+            }
+
+            .desktop-cards-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+                padding: 0.5rem 0;
+            }
+
+            .desktop-game-card {
+                margin: 0 0.5rem;
+            }
+
+            .desktop-card-header {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+                padding: 1.5rem;
+            }
+
+            .desktop-card-body {
+                padding: 1.5rem;
+            }
+
+            .teams-section-desktop {
+                flex-direction: column;
+                gap: 1.5rem;
+                text-align: center;
+            }
+
+            .vs-divider-desktop {
+                align-self: center;
+            }
+
+            .controls-section-desktop {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .game-datetime {
+                flex-direction: column;
+                gap: 0.5rem;
+                align-items: center;
             }
         }
     </style>
