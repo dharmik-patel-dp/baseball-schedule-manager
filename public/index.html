@@ -507,212 +507,221 @@
             border-top: 2px solid #f1f5f9;
         }
 
-        /* Desktop Card Styles */
-        .desktop-cards-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(800px, 1fr));
-            gap: 2rem;
-            padding: 1rem 0;
-        }
-
-        .desktop-game-card {
+        /* Modern Desktop Table Styles */
+        .table {
             background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
-            border-radius: 24px;
-            box-shadow: 
-                0 15px 35px rgba(0, 0, 0, 0.1),
-                0 5px 15px rgba(0, 0, 0, 0.07);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
             overflow: hidden;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-        }
-
-        .desktop-game-card:hover {
-            transform: translateY(-12px) scale(1.02);
             box-shadow: 
-                0 25px 50px rgba(0, 0, 0, 0.15),
-                0 10px 25px rgba(0, 0, 0, 0.1);
+                0 20px 40px rgba(0, 0, 0, 0.1),
+                0 1px 8px rgba(0, 0, 0, 0.05);
+            border: none;
         }
 
-        .desktop-game-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 6px;
-            background: linear-gradient(90deg, #667eea, #764ba2, #f093fb, #667eea);
-            background-size: 200% 100%;
-            animation: gradientShift 3s ease-in-out infinite;
-        }
-
-        @keyframes gradientShift {
-            0%, 100% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-        }
-
-        .desktop-card-header {
+        .table thead th {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            padding: 2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-size: 0.85rem;
+            padding: 1.5rem 1rem;
+            border: none;
             position: relative;
         }
 
-        .game-info-section {
-            flex: 1;
+        .table thead th::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #f093fb, #667eea, #764ba2);
         }
 
-        .game-datetime {
+        .modern-table-row {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .modern-table-row:hover {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            transform: scale(1.01);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .modern-table-row td {
+            padding: 1.5rem 1rem;
+            vertical-align: middle;
+            border: none;
+            position: relative;
+        }
+
+        .modern-table-row td::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: linear-gradient(180deg, #667eea, #764ba2);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .modern-table-row:hover td::before {
+            opacity: 1;
+        }
+
+        .umpires-cell, .concession-cell {
+            background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+            border-radius: 12px;
+            margin: 0.5rem;
+            padding: 1rem;
+        }
+
+        .modern-umpire-section, .modern-concession-section {
+            padding: 0;
+        }
+
+        .umpire-group-modern, .concession-group-modern {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .form-group-modern {
             display: flex;
-            gap: 2rem;
-            margin-top: 1rem;
+            flex-direction: column;
+            gap: 0.5rem;
         }
 
-        .day-modern {
+        .label-modern {
+            font-weight: 600;
+            color: #374151;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .select-modern {
+            padding: 0.75rem 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            background: white;
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .select-modern:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .select-modern:disabled {
+            background: #f3f4f6;
+            color: #9ca3af;
+            cursor: not-allowed;
+        }
+
+        .btn-modern {
+            padding: 0.5rem 1rem;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            justify-content: center;
+        }
+
+        .btn-modern:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-modern:active {
+            transform: translateY(0);
+        }
+
+        .concession-display-modern {
+            padding: 0.25rem 0;
+        }
+
+        .event-cell, .division-cell {
+            text-align: center;
+        }
+
+        .venue-info-modern, .day-info-modern, .date-info-modern, .time-info-modern {
             display: flex;
             align-items: center;
             gap: 0.5rem;
             font-size: 0.9rem;
-            font-weight: 500;
+            color: #475569;
         }
 
-        .venue-section {
-            text-align: right;
+        .venue-info-modern i, .day-info-modern i, .date-info-modern i, .time-info-modern i {
+            color: #667eea;
+            width: 16px;
+            font-size: 0.9rem;
         }
 
-        .venue-info {
+        .team-info-modern {
             display: flex;
             align-items: center;
-            gap: 0.5rem;
-            font-size: 1rem;
-            font-weight: 600;
-            background: rgba(255, 255, 255, 0.1);
-            padding: 0.75rem 1.5rem;
-            border-radius: 25px;
-            backdrop-filter: blur(10px);
+            gap: 0.75rem;
         }
 
-        .venue-info i {
-            font-size: 1.1rem;
-        }
-
-        .desktop-card-body {
-            padding: 2rem;
-        }
-
-        .teams-section-desktop {
-            display: flex;
-            align-items: center;
-            gap: 2rem;
-            margin-bottom: 2rem;
-            padding: 1.5rem;
-            background: linear-gradient(135deg, #f1f5f9, #e2e8f0);
-            border-radius: 20px;
-        }
-
-        .team-card-desktop {
-            flex: 1;
+        .team-info-modern .team-icon {
+            font-size: 1.5rem;
+            width: 30px;
             text-align: center;
         }
 
-        .team-header {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.75rem;
-            margin-bottom: 1rem;
-        }
-
-        .team-icon {
-            font-size: 2.5rem;
-        }
-
-        .team-label {
-            font-weight: 700;
-            font-size: 1rem;
-            color: #374151;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+        .team-details {
+            flex: 1;
         }
 
         .team-name {
-            font-weight: 800;
-            font-size: 1.3rem;
+            font-weight: 700;
+            font-size: 0.95rem;
             color: #1e293b;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.25rem;
         }
 
         .team-coach {
-            font-size: 0.95rem;
+            font-size: 0.8rem;
             color: #64748b;
             font-style: italic;
         }
 
-        .vs-divider-desktop {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 60px;
-            height: 60px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            border-radius: 50%;
-            font-weight: 800;
-            font-size: 1.1rem;
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        .team-info-modern.home .team-name {
+            color: #059669;
         }
 
-        .controls-section-desktop {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 2rem;
+        .team-info-modern.visitor .team-name {
+            color: #dc2626;
         }
 
-        .umpires-controls-desktop, .concession-controls-desktop {
-            background: #f8fafc;
-            padding: 1.5rem;
-            border-radius: 16px;
-            border: 2px solid #e2e8f0;
-        }
-
-        .section-title-desktop {
-            font-weight: 800;
-            color: #1e293b;
-            margin-bottom: 1.5rem;
-            font-size: 1.1rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            text-align: center;
-            padding-bottom: 0.5rem;
-            border-bottom: 2px solid #e2e8f0;
-        }
-
-        .controls-grid {
-            display: grid;
-            gap: 1.5rem;
-        }
-
-        .control-group {
-            display: flex;
-            flex-direction: column;
-            gap: 0.75rem;
-        }
-
-        .control-group .btn-modern {
-            margin-top: 0.5rem;
+        /* Table Responsive Enhancements */
+        .table-responsive {
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 
+                0 20px 40px rgba(0, 0, 0, 0.1),
+                0 1px 8px rgba(0, 0, 0, 0.05);
         }
 
         /* Mobile Responsive Adjustments */
-        @media (max-width: 1200px) {
-            .desktop-cards-grid {
-                grid-template-columns: 1fr;
-                gap: 1.5rem;
-            }
-        }
-
         @media (max-width: 768px) {
             .modern-cards-grid {
                 gap: 1rem;
@@ -749,48 +758,6 @@
 
             .game-details-modern {
                 grid-template-columns: 1fr;
-            }
-
-            .desktop-cards-grid {
-                grid-template-columns: 1fr;
-                gap: 1rem;
-                padding: 0.5rem 0;
-            }
-
-            .desktop-game-card {
-                margin: 0 0.5rem;
-            }
-
-            .desktop-card-header {
-                flex-direction: column;
-                gap: 1rem;
-                text-align: center;
-                padding: 1.5rem;
-            }
-
-            .desktop-card-body {
-                padding: 1.5rem;
-            }
-
-            .teams-section-desktop {
-                flex-direction: column;
-                gap: 1.5rem;
-                text-align: center;
-            }
-
-            .vs-divider-desktop {
-                align-self: center;
-            }
-
-            .controls-section-desktop {
-                grid-template-columns: 1fr;
-                gap: 1.5rem;
-            }
-
-            .game-datetime {
-                flex-direction: column;
-                gap: 0.5rem;
-                align-items: center;
             }
         }
     </style>
