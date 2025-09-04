@@ -2442,12 +2442,8 @@ document.addEventListener('DOMContentLoaded', function() {
             const type = e.target.dataset.type;
             const value = e.target.value;
             
-            // Show submit button if selection is made, hide if cleared
-            if (!e.target.disabled && value) {
-                showConcessionSubmitButton(gameId);
-            } else if (!e.target.disabled && !value) {
-                hideConcessionSubmitButton(gameId);
-            }
+            // Show submit button if selection is made
+            showConcessionSubmitButton(gameId);
         }
     });
 });
