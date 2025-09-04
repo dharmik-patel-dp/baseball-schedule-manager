@@ -1525,7 +1525,7 @@ function renderDesktopLayout(schedules, tbody) {
                 <div class="umpire-selection">
                     <div class="mb-2">
                         <label class="form-label small mb-1"><strong>Plate Umpire:</strong></label>
-                        <select class="form-select form-select-sm plate-umpire-select"
+                        <select class="select-modern plate-umpire-select"
                                 data-game-id="${schedule.id}"
                                 data-position="plate"
                                 ${schedule.plate_umpire ? 'disabled' : ''}>
@@ -1536,7 +1536,7 @@ function renderDesktopLayout(schedules, tbody) {
                     </div>
                     
                     <div class="mb-2">
-                        <button class="btn btn-sm btn-primary submit-plate-umpire-btn" 
+                        <button class="btn-modern submit-plate-umpire-btn" 
                                  data-game-id="${schedule.id}" 
                                  onclick="submitPlateUmpireRequest(${schedule.id})" 
                                  style="display: none;">
@@ -1546,7 +1546,7 @@ function renderDesktopLayout(schedules, tbody) {
                     
                     <div class="mb-2">
                         <label class="form-label small mb-1"><strong>Base Umpire:</strong></label>
-                        <select class="form-select form-select-sm base-umpire-select"
+                        <select class="select-modern base-umpire-select"
                                 data-game-id="${schedule.id}"
                                 data-position="base"
                                 ${schedule.base_umpire ? 'disabled' : ''}>
@@ -1557,7 +1557,7 @@ function renderDesktopLayout(schedules, tbody) {
                     </div>
                     
                     <div class="mb-2">
-                        <button class="btn btn-sm btn-primary submit-base-umpire-btn" 
+                        <button class="btn-modern submit-base-umpire-btn" 
                                  data-game-id="${schedule.id}" 
                                  onclick="submitBaseUmpireRequest(${schedule.id})" 
                                  style="display: none;">
@@ -1581,7 +1581,7 @@ function renderDesktopLayout(schedules, tbody) {
                     </div>
                     <div class="mb-2">
                         <label class="form-label small mb-1"><strong>Concession Staff:</strong></label>
-                        <select class="form-select form-select-sm concession-staff-select" 
+                        <select class="select-modern concession-staff-select" 
                                 data-game-id="${schedule.id}" 
                                 data-type="staff"
                                 ${schedule.concession_staff ? 'disabled' : ''}>
@@ -1590,7 +1590,7 @@ function renderDesktopLayout(schedules, tbody) {
                         </select>
                     </div>
                     ${!schedule.concession_staff ? 
-                        `<button class="btn btn-sm btn-primary submit-concession-btn" 
+                        `<button class="btn-modern submit-concession-btn" 
                                  data-game-id="${schedule.id}" 
                                  onclick="submitConcessionRequest(${schedule.id})" 
                                  style="display: none;">
